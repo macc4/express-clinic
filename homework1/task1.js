@@ -28,7 +28,7 @@ console.log(carSettings);
 
 // optional solution, one function that controls the difficulty
 const chooseDifficulty = function (option) {
-  difficulty = option.toLowerCase().trim();
+  const difficulty = option.toLowerCase().trim();
   switch (difficulty) {
     case 'beginner':
       setSettings(5, carSettings);
