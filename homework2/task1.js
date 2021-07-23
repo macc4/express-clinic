@@ -1,7 +1,7 @@
 const bulbs = function (bulbs, inversions) {
   let count = 0;
 
-  // create an array to represent the state of the lightbulb and fill it with ones
+  // create an array to represent the state of the lightbulb and fill it with 1's
   const bulbsArray = new Array(bulbs);
   bulbsArray.fill(1, 0);
 
@@ -14,7 +14,7 @@ const bulbs = function (bulbs, inversions) {
     }
   });
 
-  // check the state of every light bulb (if even - it is on, if odd - it is off)
+  // check the state of every lightbulb (if even - it is on, if odd - it is off)
   bulbsArray.forEach((el) => {
     if (el % 2 == 0) {
       count += 1;
