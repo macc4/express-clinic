@@ -1,4 +1,4 @@
-// implemantaion was created based on the "binary search the answer"
+// implementation was created based on the "binary search the answer"
 // https://oldaddr.wordpress.com/2014/06/28/binary-search-the-answer/
 // acmp.ru #523
 
