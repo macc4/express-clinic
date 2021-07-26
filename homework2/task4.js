@@ -2,25 +2,25 @@
 // with odd order, and one for doubly even order (4, 8, 12)
 // it does not create singly even magic squares (6, 10, 14)
 
-// n - order of the square
+// functions take the order of the square and print out the square in the console
 
-// both functions print out the square in the console
-
-const genMagicSquareOdd = function (n) {
-  let magicSquare = Array(n)
+const genMagicSquareOdd = function (order) {
+  let magicSquare = Array(order)
     .fill(0)
-    .map(() => Array(n).fill(0));
+    .map(() => Array(order).fill(0));
 
-  let i = Math.floor(n / 2);
-  let j = n - 1;
+  // square coordinates
+  let i = Math.floor(order / 2);
+  let j = order - 1;
 
-  for (let num = 1; num <= n * n; ) {
-    if (i == -1 && j == n) {
-      j = n - 2;
+  // num - numbers that we put in the square
+  for (let num = 1; num <= order * order; ) {
+    if (i == -1 && j == order) {
+      j = order - 2;
       i = 0;
     } else {
-      if (j == n) j = 0;
-      if (i < 0) i = n - 1;
+      if (j == order) j = 0;
+      if (i < 0) i = order - 1;
     }
 
     if (magicSquare[i][j] != 0) {
@@ -33,45 +33,47 @@ const genMagicSquareOdd = function (n) {
     i--;
   }
 
-  console.log('The Magic Square for ' + n + ':\n');
+  console.log('The Magic Square for ' + order + ':\n');
   console.log(magicSquare.join('\n'));
 };
 
-const genMagicSquareDoublyEven = function (n) {
-  let magicSquare = Array(n)
+const genMagicSquareDoublyEven = function (order) {
+  let magicSquare = Array(order)
     .fill(0)
-    .map(() => Array(n).fill(0));
+    .map(() => Array(order).fill(0));
   let i, j;
 
   // used for changing the value at the corners of the square
-  const k = Math.floor(n / 4);
+  const quarterOfOrder = Math.floor(order / 4);
 
-  for (i = 0; i < n; i++)
-    for (j = 0; j < n; j++) magicSquare[i][j] = n * i + j + 1;
+  for (i = 0; i < order; i++)
+    for (j = 0; j < order; j++) magicSquare[i][j] = order * i + j + 1;
 
-  for (i = 0; i < k; i++)
-    for (j = 0; j < k; j++) magicSquare[i][j] = n * n + 1 - magicSquare[i][j];
+  for (i = 0; i < quarterOfOrder; i++)
+    for (j = 0; j < quarterOfOrder; j++)
+      magicSquare[i][j] = order * order + 1 - magicSquare[i][j];
 
-  for (i = 0; i < k; i++)
-    for (j = 3 * k; j < n; j++)
-      magicSquare[i][j] = n * n + 1 - magicSquare[i][j];
+  for (i = 0; i < quarterOfOrder; i++)
+    for (j = 3 * quarterOfOrder; j < order; j++)
+      magicSquare[i][j] = order * order + 1 - magicSquare[i][j];
 
-  for (i = 3 * k; i < n; i++)
-    for (j = 0; j < k; j++) magicSquare[i][j] = n * n + 1 - magicSquare[i][j];
+  for (i = 3 * quarterOfOrder; i < order; i++)
+    for (j = 0; j < quarterOfOrder; j++)
+      magicSquare[i][j] = order * order + 1 - magicSquare[i][j];
 
-  for (i = 3 * k; i < n; i++)
-    for (j = 3 * k; j < n; j++)
-      magicSquare[i][j] = n * n + 1 - magicSquare[i][j];
+  for (i = 3 * quarterOfOrder; i < order; i++)
+    for (j = 3 * quarterOfOrder; j < order; j++)
+      magicSquare[i][j] = order * order + 1 - magicSquare[i][j];
 
-  for (i = k; i < 3 * k; i++)
-    for (j = k; j < 3 * k; j++)
-      magicSquare[i][j] = n * n + 1 - magicSquare[i][j];
+  for (i = quarterOfOrder; i < 3 * quarterOfOrder; i++)
+    for (j = quarterOfOrder; j < 3 * quarterOfOrder; j++)
+      magicSquare[i][j] = order * order + 1 - magicSquare[i][j];
 
-  console.log('The Magic Square for ' + n + ':\n');
+  console.log('The Magic Square for ' + order + ':\n');
   console.log(magicSquare.join('\n'));
 };
 
-const genMagicSquareSinglyEven = function (n) {
+const genMagicSquareSinglyEven = function (order) {
   console.log(
     'This implementation works only with odd and doubly even numbers. ;-;'
   );
