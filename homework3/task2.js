@@ -27,8 +27,8 @@ class Converter {
     if (this.number === 0 || this.number < 0) {
       return 'There are no negative Roman Numerals, nor is there a Roman Numeral for zero.';
     }
-    if (this.number > 3000000) {
-      return 'This number will be unreadable.';
+    if (this.number > 3999) {
+      return 'The biggest number that can be formed in Roman Numerals is 3,999';
     }
     let digits = String(+this.number).split(''),
       key = [
