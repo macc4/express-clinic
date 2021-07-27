@@ -12,7 +12,10 @@ class Users {
     const data = await response.json();
 
     data.results.forEach((element) => {
-      console.log(element);
+      console.log(`Person: ${element.name.title}. ${element.name.first} ${element.name.last}
+Gender: ${element.gender}
+Phone: ${element.phone}
+Nationality: ${element.nat}\n`);
     });
   }
 }
