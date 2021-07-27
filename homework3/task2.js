@@ -1,4 +1,4 @@
-class Add {
+class Calculator {
   constructor(input1, input2) {
     this.input1 = input1;
     this.input2 = input2;
@@ -6,29 +6,11 @@ class Add {
   add() {
     return this.input1 + this.input2;
   }
-}
-class Subtract {
-  constructor(input1, input2) {
-    this.input1 = input1;
-    this.input2 = input2;
-  }
   subtract() {
     return this.input1 - this.input2;
   }
-}
-class Multiply {
-  constructor(input1, input2) {
-    this.input1 = input1;
-    this.input2 = input2;
-  }
   multiply() {
     return this.input1 * this.input2;
-  }
-}
-class Divide {
-  constructor(input1, input2) {
-    this.input1 = input1;
-    this.input2 = input2;
   }
   divide() {
     return this.input1 / this.input2;
@@ -119,7 +101,7 @@ class Converter {
   }
 }
 
-let operation = new Subtract(26, 134);
+let operation = new Calculator(26, 134);
 
 let result = operation.subtract();
 
