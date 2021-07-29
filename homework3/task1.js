@@ -37,7 +37,7 @@ class DeleteDatesFromString extends StringFormatter {
 }
 
 class ApplyRegexSearchToString extends StringFormatter {
-  constructor(string, regex, replacement) {
+  constructor(string, { regex, replacement }) {
     super(string);
     this.regex = regex;
     this.replacement = replacement;
