@@ -6,23 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPatientTag = document.getElementById('patient-current'),
     doctorPatientTag = document.getElementById('doctor-current'),
     nextPatientButton = document.getElementById('doctor-next-patient'),
-    patientSearchResolutionName = document.getElementById(
-      'patient-search-form'
-    ),
-    patientResolutionSearchButton = document.getElementById(
-      'patient-resolution-button'
-    ),
-    patientResolutionField = document.getElementById(
-      'patient-resolution-field'
-    ),
+    patientSearchResolutionName = document.getElementById('patient-search-form'),
+    patientResolutionSearchButton = document.getElementById('patient-resolution-button'),
+    patientResolutionField = document.getElementById('patient-resolution-field'),
     doctorSearchResolutionName = document.getElementById('doctor-search-form'),
     doctorResolutionField = document.getElementById('doctor-resolution-field'),
-    doctorResolutionSearchButton = document.getElementById(
-      'doctor-resolution-button-search'
-    ),
-    doctorResolutionDeleteButton = document.getElementById(
-      'doctor-resolution-button-delete'
-    );
+    doctorResolutionSearchButton = document.getElementById('doctor-resolution-button-search'),
+    doctorResolutionDeleteButton = document.getElementById('doctor-resolution-button-delete');
 
   let currentPatientIndex = undefined;
 
@@ -54,9 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const deletePatientFromDatabase = function (database, patient) {
-    const currentPatientSearchIndex = database.findIndex(
-      (element) => element[0] === patient
-    );
+    const currentPatientSearchIndex = database.findIndex((element) => element[0] === patient);
     if (currentPatientSearchIndex === -1) {
       return alert('There is no patient with such name!');
     }
@@ -78,14 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(database);
   };
 
-  const showResolutionByPatientName = function (
-    database,
-    patient,
-    parentObject
-  ) {
-    const currentPatientSearchIndex = database.findIndex(
-      (element) => element[0] === patient
-    );
+  const showResolutionByPatientName = function (database, patient, parentObject) {
+    const currentPatientSearchIndex = database.findIndex((element) => element[0] === patient);
     if (currentPatientSearchIndex === -1) {
       return alert('There is no patient with such name');
     }
