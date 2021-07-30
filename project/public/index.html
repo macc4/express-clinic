@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Doctor's queue / Management</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <div class="patient-window">
+        <div class="patient-add-section">
+          <div class="patient-current">
+            <h2>Current patient</h2>
+            <p id="patient-current">--name of the patient--</p>
+          </div>
+          <div class="patient-add-new">
+            <h2>Add to queue</h2>
+            <form id="patient-form">
+              <label for="patient-form-input">Name: </label>
+              <input
+                type="text"
+                id="patient-form-input"
+                name="patient-form-input"
+              />
+              <br />
+              <br />
+              <button
+                id="patient-form-button"
+                onclick="patientStoreNameValue()"
+                style="float: left"
+              >
+                Submit
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="patient-search">
+          <div class="patient-search-input">
+            <h2>Search through queue</h2>
+            <input type="search" id="patient-search-form" />
+            <button>Search</button>
+          </div>
+          <div class="patient-search-results">
+            <h2> </h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+          </div>
+        </div>
+      </div>
+      <div class="doctor-window">
+        <div class="doctor-current">
+          <h2>Current patient</h2>
+          <p id="doctor-current">--name of the patient--</p>
+        </div>
+        <div class="doctor-set-resolution">
+          <h2>Set appointment resolution</h2>
+          <form id="doctor-resolution-form">
+            <label for="doctor-resolution-input">Resolution: </label>
+            <textarea
+              id="resolution-input"
+              name="resolution"
+              rows="5"
+              cols="33"
+            ></textarea>
+            <br /><br />
+            <button
+              id="doctor-resolution-button"
+              onclick="patientStoreNameValue()"
+              style="float: left"
+            >
+              Submit
+            </button>
+          </form>
+        </div>
+        <div class="doctor-search-resolution">
+          <div class="doctor-search-input">
+            <h2>Resolution database</h2>
+            <input type="search" id="doctor-search-resolution" />
+            <button>Search</button>
+          </div>
+          <div class="doctor-search-results">
+            <h2> </h2>
+            <p>Lorem ipsum dolor sit amet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../app.js"></script>
+  </body>
+</html>

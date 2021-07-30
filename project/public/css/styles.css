@@ -1,0 +1,68 @@
+.main-container,
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.main-container {
+  display: flex;
+}
+.main-container div {
+  border: 1px #ccc solid;
+  padding: 10px;
+}
+
+.patient-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-window .patient-add-section {
+  flex: 1;
+  display: flex;
+}
+.patient-window .patient-add-section .patient-add-new {
+  flex: 1;
+}
+.patient-window .patient-add-section .patient-current {
+  flex: 1;
+}
+
+.patient-window .patient-search {
+  flex: 4;
+  display: flex;
+}
+.patient-window .patient-search .patient-search-input {
+  flex: 1;
+}
+.patient-window .patient-search .patient-search-results {
+  flex: 2;
+}
+
+.doctor-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-window .doctor-current {
+  flex: 1;
+}
+
+.doctor-window .doctor-set-resolution {
+  flex: 2;
+}
+
+.doctor-window .doctor-search-resolution {
+  flex: 2;
+  display: flex;
+}
+.doctor-window .doctor-search-resolution .doctor-search-input {
+  flex: 1;
+}
+.doctor-window .doctor-search-resolution .doctor-search-results {
+  flex: 1;
+}
