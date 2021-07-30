@@ -109,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
   patientResolutionSearchButton.addEventListener('click', () => {
     const patientName = patientSearchResolutionName.value;
     showResolutionByPatientName(patients, patientName, patientResolutionField);
-    patientResolutionField.reset();
   });
 
   nextPatientButton.addEventListener('click', () => {
@@ -130,14 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
   doctorResolutionSearchButton.addEventListener('click', () => {
     const patientName = doctorSearchResolutionName.value;
     showResolutionByPatientName(patients, patientName, doctorResolutionField);
-
-    doctorSearchResolutionName.reset();
   });
 
   doctorResolutionDeleteButton.addEventListener('click', () => {
     const patientName = doctorSearchResolutionName.value;
     deletePatientFromDatabase(patients, patientName);
 
-    doctorSearchResolutionName.reset();
+    doctorSearchResolutionName.value = '';
   });
 });
