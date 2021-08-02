@@ -61,8 +61,7 @@ export default class QueueModel {
       return alert('There is no patient with such name!');
     }
 
-    let searchedPatientIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
-    this.searchedResolution = this.patients[searchedPatientIndex].resolution;
+    this.searchedResolution = this.patients[currentPatientSearchIndex].resolution;
   }
 
   deletePatient(patientName) {
