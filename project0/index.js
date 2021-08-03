@@ -23,18 +23,18 @@ class QueueModel {
 
       this.patients.push(patient);
     } else {
-      return alert('Database already contains this patient!');
+      throw Error('Database already contains this patient!');
     }
   }
 
   selectTheNextPatient() {
     const currentPatientIndex = this.patients.findIndex((patient) => patient.resolution === undefined);
     if (currentPatientIndex === -1) {
-      return alert('There are no patients left!');
+      throw Error('There are no patients left!');
     }
 
     if (this.currentPatientId == this.patients[currentPatientIndex].id) {
-      return alert('Add the resolution before moving to the next patient!');
+      throw Error('Add the resolution before moving to the next patient!');
     }
 
     this.currentPatientId = this.patients[currentPatientIndex].id;
@@ -47,7 +47,7 @@ class QueueModel {
 
   addResolution(resolution) {
     if (this.currentPatientId === undefined || this.currentPatientId === -1) {
-      return alert('Please, select the patient first!');
+      throw Error('Please, select the patient first!');
     }
 
     this.patients = this.patients.map((patient) =>
@@ -60,7 +60,7 @@ class QueueModel {
   searchResolution(patientName) {
     const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
     if (currentPatientSearchIndex === -1) {
-      return alert('There is no patient with such name!');
+      throw Error('There is no patient with such name!');
     }
 
     this.searchedResolution = this.patients[currentPatientSearchIndex].resolution;
@@ -69,7 +69,7 @@ class QueueModel {
   deletePatient(patientName) {
     const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
     if (currentPatientSearchIndex === -1) {
-      return alert('There is no patient with such name!');
+      throw Error('There is no patient with such name!');
     }
 
     this.patients = this.patients.filter((patient) => patient.name !== patientName.toUpperCase());
@@ -204,6 +204,11 @@ class QueueView {
       }
     });
   }
+
+  showError(error) {
+    console.error(error);
+    alert(error);
+  }
 }
 
 class QueueController {
@@ -224,30 +229,54 @@ class QueueController {
   };
 
   handleAddPatient = (patientName) => {
-    this.model.addPatient(patientName);
+    try {
+      this.model.addPatient(patientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleSelectTheNextPatient = () => {
-    this.model.selectTheNextPatient();
-    this.showCurrentPatient(this.model.currentPatientName);
+    try {
+      this.model.selectTheNextPatient();
+      this.showCurrentPatient(this.model.currentPatientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleAddResolution = (patientName, resolution) => {
-    this.model.addResolution(patientName, resolution);
+    try {
+      this.model.addResolution(patientName, resolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handlePatientSearchResolution = (patientName) => {
-    this.model.searchResolution(patientName);
-    this.view.patientShowResolution(this.model.searchedResolution);
+    try {
+      this.model.searchResolution(patientName);
+      this.view.patientShowResolution(this.model.searchedResolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleDoctorSearchResolution = (patientName) => {
-    this.model.searchResolution(patientName);
-    this.view.doctorShowResolution(this.model.searchedResolution);
+    try {
+      this.model.searchResolution(patientName);
+      this.view.doctorShowResolution(this.model.searchedResolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleDeletePatient = (patientName) => {
-    this.model.deletePatient(patientName);
+    try {
+      this.model.deletePatient(patientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 }
 

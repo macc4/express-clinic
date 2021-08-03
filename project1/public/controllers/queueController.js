@@ -16,29 +16,53 @@ export default class QueueController {
   };
 
   handleAddPatient = (patientName) => {
-    this.model.addPatient(patientName);
+    try {
+      this.model.addPatient(patientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleSelectTheNextPatient = () => {
-    this.model.selectTheNextPatient();
-    this.showCurrentPatient(this.model.currentPatientName);
+    try {
+      this.model.selectTheNextPatient();
+      this.showCurrentPatient(this.model.currentPatientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleAddResolution = (patientName, resolution) => {
-    this.model.addResolution(patientName, resolution);
+    try {
+      this.model.addResolution(patientName, resolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handlePatientSearchResolution = (patientName) => {
-    this.model.searchResolution(patientName);
-    this.view.patientShowResolution(this.model.searchedResolution);
+    try {
+      this.model.searchResolution(patientName);
+      this.view.patientShowResolution(this.model.searchedResolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleDoctorSearchResolution = (patientName) => {
-    this.model.searchResolution(patientName);
-    this.view.doctorShowResolution(this.model.searchedResolution);
+    try {
+      this.model.searchResolution(patientName);
+      this.view.doctorShowResolution(this.model.searchedResolution);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 
   handleDeletePatient = (patientName) => {
-    this.model.deletePatient(patientName);
+    try {
+      this.model.deletePatient(patientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
   };
 }

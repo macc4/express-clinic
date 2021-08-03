@@ -21,18 +21,18 @@ export default class QueueModel {
 
       this.patients.push(patient);
     } else {
-      return alert('Database already contains this patient!');
+      throw Error('Database already contains this patient!');
     }
   }
 
   selectTheNextPatient() {
     const currentPatientIndex = this.patients.findIndex((patient) => patient.resolution === undefined);
     if (currentPatientIndex === -1) {
-      return alert('There are no patients left!');
+      throw Error('There are no patients left!');
     }
 
     if (this.currentPatientId == this.patients[currentPatientIndex].id) {
-      return alert('Add the resolution before moving to the next patient!');
+      throw Error('Add the resolution before moving to the next patient!');
     }
 
     this.currentPatientId = this.patients[currentPatientIndex].id;
@@ -45,7 +45,7 @@ export default class QueueModel {
 
   addResolution(resolution) {
     if (this.currentPatientId === undefined || this.currentPatientId === -1) {
-      return alert('Please, select the patient first!');
+      throw Error('Please, select the patient first!');
     }
 
     this.patients = this.patients.map((patient) =>
@@ -58,7 +58,7 @@ export default class QueueModel {
   searchResolution(patientName) {
     const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
     if (currentPatientSearchIndex === -1) {
-      return alert('There is no patient with such name!');
+      throw Error('There is no patient with such name!');
     }
 
     this.searchedResolution = this.patients[currentPatientSearchIndex].resolution;
@@ -67,7 +67,7 @@ export default class QueueModel {
   deletePatient(patientName) {
     const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
     if (currentPatientSearchIndex === -1) {
-      return alert('There is no patient with such name!');
+      throw Error('There is no patient with such name!');
     }
 
     this.patients = this.patients.filter((patient) => patient.name !== patientName.toUpperCase());

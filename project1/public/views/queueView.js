@@ -126,4 +126,9 @@ export default class QueueView {
       }
     });
   }
+
+  showError(error) {
+    console.error(error);
+    alert(error);
+  }
 }
