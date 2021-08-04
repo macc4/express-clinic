@@ -36,7 +36,7 @@ class PatientsQueueModel {
     this.selectedPatientIndex = this.patients.findIndex((patient) => patient.isProcessed === false);
     console.log(`current index: ${this.selectedPatientIndex}`);
 
-    if (this.selectedPatientIndex === undefined) {
+    if (this.selectedPatientIndex === undefined || this.selectedPatientIndex === -1) {
       throw Error('There are no patients left.');
     }
 
@@ -177,24 +177,22 @@ class ResolutionModel {
       throw Error('Please, select the patient first!');
     }
 
-    // check if the patient was here before
+    // check if the patient was here before, if yes, then add on to the resolution
     const currentPatientIndex = this.database.findIndex(
       (patient) => patient.name === this.currentPatientName.toLowerCase()
     );
 
     if (this.database[currentPatientIndex] !== undefined) {
-      resolution = `${this.database[currentPatientIndex].resolution}
+      this.database[currentPatientIndex].resolution += `\n\n${resolution}`;
+    } else {
+      const entry = {
+        id: this.database.length > 0 ? this.database[this.database.length - 1].id + 1 : 1,
+        name: this.currentPatientName.toLowerCase(),
+        resolution: resolution,
+      };
 
-${resolution}`;
+      this.database.push(entry);
     }
-
-    const entry = {
-      id: this.database.length > 0 ? this.database[this.database.length - 1].id + 1 : 1,
-      name: this.currentPatientName.toLowerCase(),
-      resolution: resolution,
-    };
-
-    this.database.push(entry);
 
     console.log(this.database);
   }
