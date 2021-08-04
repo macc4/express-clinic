@@ -3,9 +3,7 @@
 class QueueModel {
   constructor() {
     this.patients = [];
-    this.currentPatientId = undefined;
     this.currentPatient = undefined;
-    this.currentPatientName = undefined;
     this.searchedResolution = '';
   }
 
@@ -37,21 +35,18 @@ class QueueModel {
       throw Error('Add the resolution before moving to the next patient!');
     }
 
-    this.currentPatientId = this.patients[currentPatientIndex].id;
-
-    this.currentPatient = this.patients.filter((patient) => patient.id == this.currentPatientId);
-    this.currentPatientName = this.currentPatient[0].name;
+    this.currentPatient = this.patients.filter((patient) => patient.id == this.patients[currentPatientIndex].id)[0];
 
     console.log(this.patients);
   }
 
   addResolution(resolution) {
-    if (this.currentPatientId === undefined || this.currentPatientId === -1) {
+    if (this.currentPatient === undefined) {
       throw Error('Please, select the patient first!');
     }
 
     this.patients = this.patients.map((patient) =>
-      patient.id === this.currentPatientId ? { id: patient.id, name: patient.name, resolution: resolution } : patient
+      patient.id === this.currentPatient.id ? { id: patient.id, name: patient.name, resolution: resolution } : patient
     );
 
     console.log(this.patients);
@@ -239,7 +234,7 @@ class QueueController {
   handleSelectTheNextPatient = () => {
     try {
       this.model.selectTheNextPatient();
-      this.showCurrentPatient(this.model.currentPatientName);
+      this.showCurrentPatient(this.model.currentPatient.name);
     } catch (error) {
       this.view.showError(error);
     }
