@@ -3,20 +3,23 @@
 class QueueModel {
   constructor() {
     this.patients = [];
+    this.emptyPatient = {
+      id: undefined,
+      name: undefined,
+      resolution: undefined,
+    };
     this.currentPatient = undefined;
     this.searchedResolution = '';
   }
 
   addPatient(patientName) {
-    console.log(this.patients);
-
     const duplicatePatient = this.patients.some((patient) => patient.name === patientName.toUpperCase());
 
     if (!duplicatePatient) {
       const patient = {
+        ...this.emptyPatient,
         id: this.patients.length > 0 ? this.patients[this.patients.length - 1].id + 1 : 1,
         name: patientName.toUpperCase(),
-        resolution: undefined,
       };
 
       this.patients.push(patient);
