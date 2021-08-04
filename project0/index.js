@@ -5,6 +5,7 @@ class PatientsQueueModel {
     this.patients = [];
     this.emptyPatient = {
       name: undefined,
+      expiry: undefined,
       isProcessed: false,
     };
     this.selectedPatientIndex = undefined;
@@ -14,18 +15,31 @@ class PatientsQueueModel {
     return this.patients[this.selectedPatientIndex].name;
   }
 
-  addPatient(patientName) {
+  addPatient(patientName, timeToLive) {
     const duplicatePatient = this.patients.some((patient) => patient.name === patientName.toLowerCase());
+    const currentTime = new Date();
 
-    if (!duplicatePatient) {
+    if (!Number.isInteger(+timeToLive)) {
+      throw Error('TTL value should be an integer.');
+    }
+
+    if (duplicatePatient) {
+      throw Error('You are already in the queue.');
+    }
+
+    if (timeToLive === '') {
       const patient = {
         ...this.emptyPatient,
         name: patientName.toLowerCase(),
       };
-
       this.patients.push(patient);
     } else {
-      throw Error('You are already in the queue.');
+      const patient = {
+        ...this.emptyPatient,
+        name: patientName.toLowerCase(),
+        expiry: currentTime.getTime() + timeToLive * 60 * 1000,
+      };
+      this.patients.push(patient);
     }
   }
 
@@ -33,14 +47,18 @@ class PatientsQueueModel {
     // filter already processed patients
     this.patients = this.patients.filter((patient) => patient.isProcessed === false);
 
+    // filter patients who's TTL has expired
+    const currentTime = new Date();
+
+    this.patients = this.patients.filter(
+      (patient) => currentTime.getTime() < patient.expiry || patient.expiry === undefined
+    );
+
     this.selectedPatientIndex = this.patients.findIndex((patient) => patient.isProcessed === false);
-    console.log(`current index: ${this.selectedPatientIndex}`);
 
     if (this.selectedPatientIndex === undefined || this.selectedPatientIndex === -1) {
       throw Error('There are no patients left.');
     }
-
-    console.log(this.patients);
   }
 
   processPatient() {
@@ -58,6 +76,7 @@ class PatientsQueueView {
 
     this.patientForm = document.getElementById('patient-form');
     this.patientFormInput = document.getElementById('patient-form-input');
+    this.patientFormTTL = document.getElementById('patient-form-ttl');
 
     this.doctorCurrentPatient = document.getElementById('current-patient-doctor');
 
@@ -82,6 +101,14 @@ class PatientsQueueView {
     this.patientFormInput.value = '';
   }
 
+  get _patientTTL() {
+    return this.patientFormTTL.value;
+  }
+
+  _resetPatientTTL() {
+    this.patientFormTTL.value = '';
+  }
+
   get _resolution() {
     return this.doctorResolutionInput.value;
   }
@@ -91,8 +118,9 @@ class PatientsQueueView {
       event.preventDefault();
 
       if (this._patientName) {
-        handler(this._patientName);
+        handler(this._patientName, this._patientTTL);
         this._resetPatientName();
+        this._resetPatientTTL();
       }
     });
   }
@@ -129,9 +157,9 @@ class PatientsQueueController {
     this.view.bindProcessPatient(this.handleProcessPatient);
   }
 
-  handleAddPatient = (patientName) => {
+  handleAddPatient = (patientName, timeToLive) => {
     try {
-      this.model.addPatient(patientName);
+      this.model.addPatient(patientName, timeToLive);
     } catch (error) {
       this.view.showError(error);
     }
@@ -171,8 +199,6 @@ class ResolutionModel {
   addResolution(resolution) {
     this.currentPatientName = this.queueModel._currentPatientName();
 
-    console.log(`testtest ${this.currentPatientName}`);
-
     if (this.currentPatientName === undefined) {
       throw Error('Please, select the patient first!');
     }
@@ -193,8 +219,6 @@ class ResolutionModel {
 
       this.database.push(entry);
     }
-
-    console.log(this.database);
   }
 
   searchResolution(patientName) {
@@ -204,8 +228,6 @@ class ResolutionModel {
     }
 
     this.searchedResolution = this.database[currentPatientSearchIndex].resolution;
-
-    console.log(this.database);
   }
 
   deleteEntry(patientName) {
@@ -215,8 +237,6 @@ class ResolutionModel {
     }
 
     this.database = this.database.filter((patient) => patient.name !== patientName.toLowerCase());
-
-    console.log(this.database);
   }
 }
 
@@ -235,12 +255,10 @@ class ResolutionView {
   }
 
   patientShowResolution(resolution) {
-    console.log(resolution);
     this.patientSearchResults.value = resolution;
   }
 
   doctorShowResolution(resolution) {
-    console.log(resolution);
     this.doctorSearchResults.value = resolution;
   }
 
