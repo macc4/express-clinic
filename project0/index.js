@@ -1,88 +1,63 @@
 // implementation was based on the MVC pattern
 
-class QueueModel {
+class PatientsQueueModel {
   constructor() {
     this.patients = [];
     this.emptyPatient = {
-      id: undefined,
       name: undefined,
-      resolution: undefined,
+      isProcessed: false,
     };
-    this.currentPatient = undefined;
-    this.searchedResolution = '';
+    this.selectedPatientIndex = undefined;
+  }
+
+  _currentPatientName() {
+    return this.patients[this.selectedPatientIndex].name;
   }
 
   addPatient(patientName) {
-    const duplicatePatient = this.patients.some((patient) => patient.name === patientName.toUpperCase());
+    const duplicatePatient = this.patients.some((patient) => patient.name === patientName.toLowerCase());
 
     if (!duplicatePatient) {
       const patient = {
         ...this.emptyPatient,
-        id: this.patients.length > 0 ? this.patients[this.patients.length - 1].id + 1 : 1,
-        name: patientName.toUpperCase(),
+        name: patientName.toLowerCase(),
       };
 
       this.patients.push(patient);
     } else {
-      throw Error('Database already contains this patient!');
+      throw Error('You are already in the queue.');
     }
   }
 
   selectTheNextPatient() {
-    const currentPatientIndex = this.patients.findIndex((patient) => patient.resolution === undefined);
-    if (currentPatientIndex === -1) {
-      throw Error('There are no patients left!');
-    }
+    // filter already processed patients
+    this.patients = this.patients.filter((patient) => patient.isProcessed === false);
 
-    if (this.currentPatientId == this.patients[currentPatientIndex].id) {
-      throw Error('Add the resolution before moving to the next patient!');
-    }
+    this.selectedPatientIndex = this.patients.findIndex((patient) => patient.isProcessed === false);
+    console.log(`current index: ${this.selectedPatientIndex}`);
 
-    this.currentPatient = this.patients.filter((patient) => patient.id == this.patients[currentPatientIndex].id)[0];
+    if (this.selectedPatientIndex === undefined) {
+      throw Error('There are no patients left.');
+    }
 
     console.log(this.patients);
   }
 
-  addResolution(resolution) {
-    if (this.currentPatient === undefined) {
-      throw Error('Please, select the patient first!');
+  processPatient() {
+    if (this.selectedPatientIndex === undefined) {
+      throw Error('Please, select the patient first.');
     }
 
-    this.patients = this.patients.map((patient) =>
-      patient.id === this.currentPatient.id ? { id: patient.id, name: patient.name, resolution: resolution } : patient
-    );
-
-    console.log(this.patients);
-  }
-
-  searchResolution(patientName) {
-    const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
-    if (currentPatientSearchIndex === -1) {
-      throw Error('There is no patient with such name!');
-    }
-
-    this.searchedResolution = this.patients[currentPatientSearchIndex].resolution;
-  }
-
-  deletePatient(patientName) {
-    const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toUpperCase());
-    if (currentPatientSearchIndex === -1) {
-      throw Error('There is no patient with such name!');
-    }
-
-    this.patients = this.patients.filter((patient) => patient.name !== patientName.toUpperCase());
+    this.patients[this.selectedPatientIndex].isProcessed = true;
   }
 }
 
-class QueueView {
+class PatientsQueueView {
   constructor() {
     this.patientCurrentPatient = document.getElementById('current-patient-patient');
 
     this.patientForm = document.getElementById('patient-form');
     this.patientFormInput = document.getElementById('patient-form-input');
-
-    this.patientSearchInput = document.getElementById('patient-search-input');
-    this.patientSearchResults = document.getElementById('patient-search-results');
 
     this.doctorCurrentPatient = document.getElementById('current-patient-doctor');
 
@@ -90,16 +65,10 @@ class QueueView {
 
     this.doctorFormResolution = document.getElementById('doctor-form-resolution');
     this.doctorResolutionInput = document.getElementById('doctor-resolution-input');
-
-    this.doctorSearchInput = document.getElementById('doctor-search-input');
-    this.doctorButtonSearch = document.getElementById('doctor-search-button');
-    this.doctorSearchResults = document.getElementById('doctor-search-results');
-    this.doctorButtonDelete = document.getElementById('doctor-delete-button');
   }
 
   showCurrentPatient(patientName) {
-    const patientNameLowerCase = patientName.toLowerCase();
-    const patientNameCapitalized = patientNameLowerCase.charAt(0).toUpperCase() + patientNameLowerCase.slice(1);
+    const patientNameCapitalized = patientName.charAt(0).toUpperCase() + patientName.slice(1);
 
     this.patientCurrentPatient.innerHTML = patientNameCapitalized;
     this.doctorCurrentPatient.innerHTML = patientNameCapitalized;
@@ -111,6 +80,160 @@ class QueueView {
 
   _resetPatientName() {
     this.patientFormInput.value = '';
+  }
+
+  get _resolution() {
+    return this.doctorResolutionInput.value;
+  }
+
+  bindAddPatient(handler) {
+    this.patientForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      if (this._patientName) {
+        handler(this._patientName);
+        this._resetPatientName();
+      }
+    });
+  }
+
+  bindSelectTheNextPatient(handler) {
+    this.doctorButtonNext.addEventListener('click', () => {
+      handler();
+    });
+  }
+
+  bindProcessPatient(handler) {
+    this.doctorFormResolution.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      if (this._resolution) {
+        handler(this._resolution);
+      }
+    });
+  }
+
+  showError(error) {
+    console.error(error);
+    alert(error);
+  }
+}
+
+class PatientsQueueController {
+  constructor(model, view) {
+    this.model = model;
+    this.view = view;
+
+    this.view.bindAddPatient(this.handleAddPatient);
+    this.view.bindSelectTheNextPatient(this.handleSelectTheNextPatient);
+    this.view.bindProcessPatient(this.handleProcessPatient);
+  }
+
+  handleAddPatient = (patientName) => {
+    try {
+      this.model.addPatient(patientName);
+    } catch (error) {
+      this.view.showError(error);
+    }
+  };
+
+  handleSelectTheNextPatient = () => {
+    try {
+      this.model.selectTheNextPatient();
+      this.view.showCurrentPatient(this.model.patients[this.model.selectedPatientIndex].name);
+    } catch (error) {
+      this.view.showError(error);
+    }
+  };
+
+  handleProcessPatient = () => {
+    try {
+      this.model.processPatient();
+    } catch (error) {
+      this.view.showError(error);
+    }
+  };
+}
+
+class ResolutionModel {
+  constructor(queueModel) {
+    this.queueModel = queueModel;
+    this.database = [];
+    this.entryScheme = {
+      id: undefined,
+      name: undefined,
+      resolution: undefined,
+    };
+    this.currentPatientName = undefined;
+    this.searchedResolution = '';
+  }
+
+  addResolution(resolution) {
+    this.currentPatientName = this.queueModel._currentPatientName();
+
+    console.log(`testtest ${this.currentPatientName}`);
+
+    if (this.currentPatientName === undefined) {
+      throw Error('Please, select the patient first!');
+    }
+
+    // check if the patient was here before
+    const currentPatientIndex = this.database.findIndex(
+      (patient) => patient.name === this.currentPatientName.toLowerCase()
+    );
+
+    if (this.database[currentPatientIndex] !== undefined) {
+      resolution = `${this.database[currentPatientIndex].resolution}
+
+${resolution}`;
+    }
+
+    const entry = {
+      id: this.database.length > 0 ? this.database[this.database.length - 1].id + 1 : 1,
+      name: this.currentPatientName.toLowerCase(),
+      resolution: resolution,
+    };
+
+    this.database.push(entry);
+
+    console.log(this.database);
+  }
+
+  searchResolution(patientName) {
+    const currentPatientSearchIndex = this.database.findIndex((patient) => patient.name === patientName.toLowerCase());
+    if (currentPatientSearchIndex === -1) {
+      throw Error('There is no patient with such name!');
+    }
+
+    this.searchedResolution = this.database[currentPatientSearchIndex].resolution;
+
+    console.log(this.database);
+  }
+
+  deleteEntry(patientName) {
+    const currentPatientSearchIndex = this.patients.findIndex((patient) => patient.name === patientName.toLowerCase());
+    if (currentPatientSearchIndex === -1) {
+      throw Error('There is no patient with such name!');
+    }
+
+    this.database = this.database.filter((patient) => patient.name !== patientName.toLowerCase());
+
+    console.log(this.database);
+  }
+}
+
+class ResolutionView {
+  constructor() {
+    this.patientSearchInput = document.getElementById('patient-search-input');
+    this.patientSearchResults = document.getElementById('patient-search-results');
+
+    this.doctorFormResolution = document.getElementById('doctor-form-resolution');
+    this.doctorResolutionInput = document.getElementById('doctor-resolution-input');
+
+    this.doctorSearchInput = document.getElementById('doctor-search-input');
+    this.doctorButtonSearch = document.getElementById('doctor-search-button');
+    this.doctorSearchResults = document.getElementById('doctor-search-results');
+    this.doctorButtonDelete = document.getElementById('doctor-delete-button');
   }
 
   patientShowResolution(resolution) {
@@ -147,23 +270,6 @@ class QueueView {
     this.doctorSearchInput.value = '';
   }
 
-  bindAddPatient(handler) {
-    this.patientForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      if (this._patientName) {
-        handler(this._patientName);
-        this._resetPatientName();
-      }
-    });
-  }
-
-  bindSelectTheNextPatient(handler) {
-    this.doctorButtonNext.addEventListener('click', () => {
-      handler();
-    });
-  }
-
   bindAddResolution(handler) {
     this.doctorFormResolution.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -194,8 +300,8 @@ class QueueView {
     });
   }
 
-  bindDeletePatient(handler) {
-    this.doctorButtonDelete.addEventListener('click', (event) => {
+  bindDeleteEntry(handler) {
+    this.doctorButtonDelete.addEventListener('click', () => {
       if (this._doctorSearchResolution) {
         handler(this._doctorSearchResolution);
         this._doctorResetSearch();
@@ -209,35 +315,20 @@ class QueueView {
   }
 }
 
-class QueueController {
+class ResolutionController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
 
-    this.view.bindAddPatient(this.handleAddPatient);
-    this.view.bindSelectTheNextPatient(this.handleSelectTheNextPatient);
     this.view.bindAddResolution(this.handleAddResolution);
     this.view.bindPatientSearchResolution(this.handlePatientSearchResolution);
     this.view.bindDoctorSearchResolution(this.handleDoctorSearchResolution);
-    this.view.bindDeletePatient(this.handleDeletePatient);
+    this.view.bindDeleteEntry(this.handleDeleteEntry);
   }
 
-  showCurrentPatient = (patientName) => {
-    this.view.showCurrentPatient(patientName);
-  };
-
-  handleAddPatient = (patientName) => {
+  handleGetCurrentPatient = () => {
     try {
-      this.model.addPatient(patientName);
-    } catch (error) {
-      this.view.showError(error);
-    }
-  };
-
-  handleSelectTheNextPatient = () => {
-    try {
-      this.model.selectTheNextPatient();
-      this.showCurrentPatient(this.model.currentPatient.name);
+      this.model.getCurrentPatient();
     } catch (error) {
       this.view.showError(error);
     }
@@ -269,13 +360,17 @@ class QueueController {
     }
   };
 
-  handleDeletePatient = (patientName) => {
+  handleDeleteEntry = (patientName) => {
     try {
-      this.model.deletePatient(patientName);
+      this.model.deleteEntry(patientName);
     } catch (error) {
       this.view.showError(error);
     }
   };
 }
 
-const queue = new QueueController(new QueueModel(), new QueueView());
+const patientsQueueModel = new PatientsQueueModel();
+const resolutionModel = new ResolutionModel(patientsQueueModel);
+
+const patientsQueue = new PatientsQueueController(patientsQueueModel, new PatientsQueueView());
+const resolutions = new ResolutionController(resolutionModel, new ResolutionView());
