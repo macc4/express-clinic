@@ -1,0 +1,58 @@
+.root,
+html,
+body {
+  height: 96%;
+  width: 96%;
+  padding: 10px;
+}
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.root {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.flex-main {
+  display: flex;
+  flex: 1;
+
+  flex-direction: column;
+  border: 1px #ccc solid;
+  padding: 10px;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  border: 1px #ccc solid;
+  padding: 10px;
+}
+
+.left-col {
+  margin: 20px;
+  flex: 1;
+}
+.right-col {
+  margin: 20px;
+  flex: 1;
+  text-align: 0 auto;
+}
+
+.patient-search {
+  flex: 3;
+}
+
+button {
+  outline-style: round;
+  border-radius: 5px;
+  font-size: 18px;
+  padding: 6px 64px;
+}
