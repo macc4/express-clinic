@@ -1,13 +1,15 @@
-const express = require('express');
+import express from 'express';
+import path from 'path';
+const __dirname = path.resolve();
+
 const router = express.Router();
-const path = require('path');
 
 router.get('/patient', (req, res) => {
-  res.sendFile(path.join(__dirname, '../html', 'patient.html'));
+  res.sendFile(path.join(__dirname, './html', 'patient.html'));
 });
 
 router.get('/doctor', (req, res) => {
-  res.sendFile(path.join(__dirname, '../html', 'doctor.html'));
+  res.sendFile(path.join(__dirname, './html', 'doctor.html'));
 });
 
-module.exports = router;
+export default router;

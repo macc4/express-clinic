@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/styles.css" />
 
-    <title>Doctor's queue</title>
+    <title>Queue</title>
   </head>
   <body>
     <div class="root">
@@ -14,7 +14,7 @@
           <div class="left-col">
             <h2>The queue</h2>
             <p>Current patient:</p>
-            <p id="current-patient-patient">Stack item value</p>
+            <p id="current-patient-patient">&ltempty&gt</p>
           </div>
           <div class="right-col">
             <form id="patient-form">
@@ -22,7 +22,14 @@
                 type="text"
                 id="patient-form-input"
                 name="patient-form-input"
-                placeholder="Input to set value"
+                placeholder="Input name"
+              />
+              <br />
+              <input
+                type="text"
+                id="patient-form-ttl"
+                name="patient-form-ttl"
+                placeholder="Optional TTL value (mins)"
               />
               <br />
               <br />
@@ -49,6 +56,7 @@
         </div>
       </div>
     </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="module" src="index.js"></script>
   </body>
 </html>

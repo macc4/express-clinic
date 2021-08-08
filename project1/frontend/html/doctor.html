@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/styles.css" />
 
-    <title>Doctor's queue</title>
+    <title>Doctor's page</title>
   </head>
   <body>
     <div class="root">
@@ -13,7 +13,7 @@
         <div class="flex-container">
           <div class="left-col">
             <p>Current patient:</p>
-            <p id="current-patient-doctor">Stack item value</p>
+            <p id="current-patient-doctor">&ltempty&gt</p>
           </div>
           <div class="right-col">
             <button id="doctor-next-button">Next</button>
@@ -22,7 +22,7 @@
         </div>
         <div class="flex-container">
           <div class="left-col">
-            <p>Set appointment resolution</p>
+            <p>Set appointment resolution:</p>
           </div>
           <div class="right-col">
             <form id="doctor-form-resolution">
@@ -34,7 +34,7 @@
                 placeholder="Input to set resolution by key pattern: 'patient: queue_current_patient_value'"
               ></textarea>
               <br />
-              <button id="doctor-add-button">Add</button>
+              <button id="doctor-add-button">Add Resolution</button>
             </form>
           </div>
         </div>
@@ -54,11 +54,12 @@
               placeholder="Found resolution"
             ></textarea>
             <br />
-            <button id="doctor-delete-button">Delete</button>
+            <button id="doctor-delete-button">Delete Patient</button>
           </div>
         </div>
       </div>
     </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script type="module" src="index.js"></script>
   </body>
 </html>

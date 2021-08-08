@@ -1,9 +1,9 @@
-const express = require('express');
-const morgan = require('morgan');
+import express from 'express';
+import morgan from 'morgan';
+import path from 'path';
+import Router from './routes/routes.js';
 
-const AppError = require('./utils/AppError.js');
-
-const Router = require('./routes/routes.js');
+const __dirname = path.resolve();
 
 const app = express();
 
@@ -18,8 +18,8 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/', Router);
 
-app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+app.all('*', (req, res) => {
+  res.redirect('/patient');
 });
 
-module.exports = app;
+export default app;
