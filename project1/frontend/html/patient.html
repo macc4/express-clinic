@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <title>Doctor's queue</title>
+  </head>
+  <body>
+    <div class="root">
+      <div class="queue flex-main">
+        <div class="flex-container">
+          <div class="left-col">
+            <h2>The queue</h2>
+            <p>Current patient:</p>
+            <p id="current-patient-patient">Stack item value</p>
+          </div>
+          <div class="right-col">
+            <form id="patient-form">
+              <input
+                type="text"
+                id="patient-form-input"
+                name="patient-form-input"
+                placeholder="Input to set value"
+              />
+              <br />
+              <br />
+              <button id="patient-add-button">Add</button>
+            </form>
+          </div>
+        </div>
+        <div class="patient-search flex-container">
+          <div class="left-col">
+            <input
+              type="search"
+              id="patient-search-input"
+              placeholder="Search"
+            />
+          </div>
+          <div class="right-col">
+            <textarea
+              id="patient-search-results"
+              id=""
+              cols="40"
+              rows="10"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>

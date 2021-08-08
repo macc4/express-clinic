@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <title>Doctor's queue</title>
+  </head>
+  <body>
+    <div class="root">
+      <div class="doctor flex-main">
+        <div class="flex-container">
+          <div class="left-col">
+            <p>Current patient:</p>
+            <p id="current-patient-doctor">Stack item value</p>
+          </div>
+          <div class="right-col">
+            <button id="doctor-next-button">Next</button>
+            <p>Click "next" to process patient</p>
+          </div>
+        </div>
+        <div class="flex-container">
+          <div class="left-col">
+            <p>Set appointment resolution</p>
+          </div>
+          <div class="right-col">
+            <form id="doctor-form-resolution">
+              <textarea
+                name="doctor-resolution-input"
+                id="doctor-resolution-input"
+                cols="40"
+                rows="10"
+                placeholder="Input to set resolution by key pattern: 'patient: queue_current_patient_value'"
+              ></textarea>
+              <br />
+              <button id="doctor-add-button">Add</button>
+            </form>
+          </div>
+        </div>
+        <div class="flex-container">
+          <div class="left-col">
+            <br /><br />
+            <input type="search" id="doctor-search-input" />
+            <br /><br />
+            <button id="doctor-search-button">Show resolution</button>
+          </div>
+          <div class="right-col">
+            <textarea
+              id="doctor-search-results"
+              id=""
+              cols="40"
+              rows="10"
+              placeholder="Found resolution"
+            ></textarea>
+            <br />
+            <button id="doctor-delete-button">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="index.js"></script>
+  </body>
+</html>
