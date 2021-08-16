@@ -3,10 +3,9 @@ import queueController from '../controllers/queueController.js';
 
 const router = express.Router();
 
-router.route('/').post(queueController.enqueuePatient);
-
 router
-  .route('/:id')
+  .route('/')
+  .post(queueController.enqueuePatient)
   .get(queueController.getPatient)
   .delete(queueController.dequeuePatient);
 
@@ -79,20 +78,13 @@ router
 
 /**
  * @swagger
- * /api/v1/queue/{id}:
+ * /api/v1/queue:
  *   get:
- *     summary: Get the patient by queue number starting from 1
+ *     summary: Get the first patient from the queue
  *     tags: [Queue]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: Patient's queue number
  *     responses:
  *       200:
- *         description: Patient data by ID
+ *         description: Get data of the first patient
  *         content:
  *           application/json:
  *             schema:
@@ -103,18 +95,10 @@ router
 
 /**
  * @swagger
- * /api/v1/queue/{id}:
+ * /api/v1/queue:
  *   delete:
- *     summary: Remove the patient by queue number starting from 1
+ *     summary: Remove the first patient from the queue
  *     tags: [Queue]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The queue number
- *
  *     responses:
  *       204:
  *         description: The patient was deleted

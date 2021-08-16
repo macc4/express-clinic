@@ -1,10 +1,14 @@
 import { StatusCodes } from 'http-status-codes';
+import ajvValidator from '../middlewares/ajvValidator.js';
 import queueModel from '../models/queueModel.js';
+import queueSchema from '../schemas/queueSchema.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 import errorMessages from '../lib/errorMessages.js';
 
 const enqueuePatient = catchAsync(async (req, res, next) => {
+  ajvValidator(req.body, queueSchema);
+
   const newPatient = await queueModel.enqueue(req.body);
 
   res.status(StatusCodes.CREATED).json({
@@ -16,7 +20,7 @@ const enqueuePatient = catchAsync(async (req, res, next) => {
 });
 
 const getPatient = catchAsync(async (req, res, next) => {
-  const patient = await queueModel.peek(req.params.id);
+  const patient = await queueModel.peek();
 
   if (!patient) {
     return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
@@ -31,7 +35,7 @@ const getPatient = catchAsync(async (req, res, next) => {
 });
 
 const dequeuePatient = catchAsync(async (req, res, next) => {
-  const patient = await queueModel.dequeue(req.params.id);
+  const patient = await queueModel.dequeue();
 
   if (!patient) {
     return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));

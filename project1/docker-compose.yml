@@ -1,13 +1,31 @@
 version: '3.8'
 services:
+  redis:
+    container_name: redis-db
+    image: redis
+    networks:
+      - webnet
+
   backend:
-    build: backend/
+    container_name: api
+    build: ./backend
     restart: always
     ports:
       - '8080:8080'
+    networks:
+      - webnet
+    depends_on:
+      - redis
 
   frontend:
-    build: frontend/
+    container_name: frontend
+    build: ./frontend
     restart: always
     ports:
       - '5000:5000'
+    networks:
+      - webnet
+    depends_on:
+      - backend
+networks:
+  webnet:

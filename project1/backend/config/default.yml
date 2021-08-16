@@ -1,0 +1,12 @@
+server:
+  host: localhost
+  port: 8080
+app:
+  # '-1' for turning expiry off; otherwise, should be at least '1' (minute)
+  timeToLive: -1
+db:
+  type: redis # ['in-memory', 'redis']
+  redis:
+    # select 'redis' if using docker-compose
+    host: redis # ['localhost', 'redis']
+    port: 6379
