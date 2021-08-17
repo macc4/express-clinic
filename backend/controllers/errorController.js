@@ -1,4 +1,5 @@
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import config from 'config';
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -34,9 +35,9 @@ export default (err, req, res, next) => {
   err.statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   err.status = err.status || 'error';
 
-  if (process.env.NODE_ENV === 'development') {
-    sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === 'production') {
+  if (config.get('error.shortLog')) {
     sendErrorProd(err, res);
+  } else {
+    sendErrorDev(err, res);
   }
 };

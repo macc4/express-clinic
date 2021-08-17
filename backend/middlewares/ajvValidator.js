@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import Ajv from 'ajv';
 
-import AppError from './appError.js';
+import AppError from '../utils/appError.js';
 
 const ajv = new Ajv();
 
@@ -13,10 +13,10 @@ const ajvParseErrorLog = (error) => {
   const errorMessage = error.message;
 
   if (variableName === '') {
-    return `Invalid input data - ${errorMessage}`;
+    return `ValidationError: ${errorMessage}`;
   }
 
-  return `Invalid input data - field '${variableName}' ${errorMessage}`;
+  return `ValidationError: field '${variableName}' ${errorMessage}`;
 };
 
 export default (body, schema) => {
