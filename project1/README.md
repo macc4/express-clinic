@@ -33,7 +33,7 @@ http://localhost:5000/
 
 ## Tests:
 
-To test the app you need to install the API first, and then run:
+To test the app, you need to install the API first, and then run:
 
 ```sh
 npm run test
@@ -41,7 +41,7 @@ npm run test
 
 ## Docker:
 
-To install the project using Docker, you need to run:
+To install the app using Docker, you need to run:
 
 ```sh
 cd project1
@@ -62,5 +62,5 @@ http://localhost:5000/
 
 The documentation was made using Swagger.
 
-First, you need to install the API, following the installation process above, and then access the docs through:
+First, you need to install the app, following the installation process above, and then access the docs through:
 http://localhost:8080/api-docs/

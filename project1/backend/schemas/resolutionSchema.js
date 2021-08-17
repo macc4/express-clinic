@@ -3,8 +3,8 @@ export default {
   properties: {
     name: { type: 'string', minLength: 2, maxLength: 20 },
     resolution: { type: 'string', maxLength: 400 },
-    expiry: { type: 'integer' },
+    timeToLive: { type: 'integer' },
   },
-  required: ['name', 'resolution', 'expiry'],
+  required: ['name', 'resolution'],
   additionalProperties: false,
 };

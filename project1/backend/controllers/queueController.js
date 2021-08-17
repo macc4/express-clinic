@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import ajvValidator from '../middlewares/ajvValidator.js';
-import queueModel from '../models/queueModel.js';
+import queueModel from '../models/queueFactory.js';
 import queueSchema from '../schemas/queueSchema.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';

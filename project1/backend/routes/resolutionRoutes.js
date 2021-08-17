@@ -3,34 +3,54 @@ import resolutionController from '../controllers/resolutionController.js';
 
 const router = express.Router();
 
-router.route('/').post(resolutionController.createPatient);
-
 router
-  .route('/:name')
-  .get(resolutionController.getPatient)
-  .delete(resolutionController.deletePatient);
+  .route('/')
+  .post(resolutionController.createResolution)
+  .get(resolutionController.getResolutions);
+
+router.route('/:name').delete(resolutionController.deleteResolution);
 
 /** @swagger
  * components:
  *   schemas:
- *     resolution:
+ *     resolution-post:
  *       type: object
  *       required:
  *         - name
  *         - resolution
- *         - expiry
+ *         - timeToLive
  *       properties:
  *         name:
  *           type: string
  *           description: The name of the patient
  *         resolution:
  *           type: string
- *           description: Resolution submitted by the doctor
+ *           description: Resolution, submitted by the doctor
+ *         timeToLive:
+ *           type: integer
+ *           description: TTL option in minutes, should be at least 1
+ *       example:
+ *         name: Edward Cullen
+ *         resolution: He is a vampire
+ *         timeToLive: 20
+ *     resolution:
+ *       type: object
+ *       properties:
+ *         key:
+ *           type: string
+ *           description: Key of the patient (name in kebab-case)
+ *         name:
+ *           type: string
+ *           description: The name of the patient
+ *         resolution:
+ *           type: string
+ *           description: Resolution, submitted by the doctor
  *         expiry:
  *           type: integer
- *           description: Expiry time in ms or -1 if none required
+ *           description: Expiry time in Unix time (-1 if no expiry)
  *       example:
- *         name: edward-cullen
+ *         key: edward-cullen
+ *         name: Edward Cullen
  *         resolution: He is a vampire
  *         expiry: -1
  */
@@ -46,14 +66,14 @@ router
  * @swagger
  * /api/v1/resolutions:
  *   post:
- *     summary: Add a new patient/resolution pair to the database (name can be in regular case)
+ *     summary: Add a new patient/resolution pair to the database
  *     tags: [Resolution]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/resolution'
+ *             $ref: '#/components/schemas/resolution-post'
  *     responses:
  *       200:
  *         description: Patient/resolution pair was successfully added
@@ -69,17 +89,17 @@ router
 
 /**
  * @swagger
- * /api/v1/resolutions/{name}:
+ * /api/v1/resolutions/?patient=:
  *   get:
- *     summary: Get the patient/resolution info by name (must be in kebab-case)
+ *     summary: Get the patient/resolution info by name
  *     tags: [Resolution]
  *     parameters:
- *       - in: path
- *         name: name
+ *       - in: query
+ *         name: patient
  *         schema:
  *           type: string
  *         required: true
- *         description: Patient's name (must be in kebab-case)
+ *         description: Patient's name
  *     responses:
  *       200:
  *         description: Patient/Resolution data by name
@@ -93,13 +113,13 @@ router
 
 /**
  * @swagger
- * /api/v1/resolutions/{name}:
+ * /api/v1/resolutions/{key}:
  *   delete:
- *     summary: Remove the patient/resolution info by name (must be in kebab-case)
+ *     summary: Remove the patient/resolution info by key (name in kebab-case)
  *     tags: [Resolution]
  *     parameters:
  *       - in: path
- *         name: name
+ *         name: key
  *         schema:
  *           type: string
  *         required: true

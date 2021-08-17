@@ -4,8 +4,8 @@ import AppError from '../utils/appError.js';
 import { StatusCodes } from 'http-status-codes';
 import { promisify } from 'util';
 
-export const redisClient = Redis.createClient({
-  host: config.get('db.redis.host'),
+const redisClient = Redis.createClient({
+  host: process.env.REDIS_HOST || 'localhost',
   port: config.get('db.redis.port'),
 });
 
@@ -14,33 +14,21 @@ redisClient.on('error', function (err) {
 });
 
 redisClient.on('connect', () => {
-  console.log('💃 connected redis successfully 💃');
+  console.log(`Redis connected redis successfully`);
 });
 
 redisClient.flushall();
 
-const existsAsync = promisify(redisClient.exists).bind(redisClient);
-const setAsync = promisify(redisClient.set).bind(redisClient);
-const getAsync = promisify(redisClient.get).bind(redisClient);
-const pexpireatAsync = promisify(redisClient.pexpireat).bind(redisClient);
-const pttlAsync = promisify(redisClient.pttl).bind(redisClient);
-const delAsync = promisify(redisClient.del).bind(redisClient);
-const lpushAsync = promisify(redisClient.lpush).bind(redisClient);
-const rpushAsync = promisify(redisClient.rpush).bind(redisClient);
-const lindexAsync = promisify(redisClient.lindex).bind(redisClient);
-const lpopAsync = promisify(redisClient.lpop).bind(redisClient);
-const lrangeAsync = promisify(redisClient.lrange).bind(redisClient);
+redisClient.exists = promisify(redisClient.exists).bind(redisClient);
+redisClient.set = promisify(redisClient.set).bind(redisClient);
+redisClient.get = promisify(redisClient.get).bind(redisClient);
+redisClient.pexpireat = promisify(redisClient.pexpireat).bind(redisClient);
+redisClient.pttl = promisify(redisClient.pttl).bind(redisClient);
+redisClient.del = promisify(redisClient.del).bind(redisClient);
+redisClient.lpush = promisify(redisClient.lpush).bind(redisClient);
+redisClient.rpush = promisify(redisClient.rpush).bind(redisClient);
+redisClient.lindex = promisify(redisClient.lindex).bind(redisClient);
+redisClient.lpop = promisify(redisClient.lpop).bind(redisClient);
+redisClient.lrange = promisify(redisClient.lrange).bind(redisClient);
 
-export {
-  existsAsync,
-  setAsync,
-  getAsync,
-  pexpireatAsync,
-  pttlAsync,
-  delAsync,
-  lpushAsync,
-  rpushAsync,
-  lindexAsync,
-  lpopAsync,
-  lrangeAsync,
-};
+export { redisClient };

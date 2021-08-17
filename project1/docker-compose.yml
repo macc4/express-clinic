@@ -3,29 +3,21 @@ services:
   redis:
     container_name: redis-db
     image: redis
-    networks:
-      - webnet
-
   backend:
-    container_name: api
+    container_name: backend
+    environment:
+      - REDIS_HOST=redis
     build: ./backend
-    restart: always
     ports:
       - '8080:8080'
-    networks:
-      - webnet
+    restart: always
     depends_on:
       - redis
-
   frontend:
     container_name: frontend
     build: ./frontend
-    restart: always
     ports:
       - '5000:5000'
-    networks:
-      - webnet
+    restart: always
     depends_on:
       - backend
-networks:
-  webnet:

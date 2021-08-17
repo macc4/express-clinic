@@ -12,36 +12,16 @@ router
 /** @swagger
  * components:
  *   schemas:
- *     patient-post:
- *       type: object
- *       required:
- *         - name
- *         - timeToLive
- *       properties:
- *         name:
- *           type: string
- *           description: The name of the patient, capitalized
- *         timeToLive:
- *           type: integer
- *           description: TTL value in minutes or -1 if none required
- *       example:
- *         name: Edward Cullen
- *         timeToLive: -1
  *     patient:
  *       type: object
  *       required:
  *         - name
- *         - expiry
  *       properties:
  *         name:
  *           type: string
- *           description: The name of the patient, capitalized
- *         expiry:
- *           type: integer
- *           description: Expiry time in ms or -1 if none required
+ *           description: The name of the patient
  *       example:
  *         name: Edward Cullen
- *         expiry: -1
  */
 
 /**
@@ -62,7 +42,7 @@ router
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/patient-post'
+ *             $ref: '#/components/schemas/patient'
  *     responses:
  *       200:
  *         description: Patient was successfully added
