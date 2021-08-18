@@ -17,20 +17,28 @@ export class ResolutionRedisModel {
     const currentDate = new Date();
     const expiry = getUnixExpiryFromBody(body);
 
-    // check for duplicate data
-    const duplicatePatient = await redisClient.exists('resolutions:' + keyName);
-
-    if (duplicatePatient) {
-      throw new AppError(errorMessages.CONFLICT, StatusCodes.CONFLICT);
-    }
-
-    const newResolution = {
+    const newResolutionEntry = {
       key: 'unique key',
       resolution: resolution,
       date: currentDate.getTime(),
     };
 
-    await redisClient.set('resolutions:' + keyName, JSON.stringify(newResolution));
+    // check for duplicate data
+    const exists = await redisClient.exists('resolutions:' + keyName);
+
+    let resolutionsData;
+
+    // if exists, then simply add a new resolution
+    if (exists) {
+      resolutionsData = JSON.parse(await redisClient.get('resolutions:' + keyName));
+      resolutionsData.resolutions.push(newResolutionEntry);
+
+      await redisClient.set('resolutions:' + keyName, JSON.stringify(resolutionsData));
+    } else {
+      resolutionsData = { resolutions: [newResolutionEntry] };
+
+      await redisClient.set('resolutions:' + keyName, JSON.stringify(resolutionsData));
+    }
 
     if (expiry !== -1) {
       await redisClient.pexpireat('resolutions:' + keyName, expiry);
@@ -39,7 +47,7 @@ export class ResolutionRedisModel {
     const returnedPatient = {
       key: convertNameToBabelCase(name),
       name: capitalizeNameFromRegularCase(name),
-      resolutions: newResolution,
+      resolutions: resolutionsData.resolutions,
       expiry: expiry,
     };
 
@@ -48,9 +56,9 @@ export class ResolutionRedisModel {
 
   async get(name) {
     const searchName = 'resolutions:' + convertNameToBabelCase(name);
-    const resolutions = JSON.parse(await redisClient.get(searchName));
+    const resolutionsData = JSON.parse(await redisClient.get(searchName));
 
-    if (!resolutions) {
+    if (!resolutionsData) {
       return undefined;
     }
 
@@ -70,7 +78,7 @@ export class ResolutionRedisModel {
     const returnedPatient = {
       key: convertNameToBabelCase(name),
       name: capitalizeNameFromBabelCase(searchName.replace('resolutions:', '')),
-      resolutions: resolutions,
+      resolutions: resolutionsData.resolutions,
       expiry: expiry,
     };
 
@@ -79,9 +87,9 @@ export class ResolutionRedisModel {
 
   async delete(key) {
     const searchKey = 'resolutions:' + key;
-    const resolutions = JSON.parse(await redisClient.get(searchKey));
+    const resolutionsData = JSON.parse(await redisClient.get(searchKey));
 
-    if (!resolutions) {
+    if (!resolutionsData) {
       return undefined;
     }
 
@@ -98,7 +106,7 @@ export class ResolutionRedisModel {
     const returnedPatient = {
       key: key,
       name: capitalizeNameFromBabelCase(key),
-      resolutions: resolutions,
+      resolutions: resolutionsData.resolutions,
       expiry: expiry,
     };
 

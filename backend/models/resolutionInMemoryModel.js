@@ -20,30 +20,31 @@ export class ResolutionInMemoryModel {
     const currentDate = new Date();
     const expiry = getUnixExpiryFromBody(body);
 
-    // check for duplicate data
-    const duplicatePatient = resolutions.some((patient) => patient.key === keyName);
-
-    if (duplicatePatient) {
-      throw new AppError(errorMessages.CONFLICT, StatusCodes.CONFLICT);
-    }
-
-    const newResolution = {
+    const newResolutionEntry = {
       key: 'unique key',
       resolution: resolution,
       date: currentDate.getTime(),
     };
 
-    // push patient
-    const patient = {
-      key: keyName,
-      name: capitalizeNameFromRegularCase(name),
-      resolutions: newResolution,
-      expiry: expiry,
-    };
+    // check for duplicate data
+    const patientIndex = resolutions.findIndex((patient) => patient.key === keyName);
 
-    resolutions.push(patient);
+    // if exists, then simply add a new resolution to the patient resolution list
+    if (patientIndex !== -1) {
+      resolutions[patientIndex].resolutions.push(newResolutionEntry);
+      return resolutions[patientIndex];
+    } else {
+      const patient = {
+        key: keyName,
+        name: capitalizeNameFromRegularCase(name),
+        resolutions: [newResolutionEntry],
+        expiry: expiry,
+      };
 
-    return patient;
+      resolutions.push(patient);
+
+      return patient;
+    }
   }
 
   get(name) {

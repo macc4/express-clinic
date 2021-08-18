@@ -27,15 +27,15 @@ describe('resolution model (in-memory) --->', () => {
 
       expect(res.key).toEqual('edward-cullen');
       expect(res.name).toEqual('Edward Cullen');
-      expect(res.resolutions.resolution).toEqual('He is a vampire!');
+      expect(res.resolutions[0].resolution).toEqual('He is a vampire!');
     });
-    it('returns an error because we try adding the same patient to the database', async () => {
-      expect.assertions(1);
-      try {
-        await resolutionModel.create(requests[0]);
-      } catch (e) {
-        expect(e.message).toEqual('Database already contains this data.');
-      }
+    it('returns the same patient, but with 2 resolutions now', async () => {
+      expect.assertions(3);
+      const res = await resolutionModel.create(requests[0]);
+
+      expect(res.key).toEqual('edward-cullen');
+      expect(res.name).toEqual('Edward Cullen');
+      expect(res.resolutions[1].resolution).toEqual('He is a vampire!');
     });
     it('returns the patient object with the correct data', async () => {
       expect.assertions(3);
@@ -43,18 +43,19 @@ describe('resolution model (in-memory) --->', () => {
 
       expect(res.key).toEqual('jacob-black');
       expect(res.name).toEqual('Jacob Black');
-      expect(res.resolutions.resolution).toEqual('He is a werewolf!');
+      expect(res.resolutions[0].resolution).toEqual('He is a werewolf!');
     });
   });
 
   describe('2) get', () => {
     it('(edward-cullen) -> returns the correct data of the patient', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       const res = await resolutionModel.get(requests[0].name);
 
       expect(res.key).toEqual('edward-cullen');
       expect(res.name).toEqual('Edward Cullen');
-      expect(res.resolutions.resolution).toEqual('He is a vampire!');
+      expect(res.resolutions[0].resolution).toEqual('He is a vampire!');
+      expect(res.resolutions[1].resolution).toEqual('He is a vampire!');
     });
     it('(bella-swan) -> returns undefined due to missing key', async () => {
       expect.assertions(1);
@@ -65,12 +66,13 @@ describe('resolution model (in-memory) --->', () => {
 
   describe('3) delete', () => {
     it('(edward-cullen) -> returns the correct data of the deleted patient', async () => {
-      expect.assertions(3);
+      expect.assertions(4);
       const res = await resolutionModel.delete('edward-cullen');
 
       expect(res.key).toEqual('edward-cullen');
       expect(res.name).toEqual('Edward Cullen');
-      expect(res.resolutions.resolution).toEqual('He is a vampire!');
+      expect(res.resolutions[0].resolution).toEqual('He is a vampire!');
+      expect(res.resolutions[1].resolution).toEqual('He is a vampire!');
     });
     it('(bella-swan) -> returns undefined due to missing key', async () => {
       expect.assertions(1);
@@ -91,7 +93,7 @@ describe('resolution model (in-memory) --->', () => {
 
       expect(res.key).toEqual('jacob-black');
       expect(res.name).toEqual('Jacob Black');
-      expect(res.resolutions.resolution).toEqual('He is a werewolf!');
+      expect(res.resolutions[0].resolution).toEqual('He is a werewolf!');
     });
   });
 });

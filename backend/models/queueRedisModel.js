@@ -33,7 +33,6 @@ export class QueueRedisModel {
   }
 
   async dequeue() {
-    // const deletedPatient = await redisClient.lindex('queue', 0); CHECK THIS PART
     const deletedPatient = await redisClient.lpop('queue');
 
     if (!deletedPatient) {
