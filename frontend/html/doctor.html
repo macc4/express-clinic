@@ -1,65 +1,112 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/styles.css" />
-
-    <title>Doctor's page</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Doctor's page - Clinic API</title>
   </head>
   <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a href="http://localhost:5000/patient" class="navbar-brand m-1">
+          Queue/Resolution API
+        </a>
+        <a class="navbar-brand">Doctor's page</a>
+        <form class="d-flex m-2">
+          <a href="http://localhost:5000/patient" class="btn btn-outline-light">
+            Switch to the Patient's page
+          </a>
+        </form>
+      </div>
+    </nav>
+
     <div class="root">
-      <div class="doctor flex-main">
-        <div class="flex-container">
-          <div class="left-col">
-            <p>Current patient:</p>
-            <p id="current-patient-doctor">&ltempty&gt</p>
-          </div>
-          <div class="right-col">
-            <button id="doctor-next-button">Next</button>
-            <p>Click "next" to process patient</p>
+      <!-- PROCESS PATIENT -->
+      <div class="d-flex">
+        <div class="container-fluid">
+          <div class="row justify-content border border-3 p-5 m-4">
+            <div class="col-md-5 text-center text-md-start">
+              <h1>
+                <div class="display-5 my-3">Current patient:</div>
+                <div id="current-patient-doctor" class="lead text-muted my-4"></div>
+              </h1>
+            </div>
+            <div class="col-md-5 text-center text-md-start">
+              <form id="form-submit-resolution" class="m-5">
+                <div class="my-3">
+                  <label for="exampleFormControlTextarea1" class="form-label"
+                    >Resolution:</label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="doctor-new-resolution"
+                    rows="4"
+                  ></textarea>
+                  <div class="form-floating my-2">
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="timeToLive"
+                      min="1"
+                      placeholder="TTL value"
+                    />
+                    <label for="timeToLive">TTL value (optional)</label>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-lg">
+                  Process patient
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-        <div class="flex-container">
-          <div class="left-col">
-            <p>Set appointment resolution:</p>
-          </div>
-          <div class="right-col">
-            <form id="doctor-form-resolution">
-              <textarea
-                name="doctor-resolution-input"
-                id="doctor-resolution-input"
-                cols="40"
-                rows="10"
-                placeholder="Input to set resolution by key pattern: 'patient: queue_current_patient_value'"
-              ></textarea>
-              <br />
-              <button id="doctor-add-button">Add Resolution</button>
-            </form>
-          </div>
-        </div>
-        <div class="flex-container">
-          <div class="left-col">
-            <br /><br />
-            <input type="search" id="doctor-search-input" />
-            <br /><br />
-            <button id="doctor-search-button">Show resolution</button>
-          </div>
-          <div class="right-col">
-            <textarea
-              id="doctor-search-results"
-              id=""
-              cols="40"
-              rows="10"
-              placeholder="Found resolution"
-            ></textarea>
-            <br />
-            <button id="doctor-delete-button">Delete Patient</button>
+      </div>
+
+      <!-- SEARCH/DELETE RESOLUTIONS -->
+      <div class="d-flex">
+        <div class="container-fluid">
+          <div class="row justify-content border border-3 p-3 m-4">
+            <div class="col-md-3 text-center text-md-start">
+              <form id="doctor-search-resolutions" class="d-flex">
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  id="doctor-search"
+                  placeholder="Name"
+                  aria-label="Search"
+                />
+                <button class="btn btn-secondary btn-lg" type="submit">Search</button>
+              </form>
+              <div class="d-grid gap-2 col-6 mx-auto text-center py-4">
+                <button id="btn-delete" class="btn btn-secondary btn-lg" type="button">
+                  Delete resolutions
+                </button>
+              </div>
+            </div>
+            <div class="col-md-9 text-center text-md-start">
+              <div
+                id="doctor-resolutions-list"
+                class="list-group"
+                style="height: 250px; overflow-y: auto"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="module" src="index.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>

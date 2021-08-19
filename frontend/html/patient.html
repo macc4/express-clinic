@@ -1,62 +1,96 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/styles.css" />
-
-    <title>Queue</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <title>Patient's page - Clinic API</title>
   </head>
   <body>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a href="http://localhost:5000/patient" class="navbar-brand m-1">
+          Queue/Resolution API
+        </a>
+        <a class="navbar-brand">Patient's page</a>
+        <form class="d-flex m-2">
+          <a href="http://localhost:5000/doctor" class="btn btn-outline-light">
+            Switch to the Doctor's page
+          </a>
+        </form>
+      </div>
+    </nav>
+
     <div class="root">
-      <div class="queue flex-main">
-        <div class="flex-container">
-          <div class="left-col">
-            <h2>The queue</h2>
-            <p>Current patient:</p>
-            <p id="current-patient-patient">&ltempty&gt</p>
-          </div>
-          <div class="right-col">
-            <form id="patient-form">
-              <input
-                type="text"
-                id="patient-form-input"
-                name="patient-form-input"
-                placeholder="Input name"
-              />
-              <br />
-              <input
-                type="text"
-                id="patient-form-ttl"
-                name="patient-form-ttl"
-                placeholder="Optional TTL value (mins)"
-              />
-              <br />
-              <br />
-              <button id="patient-add-button">Add</button>
-            </form>
+      <!-- ADD PATIENT -->
+      <div class="d-flex">
+        <div class="container-fluid">
+          <div class="row justify-content border border-3 p-5 m-4">
+            <div class="col-md-5 text-center text-md-start">
+              <h1>
+                <div class="display-5 my-3">Current patient:</div>
+                <div id="current-patient-patient" class="lead text-muted my-4"></div>
+              </h1>
+            </div>
+            <div class="col-md-5 text-center text-md-start">
+              <form id="form-add-patient" class="m-5">
+                <div class="form-floating my-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="input-text"
+                    placeholder="Aleksei Leonenko"
+                  />
+                  <label for="input-text">Name</label>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-lg">
+                  Get in the queue
+                </button>
+              </form>
+            </div>
           </div>
         </div>
-        <div class="patient-search flex-container">
-          <div class="left-col">
-            <input
-              type="search"
-              id="patient-search-input"
-              placeholder="Search"
-            />
-          </div>
-          <div class="right-col">
-            <textarea
-              id="patient-search-results"
-              id=""
-              cols="40"
-              rows="10"
-            ></textarea>
+      </div>
+
+      <!-- SEARCH RESOLUTION -->
+      <div class="d-flex">
+        <div class="container-fluid">
+          <div class="row justify-content border border-3 p-3 m-4">
+            <div class="col-md-3 text-center text-md-start">
+              <form id="patient-search-resolutions" class="d-flex my-5">
+                <input
+                  class="form-control me-2"
+                  type="search"
+                  id="patient-search"
+                  placeholder="Name"
+                  aria-label="Search"
+                />
+                <button class="btn btn-secondary btn-lg" type="submit">Search</button>
+              </form>
+            </div>
+            <div class="col-md-9 text-center text-md-start">
+              <div
+                id="patient-resolutions-list"
+                class="list-group"
+                style="height: 400px; overflow-y: auto"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script type="module" src="index.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
