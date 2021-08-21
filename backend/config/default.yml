@@ -6,3 +6,5 @@ db:
   type: redis # ['in-memory', 'redis']
   redis:
     port: 6379
+  mysql:
+    database: 'clinic'

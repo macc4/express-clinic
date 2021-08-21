@@ -1,19 +1,20 @@
-import { StatusCodes } from 'http-status-codes';
-import AppError from '../utils/appError.js';
-import errorMessages from '../lib/errorMessages.js';
 import {
   getUnixExpiryFromBody,
   convertNameToBabelCase,
   capitalizeNameFromBabelCase,
   capitalizeNameFromRegularCase,
 } from '../utils/bodyDecorator.js';
-import { redisClient } from '../db/redis.js';
+import { redisClient } from '../server.js';
 
 export class ResolutionRedisModel {
+  getKey(name) {
+    return 'resolutions:' + convertNameToBabelCase(name);
+  }
+
   async create(body) {
     let { name, resolution } = body;
 
-    const keyName = convertNameToBabelCase(name);
+    const keyName = this.getKey(name);
     const currentDate = new Date();
     const expiry = getUnixExpiryFromBody(body);
 
@@ -24,24 +25,24 @@ export class ResolutionRedisModel {
     };
 
     // check for duplicate data
-    const exists = await redisClient.exists('resolutions:' + keyName);
+    const exists = await redisClient.exists(keyName);
 
     let resolutionsData;
 
     // if exists, then simply add a new resolution
     if (exists) {
-      resolutionsData = JSON.parse(await redisClient.get('resolutions:' + keyName));
+      resolutionsData = JSON.parse(await redisClient.get(keyName));
       resolutionsData.resolutions.push(newResolutionEntry);
 
-      await redisClient.set('resolutions:' + keyName, JSON.stringify(resolutionsData));
+      await redisClient.set(keyName, JSON.stringify(resolutionsData));
     } else {
       resolutionsData = { resolutions: [newResolutionEntry] };
 
-      await redisClient.set('resolutions:' + keyName, JSON.stringify(resolutionsData));
+      await redisClient.set(keyName, JSON.stringify(resolutionsData));
     }
 
     if (expiry !== -1) {
-      await redisClient.pexpireat('resolutions:' + keyName, expiry);
+      await redisClient.pexpireat(keyName, expiry);
     }
 
     const returnedPatient = {
@@ -55,7 +56,7 @@ export class ResolutionRedisModel {
   }
 
   async get(name) {
-    const searchName = 'resolutions:' + convertNameToBabelCase(name);
+    const searchName = this.getKey(name);
     const resolutionsData = JSON.parse(await redisClient.get(searchName));
 
     if (!resolutionsData) {
@@ -86,7 +87,7 @@ export class ResolutionRedisModel {
   }
 
   async delete(key) {
-    const searchKey = 'resolutions:' + key;
+    const searchKey = this.getKey(key);
     const resolutionsData = JSON.parse(await redisClient.get(searchKey));
 
     if (!resolutionsData) {

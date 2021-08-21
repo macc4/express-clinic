@@ -1,6 +1,7 @@
-import { ResolutionInMemoryModel } from '../../models/resolutionInMemoryModel.js';
+import { ResolutionFactory } from '../../models/resolutionFactory.js';
 
-const resolutionModel = new ResolutionInMemoryModel();
+const resolutionFactory = new ResolutionFactory('in-memory');
+const resolutionModel = resolutionFactory.create();
 
 const requests = [
   {

@@ -1,34 +1,58 @@
 import Redis from 'redis';
 import config from 'config';
-import AppError from '../utils/appError.js';
-import { StatusCodes } from 'http-status-codes';
 import { promisify } from 'util';
 
-const redisClient = Redis.createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: config.get('db.redis.port'),
-});
+class RedisClient {
+  constructor() {
+    this.host = process.env.REDIS_HOST || 'localhost';
+    this.port = config.get('db.redis.port') || '6379';
 
-redisClient.on('error', function (err) {
-  throw new AppError(err, StatusCodes.INTERNAL_SERVER_ERROR);
-});
+    this.connected = false;
+    this.client = null;
+  }
 
-redisClient.on('connect', () => {
-  console.log(`Redis connected redis successfully`);
-});
+  connect() {
+    if (this.connected) return this.client;
+    else {
+      this.client = Redis.createClient({
+        host: this.host,
+        port: this.port,
+      });
 
-redisClient.flushall();
+      this.promisifyMethods();
+      this.flushData();
 
-redisClient.exists = promisify(redisClient.exists).bind(redisClient);
-redisClient.set = promisify(redisClient.set).bind(redisClient);
-redisClient.get = promisify(redisClient.get).bind(redisClient);
-redisClient.pexpireat = promisify(redisClient.pexpireat).bind(redisClient);
-redisClient.pttl = promisify(redisClient.pttl).bind(redisClient);
-redisClient.del = promisify(redisClient.del).bind(redisClient);
-redisClient.lpush = promisify(redisClient.lpush).bind(redisClient);
-redisClient.rpush = promisify(redisClient.rpush).bind(redisClient);
-redisClient.lindex = promisify(redisClient.lindex).bind(redisClient);
-redisClient.lpop = promisify(redisClient.lpop).bind(redisClient);
-redisClient.lrange = promisify(redisClient.lrange).bind(redisClient);
+      this.connected = true;
 
-export { redisClient };
+      this.client.on('error', function (error) {
+        throw new AppError(error, StatusCodes.INTERNAL_SERVER_ERROR);
+      });
+
+      this.client.on('connect', () => {
+        console.log(`Redis connected successfully...`);
+      });
+
+      return this.client;
+    }
+  }
+
+  promisifyMethods() {
+    this.client.exists = promisify(this.client.exists).bind(this.client);
+    this.client.set = promisify(this.client.set).bind(this.client);
+    this.client.get = promisify(this.client.get).bind(this.client);
+    this.client.pexpireat = promisify(this.client.pexpireat).bind(this.client);
+    this.client.pttl = promisify(this.client.pttl).bind(this.client);
+    this.client.del = promisify(this.client.del).bind(this.client);
+    this.client.lpush = promisify(this.client.lpush).bind(this.client);
+    this.client.rpush = promisify(this.client.rpush).bind(this.client);
+    this.client.lindex = promisify(this.client.lindex).bind(this.client);
+    this.client.lpop = promisify(this.client.lpop).bind(this.client);
+    this.client.lrange = promisify(this.client.lrange).bind(this.client);
+  }
+
+  flushData() {
+    this.client.flushall();
+  }
+}
+
+export { RedisClient };

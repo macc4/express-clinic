@@ -1,8 +1,7 @@
-import { StatusCodes } from 'http-status-codes';
-import AppError from '../utils/appError.js';
+import { ModelConflictError } from '../utils/errorClasses.js';
 import errorMessages from '../lib/errorMessages.js';
 import { capitalizeNameFromRegularCase } from '../utils/bodyDecorator.js';
-import { redisClient } from '../db/redis.js';
+import { redisClient } from '../server.js';
 
 export class QueueRedisModel {
   async enqueue(body) {
@@ -15,7 +14,7 @@ export class QueueRedisModel {
     const duplicatePatient = queue.some((patient) => patient === newPatient);
 
     if (duplicatePatient) {
-      throw new AppError(errorMessages.CONFLICT, StatusCodes.CONFLICT);
+      throw new ModelConflictError(errorMessages.CONFLICT);
     }
 
     await redisClient.rpush('queue', newPatient);

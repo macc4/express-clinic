@@ -21,3 +21,4 @@ const resolutionFactory = new ResolutionFactory(config.get('db.type'));
 const resolutionModel = resolutionFactory.create();
 
 export default resolutionModel;
+export { ResolutionFactory };

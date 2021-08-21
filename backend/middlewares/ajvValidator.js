@@ -1,8 +1,6 @@
-import { StatusCodes } from 'http-status-codes';
-
 import Ajv from 'ajv';
 
-import AppError from '../utils/appError.js';
+import { ValidationError } from '../utils/errorClasses.js';
 
 const ajv = new Ajv();
 
@@ -13,18 +11,22 @@ const ajvParseErrorLog = (error) => {
   const errorMessage = error.message;
 
   if (variableName === '') {
-    return `ValidationError: ${errorMessage}`;
+    return `${errorMessage}`;
   }
 
-  return `ValidationError: field '${variableName}' ${errorMessage}`;
+  return `field '${variableName}' ${errorMessage}`;
 };
 
-export default (body, schema) => {
-  const validateEnqueueSchema = ajv.compile(schema);
-  const valid = validateEnqueueSchema(body);
+export default (property, schema) => {
+  return (req, res, next) => {
+    const validateEnqueueSchema = ajv.compile(schema);
+    const valid = validateEnqueueSchema(req[property]);
 
-  if (!valid) {
-    const validationErrors = ajvParseErrorLog(validateEnqueueSchema.errors[0]);
-    throw new AppError(validationErrors, StatusCodes.BAD_REQUEST);
-  }
+    if (!valid) {
+      const validationErrors = ajvParseErrorLog(validateEnqueueSchema.errors[0]);
+      next(new ValidationError(validationErrors));
+    }
+
+    next();
+  };
 };

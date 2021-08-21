@@ -1,4 +1,3 @@
-// #region
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -8,13 +7,12 @@ import swaggerJsDoc from 'swagger-jsdoc';
 
 import { StatusCodes } from 'http-status-codes';
 import errorController from './controllers/errorController.js';
-import AppError from './utils/appError.js';
+import { AppError } from './utils/errorClasses.js';
 
 import queueRoutes from './routes/queueRoutes.js';
 import resolutionRoutes from './routes/resolutionRoutes.js';
-// #endregion
 
-// #region Swagger options
+// Swagger options
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -32,7 +30,6 @@ const options = {
 };
 
 const specs = swaggerJsDoc(options);
-// #endregion
 
 const app = express();
 

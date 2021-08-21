@@ -1,11 +1,13 @@
 import express from 'express';
+import ajvValidator from '../middlewares/ajvValidator.js';
 import resolutionController from '../controllers/resolutionController.js';
+import resolutionSchema from '../schemas/resolutionSchema.js';
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(resolutionController.createResolution)
+  .post(ajvValidator('body', resolutionSchema), resolutionController.createResolution)
   .get(resolutionController.getResolutions);
 
 router.route('/:name').delete(resolutionController.deleteResolution);

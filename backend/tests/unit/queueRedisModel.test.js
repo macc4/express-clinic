@@ -1,9 +1,7 @@
-import { QueueRedisModel } from '../../models/queueRedisModel.js';
-import { redisClient } from '../../db/redis.js';
+import { QueueFactory } from '../../models/queueFactory.js';
 
-redisClient.flushall();
-
-const queueModel = new QueueRedisModel();
+const queueFactory = new QueueFactory('redis');
+const queueModel = queueFactory.create();
 
 const requests = [
   {

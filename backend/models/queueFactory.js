@@ -21,3 +21,4 @@ const queueFactory = new QueueFactory(config.get('db.type'));
 const queueModel = queueFactory.create();
 
 export default queueModel;
+export { QueueFactory };

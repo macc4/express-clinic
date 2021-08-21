@@ -1,6 +1,7 @@
-import { QueueInMemoryModel } from '../../models/queueInMemoryModel.js';
+import { QueueFactory } from '../../models/queueFactory.js';
 
-const queueModel = new QueueInMemoryModel();
+const queueFactory = new QueueFactory('in-memory');
+const queueModel = queueFactory.create();
 
 const requests = [
   {

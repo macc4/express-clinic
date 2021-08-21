@@ -1,11 +1,13 @@
 import express from 'express';
+import ajvValidator from '../middlewares/ajvValidator.js';
 import queueController from '../controllers/queueController.js';
+import queueSchema from '../schemas/queueSchema.js';
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(queueController.enqueuePatient)
+  .post(ajvValidator('body', queueSchema), queueController.enqueuePatient)
   .get(queueController.getPatient)
   .delete(queueController.dequeuePatient);
 

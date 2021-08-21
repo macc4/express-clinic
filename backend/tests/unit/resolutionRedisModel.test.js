@@ -1,9 +1,7 @@
-import { ResolutionRedisModel } from '../../models/resolutionRedisModel.js';
-import { redisClient } from '../../db/redis.js';
+import { ResolutionFactory } from '../../models/resolutionFactory.js';
 
-redisClient.flushall();
-
-const resolutionModel = new ResolutionRedisModel();
+const resolutionFactory = new ResolutionFactory('redis');
+const resolutionModel = resolutionFactory.create();
 
 const requests = [
   {

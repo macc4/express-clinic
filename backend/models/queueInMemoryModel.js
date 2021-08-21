@@ -1,5 +1,4 @@
-import { StatusCodes } from 'http-status-codes';
-import AppError from '../utils/appError.js';
+import { ModelConflictError } from '../utils/errorClasses.js';
 import errorMessages from '../lib/errorMessages.js';
 import { capitalizeNameFromRegularCase } from '../utils/bodyDecorator.js';
 import { db } from '../db/in-memory.js';
@@ -15,7 +14,7 @@ export class QueueInMemoryModel {
     const duplicatePatient = queue.some((patient) => patient === newPatient);
 
     if (duplicatePatient) {
-      throw new AppError(errorMessages.CONFLICT, StatusCodes.CONFLICT);
+      throw new ModelConflictError(errorMessages.CONFLICT);
     }
 
     queue.push(newPatient);
