@@ -9,8 +9,8 @@ import { StatusCodes } from 'http-status-codes';
 import errorController from './controllers/errorController.js';
 import { AppError } from './utils/errorClasses.js';
 
+import patientRoutes from './routes/patientRoutes.js';
 import queueRoutes from './routes/queueRoutes.js';
-import resolutionRoutes from './routes/resolutionRoutes.js';
 
 // Swagger options
 const options = {
@@ -44,7 +44,7 @@ app.use(express.json());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
 
 app.use('/api/v1/queue', queueRoutes);
-app.use('/api/v1/resolutions', resolutionRoutes);
+app.use('/api/v1/patients', patientRoutes);
 
 app.all('*', (req, res, next) => {
   next(

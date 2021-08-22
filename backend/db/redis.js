@@ -1,6 +1,8 @@
+import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
-import { promisify } from 'util';
+
+const db = {};
 
 class RedisClient {
   constructor() {
@@ -12,8 +14,9 @@ class RedisClient {
   }
 
   connect() {
-    if (this.connected) return this.client;
-    else {
+    if (this.connected) {
+      return this.client;
+    } else {
       this.client = Redis.createClient({
         host: this.host,
         port: this.port,
@@ -21,6 +24,7 @@ class RedisClient {
 
       this.promisifyMethods();
       this.flushData();
+      this.addScanMethod();
 
       this.connected = true;
 
@@ -29,7 +33,8 @@ class RedisClient {
       });
 
       this.client.on('connect', () => {
-        console.log(`Redis connected successfully...`);
+        console.log(`-----------------------------`);
+        console.log(`Redis database has been connected.`);
       });
 
       return this.client;
@@ -48,11 +53,31 @@ class RedisClient {
     this.client.lindex = promisify(this.client.lindex).bind(this.client);
     this.client.lpop = promisify(this.client.lpop).bind(this.client);
     this.client.lrange = promisify(this.client.lrange).bind(this.client);
+    this.client.scan = promisify(this.client.scan).bind(this.client);
   }
 
   flushData() {
     this.client.flushall();
   }
+
+  // add a custom scan method for redis
+  addScanMethod() {
+    this.client.scanAll = async (pattern) => {
+      const found = [];
+      let cursor = '0';
+
+      do {
+        const reply = await this.client.scan(cursor, 'MATCH', pattern);
+
+        cursor = reply[0];
+        found.push(...reply[1]);
+      } while (cursor !== '0');
+
+      return found;
+    };
+  }
 }
 
-export { RedisClient };
+db.RedisClient = new RedisClient();
+
+export default db;

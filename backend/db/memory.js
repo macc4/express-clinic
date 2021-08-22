@@ -1,6 +1,5 @@
-const db = {
+export default {
   queue: [],
+  patients: [],
   resolutions: [],
 };
-
-export { db };
