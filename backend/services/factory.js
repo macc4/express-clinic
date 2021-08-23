@@ -56,3 +56,5 @@ class ClinicFactory {
 
 const clinicFactory = new ClinicFactory(config.get('db.type'));
 export default clinicFactory;
+
+export { ClinicFactory }; // for tests

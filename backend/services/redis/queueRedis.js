@@ -1,38 +1,44 @@
-import db from '../../db/redis.js';
-
-// NOT YET DONE
+import redisClient from '../../db/redis.js';
+import { ModelConflictError } from '../../utils/errorClasses.js';
 
 export default class QueueRedisService {
-  async enqueue(body) {
-    const newPatient = await this.Queue.create(body);
+  constructor() {
+    this.redis = redisClient.connect();
+  }
 
-    return newPatient;
+  async enqueue(body) {
+    const newPatientId = body.patientId;
+
+    // checking if the patientId is already in the queue
+    const queue = await this.redis.lrange('queue', 0, -1);
+
+    const duplicatePatient = queue.some((patient) => patient === `${newPatientId}`);
+
+    if (duplicatePatient) {
+      throw new ModelConflictError('You are already in the queue');
+    }
+
+    await this.redis.rpush('queue', newPatientId);
+    return { patientId: +newPatientId };
   }
 
   async peek() {
-    const patient = await this.Queue.findAll({
-      limit: 1,
-      order: [['updatedAt', 'ASC']],
-    });
+    const patientId = await this.redis.lindex('queue', 0);
 
-    return patient;
+    if (patientId === null) {
+      return undefined;
+    }
+
+    return { patientId: +patientId };
   }
 
   async dequeue() {
-    const patient = await this.peek();
+    const deletedPatientId = await this.redis.lpop('queue');
 
-    // somehow patient[0].dataValues.patientId cannot be accessed otherwise
-    const data = {
-      patient: patient[0],
-    };
-
-    if (patient.length !== 0) {
-      const id = data.patient.dataValues.patientId;
-      await this.Queue.destroy({
-        where: { patientId: id },
-      });
+    if (!deletedPatientId) {
+      return undefined;
     }
 
-    return patient[0];
+    return { patientId: +deletedPatientId };
   }
 }

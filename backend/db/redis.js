@@ -1,9 +1,6 @@
 import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
-
-const db = {};
-
 class RedisClient {
   constructor() {
     this.host = process.env.REDIS_HOST || 'localhost';
@@ -78,6 +75,6 @@ class RedisClient {
   }
 }
 
-db.RedisClient = new RedisClient();
+const redisClient = new RedisClient();
 
-export default db;
+export default redisClient;
