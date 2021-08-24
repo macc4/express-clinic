@@ -1,5 +1,5 @@
 import db from '../../db/memory.js';
-import { capitalizeNameFromRegularCase } from '../../utils/bodyDecorator.js';
+import { capitalizeNameFromRegularCase } from '../../utils/formatName.js';
 import { ModelConflictError } from '../../utils/errorClasses.js';
 
 let { patients } = db;

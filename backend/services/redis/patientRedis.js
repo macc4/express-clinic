@@ -1,5 +1,5 @@
-import redisClient from '../../db/redis.js';
-import { capitalizeNameFromRegularCase } from '../../utils/bodyDecorator.js';
+import redisClient, { redisScan } from '../../db/redis.js';
+import { capitalizeNameFromRegularCase } from '../../utils/formatName.js';
 import { ModelConflictError } from '../../utils/errorClasses.js';
 
 export default class PatientRedisService {
@@ -18,7 +18,7 @@ export default class PatientRedisService {
       name: patientName,
     };
 
-    const results = await this.redis.scanAll(`*\"name\":\"${patientName}\"}`);
+    const results = await redisScan(this.redis, `*\"name\":\"${patientName}\"}`);
 
     if (results.length !== 0) {
       throw new ModelConflictError('This patient already exists');
@@ -30,7 +30,7 @@ export default class PatientRedisService {
   }
 
   async getPatient(patientId) {
-    const patient = await this.redis.scanAll(`patients:{\"id\":${patientId}*`);
+    const patient = await redisScan(this.redis, `patients:{\"id\":${patientId}*`);
 
     if (patient.length === 0) {
       return undefined;
@@ -44,14 +44,15 @@ export default class PatientRedisService {
     let searchedPatients;
 
     if (query.name) {
-      const data = await this.redis.scanAll(
+      const data = await redisScan(
+        this.redis,
         `patients:*${capitalizeNameFromRegularCase(query.name)}*`
       );
       searchedPatients = data.map((patient) =>
         JSON.parse(patient.replace('patients:', ''))
       );
     } else {
-      const data = await this.redis.scanAll(`patients:*`);
+      const data = await redisScan(this.redis, `patients:*`);
       searchedPatients = data.map((patient) =>
         JSON.parse(patient.replace('patients:', ''))
       );

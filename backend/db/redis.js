@@ -1,10 +1,11 @@
 import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
+
 class RedisClient {
   constructor() {
     this.host = process.env.REDIS_HOST || 'localhost';
-    this.port = config.get('db.redis.port') || '6379';
+    this.port = config.get('redis.port') || '6379';
 
     this.connected = false;
     this.client = null;
@@ -21,7 +22,6 @@ class RedisClient {
 
       this.promisifyMethods();
       this.flushData();
-      this.addScanMethod();
 
       this.connected = true;
 
@@ -56,25 +56,23 @@ class RedisClient {
   flushData() {
     this.client.flushall();
   }
-
-  // add a custom scan method for redis
-  addScanMethod() {
-    this.client.scanAll = async (pattern) => {
-      const found = [];
-      let cursor = '0';
-
-      do {
-        const reply = await this.client.scan(cursor, 'MATCH', pattern);
-
-        cursor = reply[0];
-        found.push(...reply[1]);
-      } while (cursor !== '0');
-
-      return found;
-    };
-  }
 }
 
 const redisClient = new RedisClient();
 
+const redisScan = async (client, pattern) => {
+  const found = [];
+  let cursor = '0';
+
+  do {
+    const reply = await client.scan(cursor, 'MATCH', pattern);
+
+    cursor = reply[0];
+    found.push(...reply[1]);
+  } while (cursor !== '0');
+
+  return found;
+};
+
 export default redisClient;
+export { redisScan };

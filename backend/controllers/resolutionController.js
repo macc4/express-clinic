@@ -38,7 +38,7 @@ const getAllResolutionsForThePatient = catchAsync(async (req, res, next) => {
     req.params.patientId
   );
 
-  if (resolutions.length === 0 || resolutions === undefined) {
+  if (resolutions.length === 0 || !resolutions) {
     return next(
       new AppError('No resolutions found for that patient', StatusCodes.NOT_FOUND)
     );
@@ -57,7 +57,7 @@ const deleteAllResolutionsForThePatient = catchAsync(async (req, res, next) => {
     req.params.patientId
   );
 
-  if (resolutions === 0 || resolutions === undefined || resolutions.length === 0) {
+  if (!resolutions || resolutions.length === 0) {
     return next(new AppError('No resolutions found for that patient', 404));
   }
 

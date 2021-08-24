@@ -8,12 +8,12 @@ import Queue from './models/queueModel.js';
 const db = {};
 
 const sequelize = new Sequelize(
-  config.get('db.sequelize.db'),
-  config.get('db.sequelize.user'),
-  config.get('db.sequelize.password'),
+  config.get('sequelize.db'),
+  config.get('sequelize.user'),
+  config.get('sequelize.password'),
   {
     host: process.env.MYSQL_HOSTNAME || 'localhost',
-    dialect: config.get('db.sequelize.dialect'),
+    dialect: config.get('sequelize.dialect'),
   }
 );
 

@@ -3,7 +3,7 @@ import { ClinicFactory } from '../../../services/factory.js';
 const databaseTypes = ['in-memory', 'redis'];
 
 databaseTypes.forEach((type) => {
-  const clinicFactory = new ClinicFactory(type);
+  const clinicFactory = new ClinicFactory(type, type);
   const patientService = clinicFactory.getPatientService;
   const resolutionService = clinicFactory.getResolutionService;
 

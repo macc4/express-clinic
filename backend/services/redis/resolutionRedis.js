@@ -1,7 +1,6 @@
-import redisClient from '../../db/redis.js';
+import redisClient, { redisScan } from '../../db/redis.js';
 import { AppError } from '../../utils/errorClasses.js';
 
-// NOT YET DONE
 export default class ResolutionRedisService {
   constructor() {
     this.redis = redisClient.connect();
@@ -11,7 +10,8 @@ export default class ResolutionRedisService {
     this.increment++;
     // check if the patient exists first
 
-    const patients = await this.redis.scanAll(
+    const patients = await redisScan(
+      this.redis,
       `patients:{\"id\":${+params.patientId},\"name\"*`
     );
 
@@ -38,7 +38,8 @@ export default class ResolutionRedisService {
 
   // not used in our project
   async getResolutionById(resolutionId) {
-    const resolutionsKey = await this.redis.scanAll(
+    const resolutionsKey = await redisScan(
+      this.redis,
       `resolutions:{\"id\":${resolutionId},\"patientId\"*`
     );
 
@@ -53,7 +54,8 @@ export default class ResolutionRedisService {
   }
 
   async getAllResolutionsForThePatient(patientId) {
-    const resolutionKeys = await this.redis.scanAll(
+    const resolutionKeys = await redisScan(
+      this.redis,
       `resolutions:{\"id\":*,\"patientId\":${patientId}}`
     );
 
@@ -70,7 +72,8 @@ export default class ResolutionRedisService {
   }
 
   async deleteAllResolutionsForThePatient(patientId) {
-    const resolutionKeys = await this.redis.scanAll(
+    const resolutionKeys = await redisScan(
+      this.redis,
       `resolutions:{\"id\":*,\"patientId\":${patientId}}`
     );
 
