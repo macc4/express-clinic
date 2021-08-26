@@ -7,17 +7,12 @@ import swaggerJsDoc from 'swagger-jsdoc';
 
 import { StatusCodes } from 'http-status-codes';
 import errorController from './controllers/errorController.js';
-import AppError from './utils/appError.js';
-
-import ajvValidator from './utils/ajvValidator.js';
-import queueSchema from './schemas/queueSchema.js';
-import resolutionSchema from './schemas/resolutionSchema.js';
+import { AppError } from './utils/errorClasses.js';
 
 import queueRoutes from './routes/queueRoutes.js';
 import resolutionRoutes from './routes/resolutionRoutes.js';
 
 // Swagger options
-
 const options = {
   definition: {
     openapi: '3.0.0',
@@ -43,17 +38,6 @@ const app = express();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
-
-// 1.1) VALIDATORS
-
-app.post('/api/v1/queue', (req, res, next) => {
-  ajvValidator(req.body, queueSchema);
-  next();
-});
-app.post('/api/v1/resolutions', (req, res, next) => {
-  ajvValidator(req.body, resolutionSchema);
-  next();
-});
 
 // 2) ROUTES
 
