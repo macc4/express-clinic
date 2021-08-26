@@ -7,7 +7,9 @@ let increment = 0;
 export default class ResolutionInMemoryService {
   async createResolution(body, params) {
     // check if the patient exists first
-    const patient = patients.find((patient) => patient.id === +params.patientId);
+    const patient = patients.find(
+      (patient) => patient.id === +params.patientId
+    );
 
     if (!patient) {
       throw new AppError('No patient found with that ID', 404);
@@ -31,7 +33,9 @@ export default class ResolutionInMemoryService {
 
   // not used in our project
   async getResolutionById(resolutionId) {
-    const resolution = resolutions.find((resolution) => resolution.id === +resolutionId);
+    const resolution = resolutions.find(
+      (resolution) => resolution.id === +resolutionId
+    );
 
     return resolution;
   }
@@ -47,7 +51,9 @@ export default class ResolutionInMemoryService {
   async deleteAllResolutionsForThePatient(patientId) {
     const searchedResolutions = this.getAllResolutionsForThePatient(+patientId);
 
-    resolutions = resolutions.filter((resolution) => resolution.patientId !== +patientId);
+    resolutions = resolutions.filter(
+      (resolution) => resolution.patientId !== +patientId
+    );
 
     return searchedResolutions;
   }

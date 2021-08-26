@@ -1,11 +1,13 @@
 import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
+import { StatusCodes } from 'http-status-codes';
+import { AppError } from '../utils/errorClasses.js';
 
 class RedisClient {
   constructor() {
     this.host = process.env.REDIS_HOST || 'localhost';
-    this.port = config.get('redis.port') || '6379';
+    this.port = config.get('db.redis.port') || '6379';
 
     this.connected = false;
     this.client = null;
@@ -27,11 +29,6 @@ class RedisClient {
 
       this.client.on('error', function (error) {
         throw new AppError(error, StatusCodes.INTERNAL_SERVER_ERROR);
-      });
-
-      this.client.on('connect', () => {
-        console.log(`-----------------------------`);
-        console.log(`Redis database has been connected.`);
       });
 
       return this.client;

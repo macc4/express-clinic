@@ -18,7 +18,10 @@ export default class PatientRedisService {
       name: patientName,
     };
 
-    const results = await redisScan(this.redis, `*\"name\":\"${patientName}\"}`);
+    const results = await redisScan(
+      this.redis,
+      `*\"name\":\"${patientName}\"}`
+    );
 
     if (results.length !== 0) {
       throw new ModelConflictError('This patient already exists');
@@ -30,7 +33,10 @@ export default class PatientRedisService {
   }
 
   async getPatient(patientId) {
-    const patient = await redisScan(this.redis, `patients:{\"id\":${patientId}*`);
+    const patient = await redisScan(
+      this.redis,
+      `patients:{\"id\":${patientId}*`
+    );
 
     if (patient.length === 0) {
       return undefined;

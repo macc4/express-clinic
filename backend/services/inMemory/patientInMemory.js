@@ -49,7 +49,9 @@ export default class PatientInMemoryService {
   }
 
   async deletePatient(patientId) {
-    const deletedPatient = patients.find((patient) => patient.id === +patientId);
+    const deletedPatient = patients.find(
+      (patient) => patient.id === +patientId
+    );
 
     patients = patients.filter((patient) => patient.id !== +patientId);
 

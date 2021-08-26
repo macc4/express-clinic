@@ -58,9 +58,10 @@ docker-compose down
 Access the website through:
 http://localhost:5000/
 
-## API Docs:
+## API Docs/Diagram:
 
-The documentation was made using Swagger.
-
-First, you need to install the app, following the installation process above, and then access the docs through:
+The documentation was made using Swagger. Install the app first, following the installation process above, and then access the docs through:
 http://localhost:8080/api-docs/
+
+SQL diagram can be found here:
+https://drawsql.app/personal-261/diagrams/clinic

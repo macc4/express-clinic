@@ -7,7 +7,10 @@ import catchAsync from '../utils/catchAsync.js';
 const resolutionService = clinicFactory.getResolutionService;
 
 const createResolution = catchAsync(async (req, res, next) => {
-  const newResolution = await resolutionService.createResolution(req.body, req.params);
+  const newResolution = await resolutionService.createResolution(
+    req.body,
+    req.params
+  );
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
@@ -19,10 +22,14 @@ const createResolution = catchAsync(async (req, res, next) => {
 
 // not used in our project
 const getResolutionById = catchAsync(async (req, res, next) => {
-  const resolution = await resolutionService.getResolutionById(req.params.resolutionId);
+  const resolution = await resolutionService.getResolutionById(
+    req.params.resolutionId
+  );
 
   if (!resolution) {
-    return next(new AppError('No resolution found with that ID', StatusCodes.NOT_FOUND));
+    return next(
+      new AppError('No resolution found with that ID', StatusCodes.NOT_FOUND)
+    );
   }
 
   res.status(StatusCodes.CREATED).json({
@@ -40,7 +47,10 @@ const getAllResolutionsForThePatient = catchAsync(async (req, res, next) => {
 
   if (resolutions.length === 0 || !resolutions) {
     return next(
-      new AppError('No resolutions found for that patient', StatusCodes.NOT_FOUND)
+      new AppError(
+        'No resolutions found for that patient',
+        StatusCodes.NOT_FOUND
+      )
     );
   }
 

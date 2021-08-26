@@ -1,32 +1,5 @@
 version: '3.8'
 services:
-  redis:
-    container_name: redis
-    image: redis
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    hostname: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: password # INSERT PASSWORD
-      MYSQL_DATABASE: clinic
-      MYSQL_USER: root
-      MYSQL_PASSWORD: password # INSERT PASSWORD
-    ports:
-      - '3307:3306'
-  backend:
-    container_name: backend
-    environment:
-      - MYSQL_HOSTNAME=mysql
-      - REDIS_HOST=redis
-    build: ./backend
-    ports:
-      - '8080:8080'
-    restart: always
-    depends_on:
-      - redis
-      - mysql
   frontend:
     container_name: frontend
     build: ./frontend
@@ -35,3 +8,27 @@ services:
     restart: always
     depends_on:
       - backend
+  backend:
+    container_name: backend
+    environment:
+      - REDIS_HOST=redis
+      - MYSQL_HOST=mysql
+    build: ./backend
+    ports:
+      - '8080:8080'
+    restart: always
+    depends_on:
+      - redis
+      - mysql
+  redis:
+    container_name: redis
+    image: redis
+  mysql:
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    image: mysql
+    hostname: mysql
+    restart: always
+    ports:
+      - '3307:3306'

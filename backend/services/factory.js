@@ -68,8 +68,8 @@ class ClinicFactory {
 }
 
 const clinicFactory = new ClinicFactory(
-  config.get('db-type.queue'),
-  config.get('db-type.patients/resolutions')
+  config.get('db.type.queue'),
+  config.get('db.type.main')
 );
 export default clinicFactory;
 

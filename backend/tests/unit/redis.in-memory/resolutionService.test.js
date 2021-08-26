@@ -11,7 +11,9 @@ databaseTypes.forEach((type) => {
     test('- try getting resolutions for a non-existent patient or a patient without any resolutions', async () => {
       expect.assertions(1);
 
-      const response = await resolutionService.getAllResolutionsForThePatient(5);
+      const response = await resolutionService.getAllResolutionsForThePatient(
+        5
+      );
 
       expect(response).toEqual([]);
     });
@@ -31,9 +33,18 @@ databaseTypes.forEach((type) => {
       const bodyThree = { resolution: 'He is dead.' };
       const params = { patientId: 1 };
 
-      const responseOne = await resolutionService.createResolution(bodyOne, params);
-      const responseTwo = await resolutionService.createResolution(bodyTwo, params);
-      const responseThree = await resolutionService.createResolution(bodyThree, params);
+      const responseOne = await resolutionService.createResolution(
+        bodyOne,
+        params
+      );
+      const responseTwo = await resolutionService.createResolution(
+        bodyTwo,
+        params
+      );
+      const responseThree = await resolutionService.createResolution(
+        bodyThree,
+        params
+      );
 
       expect(responseOne.resolution).toEqual('He is a vampire!');
       expect(responseOne.patientId).toEqual(1);
@@ -66,7 +77,9 @@ databaseTypes.forEach((type) => {
     test('- get all resolutions for the patient', async () => {
       expect.assertions(6);
 
-      const response = await resolutionService.getAllResolutionsForThePatient(1);
+      const response = await resolutionService.getAllResolutionsForThePatient(
+        1
+      );
 
       expect(response[0].patientId).toEqual(1);
       expect(response[1].patientId).toEqual(1);
@@ -78,7 +91,8 @@ databaseTypes.forEach((type) => {
     test('- delete all resolutions for the patient', async () => {
       expect.assertions(6);
 
-      const response = await resolutionService.deleteAllResolutionsForThePatient(1);
+      const response =
+        await resolutionService.deleteAllResolutionsForThePatient(1);
 
       expect(response[0].patientId).toEqual(1);
       expect(response[1].patientId).toEqual(1);
@@ -90,7 +104,9 @@ databaseTypes.forEach((type) => {
     test('- try finding resolutions for the deleted patient', async () => {
       expect.assertions(1);
 
-      const response = await resolutionService.getAllResolutionsForThePatient(1);
+      const response = await resolutionService.getAllResolutionsForThePatient(
+        1
+      );
 
       expect(response).toEqual([]);
     });

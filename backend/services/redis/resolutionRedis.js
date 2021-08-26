@@ -33,7 +33,11 @@ export default class ResolutionRedisService {
 
     await this.redis.set(resolutionKey, JSON.stringify(resolutionValue));
 
-    return { id: this.increment, patientId: +params.patientId, ...resolutionValue };
+    return {
+      id: this.increment,
+      patientId: +params.patientId,
+      ...resolutionValue,
+    };
   }
 
   // not used in our project
@@ -63,7 +67,9 @@ export default class ResolutionRedisService {
 
     for (const key of resolutionKeys) {
       const data = JSON.parse(await this.redis.get(key));
-      const patientAndResolutionId = JSON.parse(key.replace('resolutions:', ''));
+      const patientAndResolutionId = JSON.parse(
+        key.replace('resolutions:', '')
+      );
       const resolutionObject = { ...patientAndResolutionId, ...data };
       outputData.push(resolutionObject);
     }
@@ -81,7 +87,9 @@ export default class ResolutionRedisService {
 
     for (const key of resolutionKeys) {
       const data = JSON.parse(await this.redis.get(key));
-      const patientAndResolutionId = JSON.parse(key.replace('resolutions:', ''));
+      const patientAndResolutionId = JSON.parse(
+        key.replace('resolutions:', '')
+      );
       const resolutionObject = { ...patientAndResolutionId, ...data };
       outputData.push(resolutionObject);
       await this.redis.del(key);

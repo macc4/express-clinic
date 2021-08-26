@@ -22,7 +22,9 @@ const getPatient = catchAsync(async (req, res, next) => {
   const patient = await patientService.getPatient(req.params.patientId);
 
   if (!patient) {
-    return next(new AppError('No patient found with that ID', StatusCodes.NOT_FOUND));
+    return next(
+      new AppError('No patient found with that ID', StatusCodes.NOT_FOUND)
+    );
   }
 
   res.status(StatusCodes.OK).json({
@@ -50,7 +52,9 @@ const getAllPatients = catchAsync(async (req, res, next) => {
 
 // not used in our project
 const deletePatient = catchAsync(async (req, res, next) => {
-  const deletedPatient = await patientService.deletePatient(req.params.patientId);
+  const deletedPatient = await patientService.deletePatient(
+    req.params.patientId
+  );
 
   if (deletedPatient === 0 || deletedPatient === undefined) {
     return next(new AppError('No patient found with that ID', 404));

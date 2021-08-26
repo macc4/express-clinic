@@ -12,7 +12,9 @@ export default class QueueRedisService {
     // checking if the patientId is already in the queue
     const queue = await this.redis.lrange('queue', 0, -1);
 
-    const duplicatePatient = queue.some((patient) => patient === `${newPatientId}`);
+    const duplicatePatient = queue.some(
+      (patient) => patient === `${newPatientId}`
+    );
 
     if (duplicatePatient) {
       throw new ModelConflictError('You are already in the queue');

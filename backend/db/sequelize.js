@@ -8,12 +8,12 @@ import Queue from './models/queueModel.js';
 const db = {};
 
 const sequelize = new Sequelize(
-  config.get('sequelize.db'),
-  config.get('sequelize.user'),
-  config.get('sequelize.password'),
+  config.get('db.sequelize.db'),
+  config.get('db.sequelize.user'),
+  config.get('db.sequelize.password'),
   {
-    host: process.env.MYSQL_HOSTNAME || 'localhost',
-    dialect: config.get('sequelize.dialect'),
+    host: process.env.MYSQL_HOST || config.get('db.sequelize.host'),
+    dialect: config.get('db.sequelize.dialect'),
   }
 );
 
@@ -24,16 +24,16 @@ db.patients = Patient(sequelize, Sequelize);
 db.queue = Queue(sequelize, Sequelize);
 db.resolutions = Resolution(sequelize, Sequelize);
 
-// HOW TO SETUP ASSOCIATIONS FOR QUEUE = PATIENTS????
-// right now any patientId can be inserted in the queue
-
 db.patients.hasMany(db.resolutions, {
   as: 'resolutions',
   onDelete: 'cascade',
   truncate: true,
   hooks: true,
 });
-db.resolutions.belongsTo(db.patients, { as: 'patient', foreignKey: 'patientId' });
+db.resolutions.belongsTo(db.patients, {
+  as: 'patient',
+  foreignKey: 'patientId',
+});
 
 db.connect = async () => {
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
@@ -44,7 +44,7 @@ db.connect = async () => {
     { name: 'Edward Cullen' },
     { name: 'Jacob Black' },
   ]);
-  console.log(`-----------------------------`);
+  console.log('-----------------------------');
   console.log('SQL database has been connected.');
 };
 
