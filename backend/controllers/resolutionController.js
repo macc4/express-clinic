@@ -1,10 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
-import resolutionModel from '../models/resolutionModel.js';
+import resolutionModel from '../models/resolutionFactory.js';
 import catchAsync from '../utils/catchAsync.js';
-import AppError from '../utils/appError.js';
+import { AppError } from '../utils/errorClasses.js';
 import errorMessages from '../lib/errorMessages.js';
 
-const createPatient = catchAsync(async (req, res, next) => {
+const createResolution = catchAsync(async (req, res, next) => {
   const newPatient = await resolutionModel.create(req.body);
 
   res.status(StatusCodes.CREATED).json({
@@ -15,8 +15,8 @@ const createPatient = catchAsync(async (req, res, next) => {
   });
 });
 
-const getPatient = catchAsync(async (req, res, next) => {
-  const patient = await resolutionModel.get(req.params.name);
+const getResolutions = catchAsync(async (req, res, next) => {
+  const patient = await resolutionModel.get(req.query.patient); // double-check this part
 
   if (!patient) {
     return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
@@ -30,7 +30,7 @@ const getPatient = catchAsync(async (req, res, next) => {
   });
 });
 
-const deletePatient = catchAsync(async (req, res, next) => {
+const deleteResolution = catchAsync(async (req, res, next) => {
   const patient = await resolutionModel.delete(req.params.name);
 
   if (!patient) {
@@ -43,4 +43,4 @@ const deletePatient = catchAsync(async (req, res, next) => {
   });
 });
 
-export default { createPatient, getPatient, deletePatient };
+export default { createResolution, getResolutions, deleteResolution };

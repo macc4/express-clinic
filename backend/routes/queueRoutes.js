@@ -1,48 +1,29 @@
 import express from 'express';
+import ajvValidator from '../middlewares/ajvValidator.js';
 import queueController from '../controllers/queueController.js';
+import queueSchema from '../schemas/queueSchema.js';
 
 const router = express.Router();
 
-router.route('/').post(queueController.enqueuePatient);
-
 router
-  .route('/:id')
+  .route('/')
+  .post(ajvValidator('body', queueSchema), queueController.enqueuePatient)
   .get(queueController.getPatient)
   .delete(queueController.dequeuePatient);
 
 /** @swagger
  * components:
  *   schemas:
- *     patient-post:
- *       type: object
- *       required:
- *         - name
- *         - timeToLive
- *       properties:
- *         name:
- *           type: string
- *           description: The name of the patient, capitalized
- *         timeToLive:
- *           type: integer
- *           description: TTL value in minutes or -1 if none required
- *       example:
- *         name: Edward Cullen
- *         timeToLive: -1
  *     patient:
  *       type: object
  *       required:
  *         - name
- *         - expiry
  *       properties:
  *         name:
  *           type: string
- *           description: The name of the patient, capitalized
- *         expiry:
- *           type: integer
- *           description: Expiry time in ms or -1 if none required
+ *           description: The name of the patient
  *       example:
  *         name: Edward Cullen
- *         expiry: -1
  */
 
 /**
@@ -63,7 +44,7 @@ router
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/patient-post'
+ *             $ref: '#/components/schemas/patient'
  *     responses:
  *       200:
  *         description: Patient was successfully added
@@ -79,20 +60,13 @@ router
 
 /**
  * @swagger
- * /api/v1/queue/{id}:
+ * /api/v1/queue:
  *   get:
- *     summary: Get the patient by queue number starting from 1
+ *     summary: Get the first patient from the queue
  *     tags: [Queue]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: Patient's queue number
  *     responses:
  *       200:
- *         description: Patient data by ID
+ *         description: Get data of the first patient
  *         content:
  *           application/json:
  *             schema:
@@ -103,18 +77,10 @@ router
 
 /**
  * @swagger
- * /api/v1/queue/{id}:
+ * /api/v1/queue:
  *   delete:
- *     summary: Remove the patient by queue number starting from 1
+ *     summary: Remove the first patient from the queue
  *     tags: [Queue]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The queue number
- *
  *     responses:
  *       204:
  *         description: The patient was deleted
