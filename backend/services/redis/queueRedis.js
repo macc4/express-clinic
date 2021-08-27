@@ -13,7 +13,7 @@ export default class QueueRedisService {
     const queue = await this.redis.lrange('queue', 0, -1);
 
     const duplicatePatient = queue.some(
-      (patient) => patient === `${newPatientId}`
+      patient => patient === `${newPatientId}`
     );
 
     if (duplicatePatient) {

@@ -6,6 +6,7 @@ export default class PatientRedisService {
   constructor() {
     this.redis = redisClient.connect();
     this.increment = 0;
+    this.patientKey = 'patients:';
   }
   async createPatient(body) {
     this.increment++;
@@ -27,7 +28,7 @@ export default class PatientRedisService {
       throw new ModelConflictError('This patient already exists');
     }
 
-    this.redis.set('patients:' + JSON.stringify(newPatientEntry), 'data'); // right now the values are empty, because we perform searches by ID and by Name
+    this.redis.set(this.patientKey + JSON.stringify(newPatientEntry), 'data'); // right now the values are empty, because we perform searches by ID and by Name
 
     return newPatientEntry;
   }
@@ -35,14 +36,14 @@ export default class PatientRedisService {
   async getPatient(patientId) {
     const patient = await redisScan(
       this.redis,
-      `patients:{\"id\":${patientId}*`
+      `${this.patientKey}{\"id\":${patientId}*`
     );
 
     if (patient.length === 0) {
       return undefined;
     }
 
-    const patientData = JSON.parse(patient[0].replace('patients:', ''));
+    const patientData = JSON.parse(patient[0].replace(this.patientKey, ''));
     return patientData;
   }
 
@@ -52,15 +53,15 @@ export default class PatientRedisService {
     if (query.name) {
       const data = await redisScan(
         this.redis,
-        `patients:*${capitalizeNameFromRegularCase(query.name)}*`
+        `${this.patientKey}*${capitalizeNameFromRegularCase(query.name)}*`
       );
-      searchedPatients = data.map((patient) =>
-        JSON.parse(patient.replace('patients:', ''))
+      searchedPatients = data.map(patient =>
+        JSON.parse(patient.replace(this.patientKey, ''))
       );
     } else {
-      const data = await redisScan(this.redis, `patients:*`);
-      searchedPatients = data.map((patient) =>
-        JSON.parse(patient.replace('patients:', ''))
+      const data = await redisScan(this.redis, `${this.patientKey}*`);
+      searchedPatients = data.map(patient =>
+        JSON.parse(patient.replace(this.patientKey, ''))
       );
     }
 
@@ -70,7 +71,7 @@ export default class PatientRedisService {
   async deletePatient(patientId) {
     const deletedPatient = await this.getPatient(patientId);
 
-    await this.redis.del('patients:' + JSON.stringify(deletedPatient));
+    await this.redis.del(this.patientKey + JSON.stringify(deletedPatient));
 
     if (!deletedPatient) {
       return undefined;

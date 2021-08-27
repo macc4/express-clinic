@@ -2,7 +2,7 @@ import { ClinicFactory } from './../../../services/factory.js';
 
 const databaseTypes = ['in-memory', 'redis'];
 
-databaseTypes.forEach((type) => {
+databaseTypes.forEach(type => {
   const clinicFactory = new ClinicFactory(type, type);
   const queueService = clinicFactory.getQueueService;
 

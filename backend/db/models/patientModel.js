@@ -1,9 +1,6 @@
 export default (sequelize, Sequelize) => {
-  const Model = Sequelize.Model;
-
-  class Patient extends Model {}
-
-  Patient.init(
+  return sequelize.define(
+    'patient',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -18,5 +15,4 @@ export default (sequelize, Sequelize) => {
     },
     { sequelize, modelName: 'patient', timestamps: false }
   );
-  return Patient;
 };

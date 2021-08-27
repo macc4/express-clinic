@@ -6,9 +6,7 @@ let { queue } = db;
 export default class QueueInMemoryService {
   enqueue(body) {
     // checking if the patient is already in the queue
-    const duplicatePatient = queue.some(
-      (patient) => patient === body.patientId
-    );
+    const duplicatePatient = queue.some(patient => patient === body.patientId);
 
     if (duplicatePatient) {
       throw new ModelConflictError('You are already in the queue');

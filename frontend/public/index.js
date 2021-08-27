@@ -1,16 +1,20 @@
 const queueURL = 'http://localhost:8080/api/v1/queue';
-const resolutionsURL = 'http://localhost:8080/api/v1/resolutions';
+const mainURL = 'http://localhost:8080/api/v1/patients';
 let searchedResolutionKey;
 
 // #region
 // current patient
-const currentPatientPatient = document.getElementById('current-patient-patient');
+const currentPatientPatient = document.getElementById(
+  'current-patient-patient'
+);
 const currentPatientDoctor = document.getElementById('current-patient-doctor');
 
 // patient forms/buttons
 const patientAddForm = document.getElementById('form-add-patient');
 const patientSearchForm = document.getElementById('patient-search-resolutions');
-const patientResolutionsList = document.getElementById('patient-resolutions-list');
+const patientResolutionsList = document.getElementById(
+  'patient-resolutions-list'
+);
 
 // patient inputs
 const newPatient = document.getElementById('input-text');
@@ -20,10 +24,14 @@ const patientSearchInput = document.getElementById('patient-search');
 const doctorAddForm = document.getElementById('form-submit-resolution');
 const doctorSearchForm = document.getElementById('doctor-search-resolutions');
 const buttonDelete = document.getElementById('btn-delete');
-const doctorResolutionsList = document.getElementById('doctor-resolutions-list');
+const doctorResolutionsList = document.getElementById(
+  'doctor-resolutions-list'
+);
 
 // doctor inputs
-const doctorNewResolutionInput = document.getElementById('doctor-new-resolution');
+const doctorNewResolutionInput = document.getElementById(
+  'doctor-new-resolution'
+);
 const timeToLiveInput = document.getElementById('timeToLive');
 const doctorSearchInput = document.getElementById('doctor-search');
 //#endregion
@@ -39,14 +47,20 @@ class Resolution {
   }
 
   convertDate() {
-    const dateObj = new Date(this.date);
-    const dateStr = dateObj.toLocaleDateString('en-GB');
-    const timeStr = dateObj.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    const outputDate = timeStr + ' ' + dateStr;
-    return outputDate;
+    console.log(this.date);
+    if (typeof this.date === 'string') {
+      const date = this.date.replace('T', ' ').replace('.000Z', '');
+      return date;
+    } else {
+      const dateObj = new Date(this.date);
+      const dateStr = dateObj.toLocaleDateString('en-GB');
+      const timeStr = dateObj.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const outputDate = timeStr + ' ' + dateStr;
+      return outputDate;
+    }
   }
 
   render() {
@@ -65,11 +79,32 @@ class Resolution {
 
 // #region logic
 
+const searchPatientId = async patientName => {
+  const response = await axios
+    .get(`${mainURL}/?name=${patientName}`)
+    .catch(function (error) {
+      alert(error.response.data.message);
+    });
+
+  const patientId = response.data.data.patients[0].id;
+
+  return patientId;
+};
+
 // #region patient/doctor update current patient
-const showCurrentPatient = async (parent) => {
-  const response = await axios.get(`${queueURL}`).catch(function (error) {
+const showCurrentPatient = async parent => {
+  const queueResponse = await axios.get(`${queueURL}`).catch(function (error) {
     parent.innerHTML = 'empty';
   });
+
+  const patientId = queueResponse.data.data.patient.patientId;
+
+  const response = await axios
+    .get(`${mainURL}/${patientId}`)
+    .catch(function (error) {
+      parent.innerHTML = 'empty';
+    });
+
   const patientName = response.data.data.patient.name;
 
   parent.innerHTML = patientName;
@@ -88,10 +123,23 @@ window.addEventListener('DOMContentLoaded', () => {
 // #endregion
 
 // #region enqueue
-const patientQueuePost = async (patientName) => {
+const patientPost = async patientName => {
+  const response = await axios
+    .post(`${mainURL}`, {
+      name: patientName,
+    })
+    .catch(function (error) {
+      console.log(error.response.data);
+      alert(error.response.data.message);
+    });
+
+  return response.data.data.patient.id;
+};
+
+const patientEnqueue = async patientId => {
   await axios
     .post(`${queueURL}`, {
-      name: patientName,
+      patientId: patientId,
     })
     .catch(function (error) {
       alert(error.response.data.message);
@@ -99,52 +147,63 @@ const patientQueuePost = async (patientName) => {
 };
 
 if (patientAddForm) {
-  patientAddForm.addEventListener('submit', (event) => {
+  patientAddForm.addEventListener('submit', async event => {
     event.preventDefault();
 
     if (newPatient.value !== '') {
-      patientQueuePost(newPatient.value);
+      const patient = await patientPost(newPatient.value);
+      console.log(patient);
+      await patientEnqueue(patient);
       newPatient.value = '';
     }
   });
 }
 //#endregion
 
-// #region patient/doctor search resolution
-const resolutionSearchAndPrint = async (patientName, parent) => {
+// #region patient/doctor search resolutions
+
+const searchResolutionsByPatientId = async patientId => {
   const response = await axios
-    .get(`${resolutionsURL}/?patient=${patientName}`)
+    .get(`${mainURL}/${patientId}/resolutions`)
     .catch(function (error) {
       alert(error.response.data.message);
     });
 
-  const resolutions = response.data.data.patient.resolutions;
+  const resolutions = response.data.data.resolutions;
 
-  searchedResolutionKey = response.data.data.patient.key;
+  return resolutions;
+};
 
+const showResolutions = async (resolutions, parent) => {
   parent.innerHTML = '';
   resolutions.forEach(
-    (resolution) => new Resolution(resolution.resolution, resolution.date, parent)
+    resolution =>
+      new Resolution(resolution.resolution, resolution.createdAt, parent)
   );
 };
 
 if (patientSearchForm) {
-  patientSearchForm.addEventListener('submit', (event) => {
+  patientSearchForm.addEventListener('submit', async event => {
     event.preventDefault();
 
     if (patientSearchInput.value !== '') {
-      resolutionSearchAndPrint(patientSearchInput.value, patientResolutionsList);
+      const patientId = await searchPatientId(patientSearchInput.value);
+      const resolutions = await searchResolutionsByPatientId(patientId);
+      showResolutions(resolutions, patientResolutionsList);
+
       patientSearchInput.value = '';
     }
   });
 }
 
 if (doctorSearchForm) {
-  doctorSearchForm.addEventListener('submit', (event) => {
+  doctorSearchForm.addEventListener('submit', async event => {
     event.preventDefault();
 
     if (doctorSearchInput.value !== '') {
-      resolutionSearchAndPrint(doctorSearchInput.value, doctorResolutionsList);
+      const patientId = await searchPatientId(doctorSearchInput.value);
+      const resolutions = await searchResolutionsByPatientId(patientId);
+      showResolutions(resolutions, doctorResolutionsList);
       doctorSearchInput.value = '';
     }
   });
@@ -156,25 +215,27 @@ const doctorProcessPatient = async (resolution, timeToLive) => {
   const response = await axios.get(`${queueURL}`).catch(function (error) {
     alert(error.response.data.message);
   });
-  const patientName = response.data.data.patient.name;
+
+  const patientId = response.data.data.patient.patientId;
 
   let request;
+
   if (timeToLive !== '') {
     request = {
-      name: patientName,
       resolution: resolution,
       timeToLive: +timeToLive,
     };
   } else {
     request = {
-      name: patientName,
       resolution: resolution,
     };
   }
 
-  await axios.post(`${resolutionsURL}`, request).catch(function (error) {
-    alert(error.response.data.message);
-  });
+  await axios
+    .post(`${mainURL}/${patientId}/resolutions`, request)
+    .catch(function (error) {
+      alert(error.response.data.message);
+    });
 
   await axios.delete(`${queueURL}`).catch(function (error) {
     alert(error.response.data.message);
@@ -183,11 +244,14 @@ const doctorProcessPatient = async (resolution, timeToLive) => {
 };
 
 if (doctorAddForm) {
-  doctorAddForm.addEventListener('submit', (event) => {
+  doctorAddForm.addEventListener('submit', event => {
     event.preventDefault();
 
     if (doctorNewResolutionInput.value !== '') {
-      doctorProcessPatient(doctorNewResolutionInput.value, timeToLiveInput.value);
+      doctorProcessPatient(
+        doctorNewResolutionInput.value,
+        timeToLiveInput.value
+      );
       doctorNewResolutionInput.value = '';
       timeToLiveInput.value = '';
     }
@@ -196,17 +260,23 @@ if (doctorAddForm) {
 // #endregion
 
 // #region doctor delete resolution
-const deleteResolution = async (key) => {
-  const response = await axios.delete(`${resolutionsURL}/${key}`).catch(function (error) {
-    alert(error.response.data.message);
-  });
+const deleteResolutions = async patientId => {
+  const response = await axios
+    .delete(`${mainURL}/${patientId}/resolutions`)
+    .catch(function (error) {
+      alert(error.response.data.message);
+    });
   console.log(response);
 };
 
 if (buttonDelete) {
-  buttonDelete.addEventListener('click', () => {
-    deleteResolution(searchedResolutionKey);
-    doctorResolutionsList.innerHTML = '';
+  buttonDelete.addEventListener('click', async () => {
+    if (doctorSearchInput.value !== '') {
+      const patientId = await searchPatientId(doctorSearchInput.value);
+      await deleteResolutions(patientId);
+      doctorResolutionsList.innerHTML = '';
+      doctorSearchInput.value = '';
+    }
   });
 }
 // #endregion

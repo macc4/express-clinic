@@ -1,9 +1,6 @@
 export default (sequelize, Sequelize) => {
-  const Model = Sequelize.Model;
-
-  class Resolution extends Model {}
-
-  Resolution.init(
+  return sequelize.define(
+    'resolution',
     {
       id: {
         type: Sequelize.INTEGER,
@@ -20,11 +17,9 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
       },
       expiry: {
-        type: Sequelize.DATE,
+        type: Sequelize.BIGINT,
       },
     },
     { sequelize, modelName: 'resolution', timestamps: true }
   );
-
-  return Resolution;
 };

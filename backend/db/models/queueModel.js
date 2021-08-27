@@ -1,9 +1,6 @@
 export default (sequelize, Sequelize) => {
-  const Model = Sequelize.Model;
-
-  class Queue extends Model {}
-
-  Queue.init(
+  return sequelize.define(
+    'queue',
     {
       patientId: {
         type: Sequelize.INTEGER,
@@ -13,5 +10,4 @@ export default (sequelize, Sequelize) => {
     },
     { sequelize, modelName: 'queue', timestamps: true, freezeTableName: true }
   );
-  return Queue;
 };

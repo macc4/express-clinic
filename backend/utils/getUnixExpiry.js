@@ -1,6 +1,6 @@
 import config from 'config';
 
-export default getUnixExpiryFromBody = (body) => {
+const getUnixExpiryFromBody = body => {
   const currentTime = new Date();
 
   if (body.hasOwnProperty('timeToLive')) {
@@ -11,3 +11,5 @@ export default getUnixExpiryFromBody = (body) => {
     return currentTime.getTime() + config.get('app.timeToLive') * 60 * 1000;
   }
 };
+
+export default getUnixExpiryFromBody;

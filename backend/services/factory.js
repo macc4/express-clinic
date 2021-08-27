@@ -12,6 +12,8 @@ import PatientSQLService from './sql/patientSQL.js';
 import QueueSQLService from './sql/queueSQL.js';
 import ResolutionSQLService from './sql/resolutionSQL.js';
 
+import sequelizeDB from '../db/sequelize.js';
+
 class ClinicFactory {
   constructor(queueType, otherTypes) {
     this.queueType = queueType;
@@ -26,7 +28,7 @@ class ClinicFactory {
   selectQueueType() {
     switch (this.queueType) {
       case 'sql':
-        this.queueService = new QueueSQLService();
+        this.queueService = new QueueSQLService(sequelizeDB);
         break;
       case 'redis':
         this.queueService = new QueueRedisService();
@@ -40,8 +42,8 @@ class ClinicFactory {
   selectOtherTypes() {
     switch (this.otherTypes) {
       case 'sql':
-        this.patientService = new PatientSQLService();
-        this.resolutionService = new ResolutionSQLService();
+        this.patientService = new PatientSQLService(sequelizeDB);
+        this.resolutionService = new ResolutionSQLService(sequelizeDB);
         break;
       case 'redis':
         this.patientService = new PatientRedisService();

@@ -1,4 +1,4 @@
-const capitalizeNameFromBabelCase = (str) => {
+const capitalizeNameFromBabelCase = str => {
   return str
     .split('-')
     .map(function capitalize(part) {
@@ -7,7 +7,7 @@ const capitalizeNameFromBabelCase = (str) => {
     .join(' ');
 };
 
-const capitalizeNameFromRegularCase = (str) => {
+const capitalizeNameFromRegularCase = str => {
   return str
     .split(' ')
     .map(function capitalize(part) {
@@ -16,7 +16,7 @@ const capitalizeNameFromRegularCase = (str) => {
     .join(' ');
 };
 
-const convertNameToBabelCase = (str) => {
+const convertNameToBabelCase = str => {
   str = str.toLowerCase();
   return str.split(' ').join('-');
 };

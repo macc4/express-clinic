@@ -1,10 +1,8 @@
-import db from '../../db/sequelize.js';
-
 export default class PatientSQLService {
-  constructor() {
-    this.db = db;
-    this.Patient = db.patients;
-    this.Sequelize = db.Sequelize;
+  constructor(database) {
+    this.db = database;
+    this.Patient = this.db.patients;
+    this.Sequelize = this.db.Sequelize;
   }
 
   async createPatient(body) {

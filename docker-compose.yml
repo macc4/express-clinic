@@ -12,7 +12,7 @@ services:
     container_name: backend
     environment:
       - REDIS_HOST=redis
-      - MYSQL_HOST=mysql
+      - MYSQL_HOST=host.docker.internal
     build: ./backend
     ports:
       - '8080:8080'
@@ -26,9 +26,12 @@ services:
   mysql:
     container_name: mysql
     environment:
+      - MYSQL_DATABASE=clinic
       - MYSQL_ROOT_PASSWORD=password
     image: mysql
     hostname: mysql
     restart: always
     ports:
       - '3307:3306'
+    expose:
+      - '3306'

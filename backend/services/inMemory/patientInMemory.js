@@ -10,7 +10,7 @@ export default class PatientInMemoryService {
     const name = capitalizeNameFromRegularCase(body.name);
 
     // check for duplicate data
-    const patientIndex = patients.findIndex((patient) => patient.name === name);
+    const patientIndex = patients.findIndex(patient => patient.name === name);
 
     if (patientIndex !== -1) {
       throw new ModelConflictError('This patient already exists');
@@ -29,7 +29,7 @@ export default class PatientInMemoryService {
   }
 
   async getPatient(patientId) {
-    const patient = patients.find((patient) => patient.id === +patientId);
+    const patient = patients.find(patient => patient.id === +patientId);
 
     return patient;
   }
@@ -38,7 +38,7 @@ export default class PatientInMemoryService {
     let searchedPatients;
 
     if (query.name) {
-      searchedPatients = patients.filter((patient) =>
+      searchedPatients = patients.filter(patient =>
         patient.name.includes(capitalizeNameFromRegularCase(query.name))
       );
     } else {
@@ -49,11 +49,9 @@ export default class PatientInMemoryService {
   }
 
   async deletePatient(patientId) {
-    const deletedPatient = patients.find(
-      (patient) => patient.id === +patientId
-    );
+    const deletedPatient = patients.find(patient => patient.id === +patientId);
 
-    patients = patients.filter((patient) => patient.id !== +patientId);
+    patients = patients.filter(patient => patient.id !== +patientId);
 
     return deletedPatient;
   }

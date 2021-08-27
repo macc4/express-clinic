@@ -3,7 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 
 import swaggerUI from 'swagger-ui-express';
-import swaggerJsDoc from 'swagger-jsdoc';
+import YAML from 'yamljs';
 
 import { StatusCodes } from 'http-status-codes';
 import errorController from './controllers/errorController.js';
@@ -11,25 +11,6 @@ import { AppError } from './utils/errorClasses.js';
 
 import patientRoutes from './routes/patientRoutes.js';
 import queueRoutes from './routes/queueRoutes.js';
-
-// Swagger options
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: "Queue/Resoulution API's",
-      version: '0.1.0',
-    },
-    servers: [
-      {
-        url: 'http://localhost:8080',
-      },
-    ],
-  },
-  apis: ['./routes/*.js'],
-};
-
-const specs = swaggerJsDoc(options);
 
 const app = express();
 
@@ -41,7 +22,8 @@ app.use(express.json());
 
 // 2) ROUTES
 
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(specs));
+const swaggerJsDocs = YAML.load('./api-docs.yaml');
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJsDocs));
 
 app.use('/api/v1/queue', queueRoutes);
 app.use('/api/v1/patients', patientRoutes);

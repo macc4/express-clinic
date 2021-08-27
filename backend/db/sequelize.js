@@ -39,11 +39,11 @@ db.connect = async () => {
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
   await db.sequelize.sync({ force: true });
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
-  await db.patients.bulkCreate([
-    { name: 'Bella Cullen' },
-    { name: 'Edward Cullen' },
-    { name: 'Jacob Black' },
-  ]);
+  // await db.patients.bulkCreate([
+  //   { name: 'Bella Cullen' },
+  //   { name: 'Edward Cullen' },
+  //   { name: 'Jacob Black' },
+  // ]);
   console.log('-----------------------------');
   console.log('SQL database has been connected.');
 };

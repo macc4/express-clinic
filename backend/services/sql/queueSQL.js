@@ -1,10 +1,8 @@
-import db from '../../db/sequelize.js';
-
 export default class QueueSQLService {
-  constructor() {
-    this.db = db;
-    this.Queue = db.queue;
-    this.Sequelize = db.Sequelize;
+  constructor(database) {
+    this.db = database;
+    this.Queue = this.db.queue;
+    this.Sequelize = this.db.Sequelize;
   }
 
   async enqueue(body) {
@@ -19,7 +17,7 @@ export default class QueueSQLService {
       order: [['updatedAt', 'ASC']],
     });
 
-    return patient;
+    return patient[0];
   }
 
   async dequeue() {
@@ -27,7 +25,7 @@ export default class QueueSQLService {
 
     // somehow patient[0].dataValues.patientId cannot be accessed otherwise
     const data = {
-      patient: patient[0],
+      patient: patient,
     };
 
     if (patient.length !== 0) {
@@ -37,6 +35,6 @@ export default class QueueSQLService {
       });
     }
 
-    return patient[0];
+    return patient;
   }
 }
