@@ -6,11 +6,12 @@ import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 
 import { StatusCodes } from 'http-status-codes';
-import errorController from './controllers/errorController.js';
+import errorController from './controllers/error.controller.js';
 import { AppError } from './utils/errorClasses.js';
 
-import patientRoutes from './routes/patientRoutes.js';
-import queueRoutes from './routes/queueRoutes.js';
+import userRoutes from './routes/user.routes.js';
+import patientRoutes from './routes/patient.routes.js';
+import resolutionRoutes from './routes/resolution.routes.js';
 
 const app = express();
 
@@ -22,18 +23,19 @@ app.use(express.json());
 
 // 2) ROUTES
 
-const swaggerJsDocs = YAML.load('./api-docs.yaml');
+const swaggerJsDocs = YAML.load('./api-docs.yml');
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerJsDocs));
 
-app.use('/api/v1/queue', queueRoutes);
+app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/patients', patientRoutes);
+app.use('/api/v1/resolutions', resolutionRoutes);
 
 app.all('*', (req, res, next) => {
   next(
     new AppError(
       `Can't find the ${req.originalUrl} route on this server!`,
-      StatusCodes.NOT_FOUND
-    )
+      StatusCodes.NOT_FOUND,
+    ),
   );
 });
 

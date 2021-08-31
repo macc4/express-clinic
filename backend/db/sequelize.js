@@ -1,9 +1,9 @@
 import { Sequelize } from 'sequelize';
 import config from 'config';
 
-import Patient from './models/patientModel.js';
-import Resolution from './models/resolutionModel.js';
-import Queue from './models/queueModel.js';
+import User from '../models/user.model.js';
+import Patient from '../models/patient.model.js';
+import Resolution from '../models/resolution.model.js';
 
 const db = {};
 
@@ -14,38 +14,53 @@ const sequelize = new Sequelize(
   {
     host: process.env.MYSQL_HOST || config.get('db.sequelize.host'),
     dialect: config.get('db.sequelize.dialect'),
-  }
+  },
 );
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+db.users = User(sequelize, Sequelize);
 db.patients = Patient(sequelize, Sequelize);
-db.queue = Queue(sequelize, Sequelize);
 db.resolutions = Resolution(sequelize, Sequelize);
 
+// ASSOCIATIONS
+db.users.hasOne(db.patients, {
+  onDelete: 'cascade',
+});
+db.patients.belongsTo(db.users, {
+  foreignKey: 'userId',
+});
+
 db.patients.hasMany(db.resolutions, {
-  as: 'resolutions',
   onDelete: 'cascade',
   truncate: true,
   hooks: true,
 });
 db.resolutions.belongsTo(db.patients, {
-  as: 'patient',
   foreignKey: 'patientId',
 });
 
 db.connect = async () => {
+  await db.sequelize.query(
+    `CREATE DATABASE IF NOT EXISTS \`${config.get('db.sequelize.db')}\`;`,
+  );
+
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null, { raw: true });
   await db.sequelize.sync({ force: true });
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
-  // await db.patients.bulkCreate([
-  //   { name: 'Bella Cullen' },
-  //   { name: 'Edward Cullen' },
-  //   { name: 'Jacob Black' },
-  // ]);
-  console.log('-----------------------------');
-  console.log('SQL database has been connected.');
+
+  // create a default admin role
+  await db.users.create({
+    name: 'admin',
+    email: 'admin@gmail.com',
+    password: 'admin123',
+    passwordConfirm: 'admin123',
+    role: 'admin',
+  });
+
+  console.log('-----------------------------'); // eslint-disable-line no-console
+  console.log('SQL database has been connected.'); // eslint-disable-line no-console
 };
 
 export default db;

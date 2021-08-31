@@ -21,7 +21,7 @@ const sendErrorProd = (err, res) => {
     // Programming or other error, not sending anything to the client
   } else {
     // 1) Log error
-    console.error('ERROR', err);
+    console.error('ERROR', err); // eslint-disable-line no-console
 
     // 2) Send a generic message
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

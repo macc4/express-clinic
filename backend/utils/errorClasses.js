@@ -1,3 +1,4 @@
+/*eslint max-classes-per-file: "off"*/
 import { StatusCodes } from 'http-status-codes';
 
 // TODO create a separate handler for sequelize validation errors
