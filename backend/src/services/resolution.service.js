@@ -6,18 +6,11 @@ const createOne = async body => {
   return newResolution;
 };
 
-const getOne = async id => {
-  const resolution = await db.resolutions.findByPk(id);
-
-  return resolution;
-};
-
 const getAll = async query => {
   const queryConditions = {};
-
   if (query.patientId) {
     queryConditions.patientId = {
-      [db.Sequelize.Op.like]: `'%${query.patientId}%`,
+      [db.Sequelize.Op.eq]: `${query.patientId}`,
     };
   }
 
@@ -28,9 +21,15 @@ const getAll = async query => {
   return resolutions;
 };
 
-const deleteOne = async id => {
+const getOne = async params => {
+  const resolution = await db.resolutions.findByPk(params.resolutionId);
+
+  return resolution;
+};
+
+const deleteOne = async params => {
   const deletedResolution = await db.resolutions.destroy({
-    where: { id: id },
+    where: { id: params.resolutionId },
   });
 
   return deletedResolution;

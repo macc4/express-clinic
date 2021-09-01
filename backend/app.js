@@ -6,12 +6,12 @@ import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 
 import { StatusCodes } from 'http-status-codes';
-import errorController from './controllers/error.controller.js';
-import { AppError } from './utils/errorClasses.js';
+import errorController from './src/controllers/error.controller.js';
+import { AppError } from './src/utils/errorClasses.js';
 
-import userRoutes from './routes/user.routes.js';
-import patientRoutes from './routes/patient.routes.js';
-import resolutionRoutes from './routes/resolution.routes.js';
+import userRoutes from './src/routes/user.routes.js';
+import patientRoutes from './src/routes/patient.routes.js';
+import resolutionRoutes from './src/routes/resolution.routes.js';
 
 const app = express();
 

@@ -18,6 +18,12 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.ENUM('patient', 'doctor', 'admin'),
         defaultValue: 'patient',
       },
+      patientId: {
+        type: Sequelize.INTEGER,
+        foreignKey: true,
+        allowNull: true,
+        unique: true,
+      },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -60,10 +66,16 @@ export default (sequelize, Sequelize) => {
     user.passwordConfirm = undefined;
   });
 
-  // automatically create the Patient instance of the User if the role was selected
+  // automatically create the Patient instance of the User if the specific role was selected
   User.afterCreate(async user => {
     if (user.role === 'patient') {
-      await sequelize.models.patient.create({ userId: user.id });
+      const patient = await sequelize.models.patient.create({
+        userId: user.id,
+      });
+
+      // if the role is patient, add patientId to the user instance for one-to-one referencing
+      user.patientId = patient.id;
+      await user.save({ fields: ['patientId'] });
     }
   });
 

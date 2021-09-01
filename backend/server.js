@@ -1,7 +1,7 @@
 import config from 'config';
 
 import app from './app.js';
-import db from './db/sequelize.js';
+import db from './src/db/sequelize.js';
 
 const port = config.get('server.port');
 

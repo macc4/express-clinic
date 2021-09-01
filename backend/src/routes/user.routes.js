@@ -11,26 +11,26 @@ router.post('/login', authController.login);
 router
   .route('/')
   .get(
-    authController.protect,
-    authController.restrictTo('admin'),
+    // authController.protect,
+    // authController.restrictTo('admin'),
     userController.getAllUsers,
   )
   .post(
-    authController.protect,
-    authController.restrictTo('admin'),
+    // authController.protect,
+    // authController.restrictTo('admin'),
     userController.createUser,
   );
 
 router
-  .route('/:id')
+  .route('/:userId')
   .get(
-    authController.protect,
-    authController.restrictTo('admin'),
+    // authController.protect,
+    // authController.restrictTo('admin'),
     userController.getUser,
   )
   .delete(
-    authController.protect,
-    authController.restrictTo('admin'),
+    // authController.protect,
+    // authController.restrictTo('admin'),
     userController.deleteUser,
   );
 

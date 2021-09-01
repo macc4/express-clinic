@@ -125,8 +125,10 @@ const protect = catchAsync(async (req, res, next) => {
   // don't send back the password
   freshUser.dataValues.password = undefined;
 
-  // GRANT ACCESS TO PROTECTED ROUTE
+  // put the user data into the request for the next controllers
   req.user = freshUser;
+
+  // GRANT ACCESS TO PROTECTED ROUTE
   next();
 });
 

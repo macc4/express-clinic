@@ -26,15 +26,19 @@ const createOne = async body => {
   return user;
 };
 
-const getOne = async id => {
-  const user = await db.user.findByPk(id);
+const getOne = async params => {
+  const user = await db.users.findByPk(params.userId, {
+    attributes: {
+      exclude: ['password', 'passwordConfirm', 'passwordChangedAt'],
+    },
+  });
 
   return user;
 };
 
-const deleteOne = async id => {
+const deleteOne = async params => {
   const deletedUser = await db.users.destroy({
-    where: { id: id },
+    where: { id: params.userId },
   });
 
   return deletedUser;
