@@ -8,10 +8,12 @@ router
   .route('/')
   .post(
     // authController.protect,
+    resolutionController.setPatientId,
     resolutionController.createResolution,
   )
   .get(
     // authController.protect,
+    resolutionController.setPatientId,
     resolutionController.getAllResolutions,
   );
 

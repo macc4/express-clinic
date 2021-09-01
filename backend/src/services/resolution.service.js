@@ -8,6 +8,7 @@ const createOne = async body => {
 
 const getAll = async query => {
   const queryConditions = {};
+
   if (query.patientId) {
     queryConditions.patientId = {
       [db.Sequelize.Op.eq]: `${query.patientId}`,

@@ -4,10 +4,6 @@ import catchAsync from '../utils/catchAsync.js';
 
 const createOne = Service =>
   catchAsync(async (req, res, next) => {
-    // for nested patient/:id/resolution routes
-    if (!req.body.patientId && req.params.patientId)
-      req.body.patientId = +req.params.patientId;
-
     const data = await Service.createOne(req.body);
 
     res.status(StatusCodes.CREATED).json({
@@ -20,8 +16,7 @@ const createOne = Service =>
 
 const getAll = Service =>
   catchAsync(async (req, res, next) => {
-    // for nested patient/:id/resolution routes
-    if (req.params.patientId) req.query.patientId = +req.params.patientId;
+    // TODO add proper query middleware for limit offset etc
 
     const data = await Service.getAll(req.query);
 
