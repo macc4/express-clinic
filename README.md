@@ -4,7 +4,7 @@ Queue API was created to simulate live queue in the clinic. It works closely wit
 
 ## Installation:
 
-1. Run API in the 1'st terminal:
+1. Run the server:
 
 ```sh
 cd project1/backend
@@ -18,15 +18,7 @@ Note: you can use the following command to run the API in production mode, which
 npm run start:prod
 ```
 
-2. Run frontend in the 2'nd terminal:
-
-```sh
-cd project1/frontend
-npm install
-npm start
-```
-
-3. Run redis server using terminal on linux or WSL on windows.
+2. Run redis server using terminal on linux or WSL on windows.
 
 Access the website through:
 http://localhost:5000/

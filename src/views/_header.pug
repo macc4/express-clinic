@@ -1,0 +1,39 @@
+header.header
+  nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+    .container-fluid
+      a.navbar-brand.mx-2.m-1(href='http://127.0.0.1:8080/') Clinic
+      span.navbar-text.mx-2
+      ul.navbar-nav.me-auto.mb-2.mb-lg-0
+        li.nav-item
+          a.nav-link(href='/') Home
+        if user
+          -if (user.role === 'patient')
+            li.nav-item
+              a.nav-link(href='/resolutions') Resolutions
+          -if (user.role === 'admin')
+            span.navbar-text.mx-3
+            li.nav-item.dropdown
+              a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false')
+                | Admin Menu
+              ul.dropdown-menu(aria-labelledby='navbarDropdown')
+                li
+                  a.dropdown-item(href='#') Users
+                li
+                  a.dropdown-item(href='#') Patients
+                li
+                  a.dropdown-item(href='#') Resolutions
+
+      if user
+        form.d-flex.justify-content-end.m-1
+          ul.navbar-nav.me-auto
+            li.nav-item
+              a.nav-link.m-1(href='#')
+                span= user.name.split(' ')[0]
+          a.btn.btn-outline-light.m-1#btn-signout(href='#') Sign out
+      else
+        form.d-flex.justify-content-end.m-1
+          ul.navbar-nav.me-auto
+            li.nav-item
+              a.nav-link.m-1(href='/signin') Sign in
+          a.btn.btn-outline-light.m-1(href='/signup') Sign up
+

@@ -1,19 +1,11 @@
 version: '3.8'
 services:
-  frontend:
-    container_name: frontend
-    build: ./frontend
-    ports:
-      - '5000:5000'
-    restart: always
-    depends_on:
-      - backend
   backend:
     container_name: backend
     environment:
       - REDIS_HOST=redis
       - MYSQL_HOST=host.docker.internal
-    build: ./backend
+    build: ./
     ports:
       - '8080:8080'
     restart: always
@@ -27,7 +19,7 @@ services:
     container_name: mysql
     environment:
       - MYSQL_DATABASE=clinic
-      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password # INSERT PASSWORD HERE
     image: mysql
     hostname: mysql
     restart: always

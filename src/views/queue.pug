@@ -1,0 +1,33 @@
+extends base
+
+block content
+  .d-flex
+    .container-fluid
+      .row.justify-content.p-5.m-4
+        .col-md-5.text-center.text-md-start
+          h1
+            .display-5.my-3 Current patient:
+            if queue.current
+              .lead.text-muted.my-4=queue.current
+            else
+              .lead.text-muted.my-4 empty
+        if user
+          -if (user.role === 'patient')
+            .col-md-5.text-center.text-md-start
+              h1
+                .lead.text-muted.my-4.text-white .
+              form.d-flex.justify-content-end.m-2
+                a.btn.btn-dark.m-1(href='#') Get into queue
+          -if (user.role === 'doctor' || user.role === 'admin')
+            .col-md-5.text-center.text-md-start
+              form#form-submit-resolution.m-5
+                .my-3
+                  label.form-label(for='doctor-new-resolution') Resolution:
+                  textarea#doctor-new-resolution.form-control(rows='4')
+                  .form-floating.my-2
+                    input#timeToLive.form-control(type='number' min='1' placeholder='TTL value')
+                    label(for='timeToLive') TTL value (optional)
+                button.btn.btn-secondary.btn-lg(type='submit')
+                  | Submit resolution
+                button.btn.btn-secondary.btn-lg.mx-5
+                  | Next patient
