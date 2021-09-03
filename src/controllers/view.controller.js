@@ -8,17 +8,20 @@ const getQueue = catchAsync(async (req, res, next) => {
   const currentPatient = await queueService.peek();
 
   const queue = {};
+
   if (currentPatient) {
     const currentUser = await db.users.findOne({
       where: { patientId: currentPatient.patientId },
     });
 
     queue.current = currentUser.name;
+    if (req.user) {
+      queue.userPatientId = req.user.patientId;
+    }
   }
 
   res.status(StatusCodes.OK).render('queue', {
     title: 'Queue',
-    // user: { name: 'Aleksei Leonenko', role: 'admin' },
     queue: queue,
   });
 });
@@ -30,7 +33,6 @@ const getPersonalResolutions = catchAsync(async (req, res, next) => {
 
   res.status(StatusCodes.OK).render('resolutions', {
     title: 'Resolutions',
-    // user: { name: 'Aleksei Leonenko', role: 'admin' },
     resolutions,
   });
 });

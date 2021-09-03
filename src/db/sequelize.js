@@ -26,6 +26,7 @@ db.resolutions = Resolution(sequelize, Sequelize);
 
 // ASSOCIATIONS
 db.users.hasOne(db.patients, {
+  foreignKey: 'patientId',
   onDelete: 'cascade',
 });
 db.patients.belongsTo(db.users, {
@@ -59,6 +60,7 @@ db.connect = async () => {
     role: 'admin',
   });
 
+  // patient is being created automatically via model hook if the role was selected
   await db.users.create({
     name: 'Aleksei Leonenko',
     email: 'aleksei@gmail.com',
@@ -67,24 +69,24 @@ db.connect = async () => {
     role: 'patient',
   });
 
-  await db.resolutions.bulkCreate([
-    {
-      patientId: 1,
-      resolution: 'This is a test resolution!',
-    },
-    {
-      patientId: 1,
-      resolution: 'This is a test resolution!',
-    },
-    {
-      patientId: 1,
-      resolution: 'This is a test resolution!',
-    },
-    {
-      patientId: 1,
-      resolution: 'This is a test resolution!',
-    },
-  ]);
+  // await db.resolutions.bulkCreate([
+  //   {
+  //     patientId: 1,
+  //     resolution: 'This is a test resolution!',
+  //   },
+  //   {
+  //     patientId: 1,
+  //     resolution: 'This is a test resolution!',
+  //   },
+  //   {
+  //     patientId: 1,
+  //     resolution: 'This is a test resolution!',
+  //   },
+  //   {
+  //     patientId: 1,
+  //     resolution: 'This is a test resolution!',
+  //   },
+  // ]);
 
   console.log('-----------------------------'); // eslint-disable-line no-console
   console.log('SQL database has been connected.'); // eslint-disable-line no-console

@@ -17,7 +17,7 @@ block content
               h1
                 .lead.text-muted.my-4.text-white .
               form.d-flex.justify-content-end.m-2
-                a.btn.btn-dark.m-1(href='#') Get into queue
+                a.btn.btn-dark.m-1#btn-get-into-queue(href='#') Get into queue
           -if (user.role === 'doctor' || user.role === 'admin')
             .col-md-5.text-center.text-md-start
               form#form-submit-resolution.m-5
@@ -27,7 +27,8 @@ block content
                   .form-floating.my-2
                     input#timeToLive.form-control(type='number' min='1' placeholder='TTL value')
                     label(for='timeToLive') TTL value (optional)
-                button.btn.btn-secondary.btn-lg(type='submit')
-                  | Submit resolution
-                button.btn.btn-secondary.btn-lg.mx-5
-                  | Next patient
+                .my-3
+                  button.btn.btn-secondary.btn-lg(type='submit')
+                    | Submit resolution
+                  button.btn.btn-secondary.btn-lg.m-4#btn-next-patient
+                    | Next patient

@@ -7,7 +7,7 @@ const createOne = async body => {
 };
 
 const getAll = async query => {
-  const queryConditions = {};
+  const queryConditions = { isExpired: false };
 
   if (query.patientId) {
     queryConditions.patientId = {
@@ -15,9 +15,21 @@ const getAll = async query => {
     };
   }
 
-  const resolutions = await db.resolutions.findAll({
+  const resolutionsCheck = await db.resolutions.findAll({
     where: queryConditions,
   });
+
+  resolutionsCheck.forEach(async resolution => {
+    const isExpired = resolution.checkIfExpired(resolution.expiry);
+    if (isExpired) {
+      resolution.isExpired = true;
+      await resolution.save({ fields: ['isExpired'] });
+    }
+  });
+
+  const resolutions = resolutionsCheck.filter(
+    resolution => resolution.isExpired === false,
+  );
 
   return resolutions;
 };

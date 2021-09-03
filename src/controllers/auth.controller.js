@@ -51,7 +51,7 @@ const signUp = catchAsync(async (req, res, next) => {
   // don't send back the password
   newUser.dataValues.password = undefined;
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -59,7 +59,12 @@ const login = catchAsync(async (req, res, next) => {
 
   // 1) check if the email and the password exist
   if (!email || !password) {
-    return next(new AppError('Please, provide email and password!', 400));
+    return next(
+      new AppError(
+        'Please, provide email and password!',
+        StatusCodes.BAD_REQUEST,
+      ),
+    );
   }
 
   // 2) check if the user exists and passwords is correct
@@ -71,7 +76,9 @@ const login = catchAsync(async (req, res, next) => {
     !user ||
     !(await db.users.correctPassword(password, user.dataValues.password))
   ) {
-    return next(new AppError('Incorrect email or password!', 401));
+    return next(
+      new AppError('Incorrect email or password!', StatusCodes.UNAUTHORIZED),
+    );
   }
 
   // don't send back the data
@@ -80,7 +87,7 @@ const login = catchAsync(async (req, res, next) => {
   user.dataValues.passwordChangedAt = undefined;
 
   // 3) send data and the token to the client
-  createSendToken(user, 200, res);
+  createSendToken(user, StatusCodes.OK, res);
 });
 
 const signOut = (req, res) => {
@@ -105,7 +112,9 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new AppError('You are not logged in!', 401));
+    return next(
+      new AppError('You are not logged in!', StatusCodes.UNAUTHORIZED),
+    );
   }
 
   // 2) Verificate the token
@@ -118,7 +127,10 @@ const protect = catchAsync(async (req, res, next) => {
   const freshUser = await db.users.findByPk(decoded.id);
   if (!freshUser) {
     return next(
-      new AppError('The user belonging to this token no longer exists.', 401),
+      new AppError(
+        'The user belonging to this token no longer exists.',
+        StatusCodes.UNAUTHORIZED,
+      ),
     );
   }
 
@@ -127,7 +139,7 @@ const protect = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         'The password has been changed recently, please, login again!',
-        401,
+        StatusCodes.UNAUTHORIZED,
       ),
     );
   }
@@ -165,7 +177,8 @@ const isLoggedIn = async (req, res, next) => {
       // don't send back the password
       currentUser.dataValues.password = undefined;
 
-      // put the user data into the request for the next controllers
+      // put the user data into the request and locals for the next controllers
+      req.user = currentUser;
       res.locals.user = currentUser;
 
       return next();
@@ -182,7 +195,10 @@ const restrictTo =
   (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(
-        new AppError('You do not have permission to perform this action.', 403),
+        new AppError(
+          'You do not have permission to perform this action.',
+          StatusCodes.FORBIDDEN,
+        ),
       );
     }
 

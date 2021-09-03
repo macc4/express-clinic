@@ -63,7 +63,7 @@ export default (sequelize, Sequelize) => {
     user.password = await bcrypt.hash(user.password, 12);
 
     // Delete passwordConfirm field
-    user.passwordConfirm = undefined;
+    user.passwordConfirm = null;
   });
 
   // automatically create the Patient instance of the User if the specific role was selected
@@ -73,7 +73,7 @@ export default (sequelize, Sequelize) => {
         userId: user.id,
       });
 
-      // if the role is patient, add patientId to the user instance for one-to-one referencing
+      // add patientId to the user instance for one-to-one referencing
       user.patientId = patient.id;
       await user.save({ fields: ['patientId'] });
     }
@@ -85,6 +85,7 @@ export default (sequelize, Sequelize) => {
   };
 
   // PROTOTYPE METHODS
+  // if the password was changed after the jwt was issued, throw 401
   User.prototype.changedPasswordAfter = function (JWTTimeStamp) {
     if (this.passwordChangedAt) {
       const changedTimeStamp = parseInt(

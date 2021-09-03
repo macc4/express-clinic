@@ -3,7 +3,7 @@
 // import { showAlert } from './alerts.js';
 import axios from 'axios';
 
-export const signin = async (email, password) => {
+const signin = async (email, password) => {
   const config = {
     method: 'POST',
     url: 'http://127.0.0.1:8080/api/v1/users/signin',
@@ -26,7 +26,7 @@ export const signin = async (email, password) => {
     });
 };
 
-export const signout = async () => {
+const signout = async () => {
   const config = {
     method: 'GET',
     url: 'http://127.0.0.1:8080/api/v1/users/signout',
@@ -35,7 +35,7 @@ export const signout = async () => {
   const res = await axios(config)
     .then(function (response) {
       if (response.data.status === 'success') {
-        location.reload(true);
+        location.assign('/');
       }
     })
     .catch(function (error) {
@@ -43,3 +43,30 @@ export const signout = async () => {
       // showAlert('error', error.response.data.message);
     });
 };
+
+const signup = async (name, email, password, passwordConfirm) => {
+  const config = {
+    method: 'POST',
+    url: 'http://127.0.0.1:8080/api/v1/users/signup',
+    headers: {},
+    data: {
+      name,
+      email,
+      password,
+      passwordConfirm,
+    },
+  };
+
+  const res = await axios(config)
+    .then(function (response) {
+      if (response.data.status === 'success') {
+        location.assign('/');
+      }
+    })
+    .catch(function (error) {
+      alert(error.response.data.message);
+      // showAlert('error', error.response.data.message);
+    });
+};
+
+export { signin, signout, signup };

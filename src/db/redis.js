@@ -1,5 +1,3 @@
-/*eslint no-await-in-loop: "off"*/
-
 import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
@@ -63,6 +61,7 @@ const redisScan = async (client, pattern) => {
   const found = [];
   let cursor = '0';
 
+  /*eslint no-await-in-loop: "off"*/
   do {
     const reply = await client.scan(cursor, 'MATCH', pattern);
 

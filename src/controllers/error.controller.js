@@ -1,16 +1,32 @@
 import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import config from 'config';
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-  });
+const sendErrorDev = (err, req, res) => {
+  if (req.originalUrl.startsWith('/api')) {
+    // API ERROR RESPONSE
+    res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+    });
+  } else {
+    // RENDERED WEBSITE ERROR RESPONSE
+
+    if (err.message === 'jwt malformed') {
+      err.statusCode = StatusCodes.UNAUTHORIZED;
+      err.message = 'You are not logged in!';
+    }
+
+    res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      code: err.statusCode,
+      msg: err.message,
+    });
+  }
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (err, req, res) => {
   // Operational error, send the message to the client
   if (err.isOperational) {
     res.status(err.statusCode).json({
@@ -36,8 +52,8 @@ export default (err, req, res, next) => {
   err.status = err.status || 'error';
 
   if (config.get('error.shortLog')) {
-    sendErrorProd(err, res);
+    sendErrorProd(err, req, res);
   } else {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   }
 };
