@@ -15,8 +15,7 @@ const createUser = (req, res) => {
 };
 
 const getAllUsers = factory.getAll(userService);
-const getUser = factory.getOne(userService);
+const getUserByID = factory.getByID(userService);
+const deleteUserByID = factory.deleteByID(userService);
 
-const deleteUser = factory.deleteOne(userService);
-
-export default { getMe, createUser, getUser, getAllUsers, deleteUser };
+export default { getMe, createUser, getUserByID, getAllUsers, deleteUserByID };

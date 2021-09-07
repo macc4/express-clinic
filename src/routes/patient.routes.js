@@ -15,8 +15,8 @@ router
 
 router
   .route('/:patientId')
-  .get(patientController.getPatient)
-  .delete(patientController.deletePatient);
+  .get(patientController.getPatientByID)
+  .delete(patientController.deletePatientByID);
 
 // route nesting for the resolution entity
 router.use('/:patientId/resolutions', resolutionRouter);

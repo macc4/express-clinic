@@ -10,17 +10,17 @@ router.use(authController.protect);
 router
   .route('/')
   .post(
-    resolutionController.setPatientId,
+    resolutionController.setPatientID,
     resolutionController.createResolution,
   )
   .get(
-    resolutionController.setPatientId,
+    resolutionController.setPatientID,
     resolutionController.getAllResolutions,
   );
 
 router
   .route('/:resolutionId')
-  .get(resolutionController.getResolution)
-  .delete(resolutionController.deleteResolution);
+  .get(resolutionController.getResolutionByID)
+  .delete(resolutionController.deleteResolutionByID);
 
 export default router;

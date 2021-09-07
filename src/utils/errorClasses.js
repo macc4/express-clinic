@@ -15,17 +15,6 @@ class AppError extends Error {
   }
 }
 
-class ModelConflictError extends Error {
-  constructor(message) {
-    super(message);
-
-    this.name = 'ConflictError';
-    this.statusCode = StatusCodes.CONFLICT;
-    this.isOperational = true;
-
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
 class ValidationError extends Error {
   constructor(message) {
     super(message);
@@ -38,4 +27,4 @@ class ValidationError extends Error {
   }
 }
 
-export { AppError, ModelConflictError, ValidationError };
+export { AppError, ValidationError };

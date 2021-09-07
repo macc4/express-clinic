@@ -1,22 +1,40 @@
-import SequelizeFactoryStorage from './sequelize.factory.storage.js';
-import db from './clients/sequelize.client.js';
+import sequelize from './clients/sequelize.client.js';
 
 class SequelizeUserStorage {
-  constructor(factory, storage) {
-    this.factory = factory;
-    this.storage = storage;
+  constructor(client) {
+    this.client = client;
   }
 
   async createOne(body) {
-    await this.factory.createOne(body);
+    const data = await this.client.users.create(body);
+
+    return data;
   }
 
-  async getOne(id) {
-    await this.factory.getOne(id);
+  async getByID(id) {
+    const data = await this.client.users.findByPk(id);
+
+    return data;
   }
 
-  async deleteOne(id) {
-    await this.factory.deleteOne(id);
+  async deleteByID(id) {
+    const data = await this.client.users.destroy({ where: { id } });
+
+    return data;
+  }
+
+  async getOne(query) {
+    const queryConditions = {};
+
+    if (query.email) {
+      queryConditions.email = {
+        [this.client.Sequelize.Op.like]: `${query.email}`,
+      };
+    }
+
+    const users = await this.client.users.findOne({ where: queryConditions });
+
+    return users;
   }
 
   async getAll(query) {
@@ -24,19 +42,16 @@ class SequelizeUserStorage {
 
     if (query.role) {
       queryConditions.role = {
-        [db.Sequelize.Op.like]: `%${query.role}%`,
+        [this.client.Sequelize.Op.like]: `%${query.role}%`,
       };
     }
 
-    const users = await this.storage.users.findAll({ where: queryConditions });
+    const users = await this.client.users.findAll({ where: queryConditions });
 
     return users;
   }
 }
 
-const sequelizeUserStorage = new SequelizeUserStorage(
-  new SequelizeFactoryStorage('Users'),
-  db,
-);
+const sequelizeUserStorage = new SequelizeUserStorage(sequelize);
 
 export default sequelizeUserStorage;

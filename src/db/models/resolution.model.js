@@ -1,4 +1,4 @@
-import getUnixExpiry from '../utils/getUnixExpiry.js';
+import getUnixExpiry from '../../utils/getUnixExpiry.js';
 
 export default (sequelize, Sequelize) => {
   const Resolution = sequelize.define(

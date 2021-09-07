@@ -11,10 +11,10 @@ router.get('/signout', authController.signOut);
 // for registered users
 router.use(authController.protect);
 
-router.get('/account', userController.getMe, userController.getUser);
+router.get('/account', userController.getMe, userController.getUserByID);
 
 // for admins
-// router.use(authController.restrictTo('admin'));
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
@@ -23,7 +23,7 @@ router
 
 router
   .route('/:userId')
-  .get(userController.getUser)
-  .delete(userController.deleteUser);
+  .get(userController.getUserByID)
+  .delete(userController.deleteUserByID);
 
 export default router;

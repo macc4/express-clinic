@@ -13,58 +13,20 @@ const selectStorage = storage => {
 
 const userStorage = selectStorage(config.get('db.types.main'));
 
-const createOne = async body => {
-  const user = await userStorage.createOne(body);
+const create = async body => await userStorage.createOne(body);
 
-  if (!user) {
-    return undefined;
-  }
+const getAll = async query => await userStorage.getAll(query);
 
-  user.password = undefined;
-  user.passwordConfirm = undefined;
-  user.passwordChangedAt = undefined;
+const getByID = async params => await userStorage.getByID(params.userId);
 
-  return user;
+const getOne = async query => await userStorage.getOne(query);
+
+const deleteByID = async params => await userStorage.deleteByID(params.userId);
+
+export default {
+  create,
+  getAll,
+  getOne,
+  getByID,
+  deleteByID,
 };
-
-const getAll = async query => {
-  const users = await userStorage.getAll(query);
-
-  if (!users) {
-    return undefined;
-  }
-
-  users.forEach = user => {
-    user.password = undefined;
-    user.passwordConfirm = undefined;
-    user.passwordChangedAt = undefined;
-  };
-
-  return users;
-};
-
-const getOne = async params => {
-  const user = await userStorage.getOne(params.patientId);
-
-  if (!user) {
-    return undefined;
-  }
-
-  user.password = undefined;
-  user.passwordConfirm = undefined;
-  user.passwordChangedAt = undefined;
-
-  return user;
-};
-
-const deleteOne = async params => {
-  const user = await userStorage.deleteOne(params.patientId);
-
-  if (!user) {
-    return undefined;
-  }
-
-  return user;
-};
-
-export default { createOne, getOne, getAll, deleteOne };

@@ -13,11 +13,19 @@ const selectStorage = storage => {
 
 const resolutionStorage = selectStorage(config.get('db.types.main'));
 
-const createOne = async body => await resolutionStorage.createOne(body);
-const getAll = async query => await resolutionStorage.getAll(query);
-const getOne = async params =>
-  await resolutionStorage.getOne(params.resolutionId);
-const deleteOne = async params =>
-  await resolutionStorage.deleteOne(params.resolutionId);
+const create = async body => await resolutionStorage.createOne(body);
 
-export default { createOne, getOne, getAll, deleteOne };
+const getAll = async query => await resolutionStorage.getAll(query);
+
+const getByID = async params =>
+  await resolutionStorage.getByID(params.resolutionId);
+
+const deleteByID = async params =>
+  await resolutionStorage.deleteByID(params.resolutionId);
+
+export default {
+  create,
+  getAll,
+  getByID,
+  deleteByID,
+};

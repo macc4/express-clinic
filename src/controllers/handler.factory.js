@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync.js';
 
 const createOne = Service =>
   catchAsync(async (req, res, next) => {
-    const data = await Service.createOne(req.body);
+    const data = await Service.create(req.body);
 
     res.status(StatusCodes.CREATED).json({
       status: 'success',
@@ -33,9 +33,9 @@ const getAll = Service =>
     });
   });
 
-const getOne = Service =>
+const getByID = Service =>
   catchAsync(async (req, res, next) => {
-    const data = await Service.getOne(req.params);
+    const data = await Service.getByID(req.params);
 
     if (!data) {
       return next(new AppError(ReasonPhrases.NOT_FOUND, StatusCodes.NOT_FOUND));
@@ -49,9 +49,9 @@ const getOne = Service =>
     });
   });
 
-const deleteOne = Service =>
+const deleteByID = Service =>
   catchAsync(async (req, res, next) => {
-    const data = await Service.deleteOne(req.params);
+    const data = await Service.deleteByID(req.params);
 
     if (!data) {
       return next(new AppError(ReasonPhrases.NOT_FOUND, StatusCodes.NOT_FOUND));
@@ -63,4 +63,4 @@ const deleteOne = Service =>
     });
   });
 
-export default { createOne, getOne, getAll, deleteOne };
+export default { createOne, getByID, getAll, deleteByID };

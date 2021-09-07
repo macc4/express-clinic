@@ -1,5 +1,6 @@
 import config from 'config';
-import { ModelConflictError, AppError } from '../utils/errorClasses.js';
+import { StatusCodes } from 'http-status-codes';
+import { AppError } from '../utils/errorClasses.js';
 import redisQueueStorage from '../db/redis.queue.storage.js';
 
 const selectStorage = storage => {
@@ -24,7 +25,7 @@ const enqueue = async body => {
   const duplicate = queue.some(patient => patient === `${newPatientId}`);
 
   if (duplicate) {
-    throw new ModelConflictError('You are already in the queue');
+    throw new AppError('You are already in the queue', StatusCodes.CONFLICT);
   }
 
   await queueStorage.enqueue(newPatientId);

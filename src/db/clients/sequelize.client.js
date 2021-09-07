@@ -1,9 +1,9 @@
 import { Sequelize } from 'sequelize';
 import config from 'config';
 
-import User from '../../models/user.model.js';
-import Patient from '../../models/patient.model.js';
-import Resolution from '../../models/resolution.model.js';
+import User from '../models/user.model.js';
+import Patient from '../models/patient.model.js';
+import Resolution from '../models/resolution.model.js';
 
 const db = {};
 
@@ -26,7 +26,7 @@ db.resolutions = Resolution(sequelize, Sequelize);
 
 // ASSOCIATIONS
 db.users.hasOne(db.patients, {
-  foreignKey: 'patientId',
+  // foreignKey: 'patientId',
   onDelete: 'cascade',
 });
 db.patients.belongsTo(db.users, {
@@ -53,20 +53,10 @@ db.connect = async () => {
 
   // create a default admin role
   await db.users.create({
-    name: 'Admin',
     email: 'admin@gmail.com',
     password: '12345678',
     passwordConfirm: '12345678',
     role: 'admin',
-  });
-
-  // patient is being created automatically via model hook if the role was selected
-  await db.users.create({
-    name: 'Aleksei Leonenko',
-    email: 'aleksei@gmail.com',
-    password: '12345678',
-    passwordConfirm: '12345678',
-    role: 'patient',
   });
 
   // await db.resolutions.bulkCreate([

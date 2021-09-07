@@ -13,10 +13,18 @@ const selectStorage = storage => {
 
 const patientStorage = selectStorage(config.get('db.types.main'));
 
-const createOne = async body => await patientStorage.createOne(body);
-const getAll = async query => await patientStorage.getAll(query);
-const getOne = async params => await patientStorage.getOne(params.patientId);
-const deleteOne = async params =>
-  await patientStorage.deleteOne(params.patientId);
+const create = async body => await patientStorage.createOne(body);
 
-export default { createOne, getOne, getAll, deleteOne };
+const getAll = async query => await patientStorage.getAll(query);
+
+const getByID = async params => await patientStorage.getByID(params.patientId);
+
+const deleteByID = async params =>
+  await patientStorage.deleteByID(params.patientId);
+
+export default {
+  create,
+  getAll,
+  getByID,
+  deleteByID,
+};

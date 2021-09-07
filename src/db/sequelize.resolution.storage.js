@@ -1,22 +1,20 @@
-import SequelizeFactoryStorage from './sequelize.factory.storage.js';
-import db from './clients/sequelize.client.js';
+import sequelize from './clients/sequelize.client.js';
 
 class SequelizeResolutionStorage {
-  constructor(factory, storage) {
-    this.factory = factory;
-    this.storage = storage;
+  constructor(client) {
+    this.client = client;
   }
 
   async createOne(body) {
-    await this.factory.createOne(body);
+    return await this.client.resolutions.create(body);
   }
 
-  async deleteOne(id) {
-    await this.factory.deleteOne(id);
+  async deleteByID(id) {
+    return await this.client.resolutions.destroy({ where: { id } });
   }
 
-  async getOne(id) {
-    const resolution = await this.storage.resolutions.findByPk(id);
+  async getByID(id) {
+    const resolution = await this.client.resolutions.findByPk(id);
 
     if (resolution.isExpired) {
       return undefined;
@@ -34,17 +32,16 @@ class SequelizeResolutionStorage {
     return resolution;
   }
 
-  // // eslint-disable-next-line no-unused-vars
   async getAll(query) {
     const queryConditions = { isExpired: false };
 
     if (query.patientId) {
       queryConditions.patientId = {
-        [db.Sequelize.Op.eq]: `${query.patientId}`,
+        [this.client.Sequelize.Op.eq]: `${query.patientId}`,
       };
     }
 
-    const resolutionsCheck = await this.storage.resolutions.findAll({
+    const resolutionsCheck = await this.client.resolutions.findAll({
       where: queryConditions,
     });
 
@@ -64,9 +61,6 @@ class SequelizeResolutionStorage {
   }
 }
 
-const sequelizeResolutionStorage = new SequelizeResolutionStorage(
-  new SequelizeFactoryStorage('Resolutions'),
-  db,
-);
+const sequelizeResolutionStorage = new SequelizeResolutionStorage(sequelize);
 
 export default sequelizeResolutionStorage;

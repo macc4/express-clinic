@@ -6,19 +6,19 @@ class RedisStorage {
   }
 
   async getQueue() {
-    await this.client.lrange('queue', 0, -1);
+    return await this.client.lrange('queue', 0, -1);
   }
 
   async enqueue(id) {
-    await this.client.rpush('queue', id);
+    return await this.client.rpush('queue', id);
   }
 
   async peek() {
-    await this.client.lindex('queue', 0);
+    return await this.client.lindex('queue', 0);
   }
 
   async dequeue() {
-    await this.client.lpop('queue');
+    return await this.client.lpop('queue');
   }
 }
 

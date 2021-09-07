@@ -1,22 +1,24 @@
-import SequelizeFactoryStorage from './sequelize.factory.storage.js';
-import db from './clients/sequelize.client.js';
+import sequelize from './clients/sequelize.client.js';
 
 class SequelizePatientStorage {
-  constructor(factory, storage) {
-    this.factory = factory;
-    this.storage = storage;
+  constructor(client) {
+    this.client = client;
   }
 
   async createOne(body) {
-    await this.factory.createOne(body);
+    const data = await this.client.patients
+      .create(body)
+      .then(result => result.get({ plain: true }));
+
+    return data;
   }
 
-  async getOne(id) {
-    await this.factory.getOne(id);
+  async getByID(id) {
+    return await this.client.patients.findByPk(id, { raw: true });
   }
 
-  async deleteOne(id) {
-    await this.factory.deleteOne(id);
+  async deleteByID(id) {
+    return await this.client.patients.destroy({ raw: true, where: { id } });
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -31,7 +33,8 @@ class SequelizePatientStorage {
     //   };
     // }
 
-    const patients = await this.storage.patients.findAll({
+    const patients = await this.client.patients.findAll({
+      raw: true,
       where: queryConditions,
     });
 
@@ -39,9 +42,6 @@ class SequelizePatientStorage {
   }
 }
 
-const sequelizePatientStorage = new SequelizePatientStorage(
-  new SequelizeFactoryStorage('Patients'),
-  db,
-);
+const sequelizePatientStorage = new SequelizePatientStorage(sequelize);
 
 export default sequelizePatientStorage;

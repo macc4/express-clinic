@@ -2,21 +2,26 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../utils/catchAsync.js';
 import resolutionService from '../services/resolution.service.js';
 import queueService from '../services/queue.service.js';
+import patientService from '../services/patient.service.js';
 import db from '../db/clients/sequelize.client.js';
 
 const getQueue = catchAsync(async (req, res, next) => {
-  const currentPatient = await queueService.peek();
+  const currentPatientId = await queueService.peek();
 
   const queue = {};
 
+  req.params.patientId = currentPatientId;
+
+  const currentPatient = await patientService.getByID(req.params);
+
   if (currentPatient) {
     const currentUser = await db.users.findOne({
-      where: { patientId: currentPatient.patientId },
+      where: { id: currentPatient.userId },
     });
 
     queue.current = currentUser.name;
     if (req.user) {
-      queue.userPatientId = req.user.patientId;
+      queue.userPatientId = currentPatientId;
     }
   }
 
@@ -27,7 +32,11 @@ const getQueue = catchAsync(async (req, res, next) => {
 });
 
 const getPersonalResolutions = catchAsync(async (req, res, next) => {
-  req.query.patientId = req.user.patientId;
+  const patient = db.users.findOne({
+    where: { userId: req.user.id },
+  });
+
+  req.query.patientId = patient.id;
 
   const resolutions = await resolutionService.getAll(req.query);
 

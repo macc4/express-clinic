@@ -1,20 +1,20 @@
-import { promisify } from 'util';
 import { StatusCodes } from 'http-status-codes';
-import jwt from 'jsonwebtoken';
 import config from 'config';
 
 import { AppError } from '../utils/errorClasses.js';
 import catchAsync from '../utils/catchAsync.js';
+import correctPassword from '../utils/correctPassword.js';
+import utilsJWT from '../utils/utilsJWT.js';
 
-import db from '../db/clients/sequelize.client.js';
-
-const signToken = id =>
-  jwt.sign({ id }, config.get('security.jwt_secret'), {
-    expiresIn: config.get('security.jwt_expiry'),
-  });
+import patientService from '../services/patient.service.js';
+import userService from '../services/user.service.js';
 
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user.dataValues.id);
+  const token = utilsJWT.sign(
+    user.id,
+    config.get('security.jwt_secret'),
+    config.get('security.jwt_expiry'),
+  );
 
   const cookieOptions = {
     expires: new Date(
@@ -38,18 +38,15 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 const signUp = catchAsync(async (req, res, next) => {
-  // for security reasons, so body won't receive an admin role by POST req
-  const body = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-  };
+  // destructuring for security reasons, so body won't receive an admin role by POST req
+  const { name, email, password, passwordConfirm, gender, birthday } = req.body;
 
-  const newUser = await db.users.create(body);
+  const userBody = { email, password, passwordConfirm };
+  const newUser = await userService.create(userBody);
 
-  // don't send back the password
-  newUser.dataValues.password = undefined;
+  // automatically create a corresponding patient
+  const patientBody = { name, gender, birthday, userId: newUser.id };
+  await patientService.create(patientBody);
 
   createSendToken(newUser, StatusCodes.CREATED, res);
 });
@@ -67,24 +64,20 @@ const login = catchAsync(async (req, res, next) => {
     );
   }
 
-  // 2) check if the user exists and passwords is correct
-  const user = await db.users.findOne({
-    where: { email: email },
-  });
+  // 2) check if the user exists and password is correct
+  req.query.email = email;
+  const user = await userService.getOne(req.query);
 
-  if (
-    !user ||
-    !(await db.users.correctPassword(password, user.dataValues.password))
-  ) {
+  if (!user || !(await correctPassword(password, user.password))) {
     return next(
       new AppError('Incorrect email or password!', StatusCodes.UNAUTHORIZED),
     );
   }
 
   // don't send back the data
-  user.dataValues.password = undefined;
-  user.dataValues.passwordConfirm = undefined;
-  user.dataValues.passwordChangedAt = undefined;
+  user.password = undefined;
+  user.passwordConfirm = undefined;
+  user.passwordChangedAt = undefined;
 
   // 3) send data and the token to the client
   createSendToken(user, StatusCodes.OK, res);
@@ -98,7 +91,7 @@ const signOut = (req, res) => {
   res.status(StatusCodes.OK).json({ status: 'success' });
 };
 
-// protect routes for certain roles
+// protect routes for only authorized users
 const protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   let token;
@@ -118,13 +111,16 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verificate the token
-  const decoded = await promisify(jwt.verify)(
+
+  const decoded = await utilsJWT.decode(
     token,
     config.get('security.jwt_secret'),
   );
 
   // 3) Check if the user still exists
-  const freshUser = await db.users.findByPk(decoded.id);
+  req.params.userId = decoded.id;
+  const freshUser = await userService.getByID(req.params);
+
   if (!freshUser) {
     return next(
       new AppError(
@@ -135,17 +131,19 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   // 4) Check if the user has changed the password after the token was issued
-  if (freshUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError(
-        'The password has been changed recently, please, login again!',
-        StatusCodes.UNAUTHORIZED,
-      ),
-    );
-  }
+
+  // not working due to recent sequelize detachment from user.service, requires a separate method now
+  // if (freshUser.changedPasswordAfter(decoded.iat)) {
+  //   return next(
+  //     new AppError(
+  //       'The password has been changed recently, please, login again!',
+  //       StatusCodes.UNAUTHORIZED,
+  //     ),
+  //   );
+  // }
 
   // don't send back the password
-  freshUser.dataValues.password = undefined;
+  freshUser.password = undefined;
 
   // put the user data into the request for the next controllers
   req.user = freshUser;
@@ -159,12 +157,13 @@ const isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.jwt) {
       // 1) Verify the token
-      const decoded = await promisify(jwt.verify)(
+      const decoded = await utilsJWT.decode(
         req.cookies.jwt,
         config.get('security.jwt_secret'),
       );
+
       // 2) Check if the user still exists
-      const currentUser = await db.users.findByPk(decoded.id);
+      const currentUser = await userService.getByID(decoded.id);
       if (!currentUser) {
         return next();
       }
@@ -175,7 +174,7 @@ const isLoggedIn = async (req, res, next) => {
       }
 
       // don't send back the password
-      currentUser.dataValues.password = undefined;
+      currentUser.password = undefined;
 
       // put the user data into the request and locals for the next controllers
       req.user = currentUser;

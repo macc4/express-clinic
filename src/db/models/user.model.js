@@ -10,19 +10,9 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       role: {
         type: Sequelize.ENUM('patient', 'doctor', 'admin'),
         defaultValue: 'patient',
-      },
-      patientId: {
-        type: Sequelize.INTEGER,
-        foreignKey: true,
-        allowNull: true,
-        unique: true,
       },
       email: {
         type: Sequelize.STRING,
@@ -46,9 +36,9 @@ export default (sequelize, Sequelize) => {
           },
         },
       },
-
       passwordChangedAt: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.DATE,
+        default: Date.now(),
       },
     },
     { sequelize, modelName: 'user', timestamps: true },
@@ -65,24 +55,6 @@ export default (sequelize, Sequelize) => {
     // Delete passwordConfirm field
     user.passwordConfirm = null;
   });
-
-  // automatically create the Patient instance of the User if the specific role was selected
-  User.afterCreate(async user => {
-    if (user.role === 'patient') {
-      const patient = await sequelize.models.patient.create({
-        userId: user.id,
-      });
-
-      // add patientId to the user instance for one-to-one referencing
-      user.patientId = patient.id;
-      await user.save({ fields: ['patientId'] });
-    }
-  });
-
-  // CLASS METHODS
-  User.correctPassword = async function (candidatePassword, userPassword) {
-    return bcrypt.compare(candidatePassword, userPassword);
-  };
 
   // PROTOTYPE METHODS
   // if the password was changed after the jwt was issued, throw 401
