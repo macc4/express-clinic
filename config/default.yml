@@ -3,6 +3,9 @@ server:
 app:
   timeToLive: -1 # '-1' for turning expiry off; otherwise, should be at least '1' (minute)
 db:
+  types:
+    main: 'sequelize' # options: 'sequelize;'
+    queue: 'redis' # options: 'redis;'
   redis:
     port: 6379
   sequelize:

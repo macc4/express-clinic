@@ -1,42 +1,22 @@
-import db from '../db/sequelize.js';
+import config from 'config';
+import { AppError } from '../utils/errorClasses.js';
+import sequelizePatientStorage from '../db/sequelize.patient.storage.js';
 
-const createOne = async body => {
-  const newPatient = await db.patients.create(body);
-
-  return newPatient;
+const selectStorage = storage => {
+  switch (storage) {
+    case 'sequelize':
+      return sequelizePatientStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, 404);
+  }
 };
 
-// eslint-disable-next-line no-unused-vars
-const getAll = async query => {
-  const queryConditions = {};
+const patientStorage = selectStorage(config.get('db.types.main'));
 
-  // not used since our Patients entity doesn't really contain any data right now
-
-  // if (query.name) {
-  //   queryConditions.name = {
-  //     [db.Sequelize.Op.like]: `'%${query.name}%`,
-  //   };
-  // }
-
-  const patients = await db.patients.findAll({
-    where: queryConditions,
-  });
-
-  return patients;
-};
-
-const getOne = async params => {
-  const patient = await db.patients.findByPk(params.patientId);
-
-  return patient;
-};
-
-const deleteOne = async params => {
-  const deletedPatient = await db.patients.destroy({
-    where: { id: params.patientId },
-  });
-
-  return deletedPatient;
-};
+const createOne = async body => await patientStorage.createOne(body);
+const getAll = async query => await patientStorage.getAll(query);
+const getOne = async params => await patientStorage.getOne(params.patientId);
+const deleteOne = async params =>
+  await patientStorage.deleteOne(params.patientId);
 
 export default { createOne, getOne, getAll, deleteOne };

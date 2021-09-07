@@ -1,56 +1,23 @@
-import db from '../db/sequelize.js';
+import config from 'config';
+import { AppError } from '../utils/errorClasses.js';
+import sequelizeResolutionStorage from '../db/sequelize.resolution.storage.js';
 
-const createOne = async body => {
-  const newResolution = await db.resolutions.create(body);
-
-  return newResolution;
-};
-
-const getAll = async query => {
-  const queryConditions = { isExpired: false };
-
-  if (query.patientId) {
-    queryConditions.patientId = {
-      [db.Sequelize.Op.eq]: `${query.patientId}`,
-    };
+const selectStorage = storage => {
+  switch (storage) {
+    case 'sequelize':
+      return sequelizeResolutionStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, 404);
   }
-
-  const resolutionsCheck = await db.resolutions.findAll({
-    where: queryConditions,
-  });
-
-  resolutionsCheck.forEach(async resolution => {
-    const isExpired = resolution.checkIfExpired(resolution.expiry);
-    if (isExpired) {
-      resolution.isExpired = true;
-      await resolution.save({ fields: ['isExpired'] });
-    }
-  });
-
-  const resolutions = resolutionsCheck.filter(
-    resolution => resolution.isExpired === false,
-  );
-
-  return resolutions;
 };
 
-const getOne = async params => {
-  const resolution = await db.resolutions.findByPk(params.resolutionId);
+const resolutionStorage = selectStorage(config.get('db.types.main'));
 
-  return resolution;
-};
+const createOne = async body => await resolutionStorage.createOne(body);
+const getAll = async query => await resolutionStorage.getAll(query);
+const getOne = async params =>
+  await resolutionStorage.getOne(params.resolutionId);
+const deleteOne = async params =>
+  await resolutionStorage.deleteOne(params.resolutionId);
 
-const deleteOne = async params => {
-  const deletedResolution = await db.resolutions.destroy({
-    where: { id: params.resolutionId },
-  });
-
-  return deletedResolution;
-};
-
-export default {
-  createOne,
-  getOne,
-  getAll,
-  deleteOne,
-};
+export default { createOne, getOne, getAll, deleteOne };

@@ -1,9 +1,9 @@
 import { Sequelize } from 'sequelize';
 import config from 'config';
 
-import User from '../models/user.model.js';
-import Patient from '../models/patient.model.js';
-import Resolution from '../models/resolution.model.js';
+import User from '../../models/user.model.js';
+import Patient from '../../models/patient.model.js';
+import Resolution from '../../models/resolution.model.js';
 
 const db = {};
 

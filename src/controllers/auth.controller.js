@@ -6,7 +6,7 @@ import config from 'config';
 import { AppError } from '../utils/errorClasses.js';
 import catchAsync from '../utils/catchAsync.js';
 
-import db from '../db/sequelize.js';
+import db from '../db/clients/sequelize.client.js';
 
 const signToken = id =>
   jwt.sign({ id }, config.get('security.jwt_secret'), {

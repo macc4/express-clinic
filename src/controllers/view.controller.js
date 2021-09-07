@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../utils/catchAsync.js';
 import resolutionService from '../services/resolution.service.js';
 import queueService from '../services/queue.service.js';
-import db from '../db/sequelize.js';
+import db from '../db/clients/sequelize.client.js';
 
 const getQueue = catchAsync(async (req, res, next) => {
   const currentPatient = await queueService.peek();
