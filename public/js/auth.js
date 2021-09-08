@@ -7,13 +7,10 @@ const signin = async (email, password) => {
   const config = {
     method: 'POST',
     url: 'http://127.0.0.1:8080/api/v1/users/signin',
-    headers: {},
     data: {
       email,
       password,
     },
-    withCredentials: true,
-    credentials: 'include',
   };
 
   const res = await axios(config)
@@ -67,7 +64,6 @@ const signup = async (
       gender,
       birthday,
     },
-    withCredentials: true,
   };
 
   const res = await axios(config)

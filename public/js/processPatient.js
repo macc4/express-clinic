@@ -7,8 +7,6 @@ export const getPatientId = async () => {
   const config = {
     method: 'GET',
     url: 'http://127.0.0.1:8080/api/v1/queue',
-    headers: {},
-    withCredentials: true,
   };
 
   return await axios(config);
@@ -18,13 +16,11 @@ export const submitResolution = async (patientId, resolution, expiry) => {
   const config = {
     method: 'POST',
     url: 'http://127.0.0.1:8080/api/v1/resolutions',
-    headers: {},
     data: {
       patientId,
       resolution,
       expiry,
     },
-    withCredentials: true,
   };
 
   const res = await axios(config)
@@ -43,8 +39,6 @@ export const dequeue = async () => {
   const config = {
     method: 'DELETE',
     url: 'http://127.0.0.1:8080/api/v1/queue',
-    headers: {},
-    withCredentials: true,
   };
 
   const res = await axios(config)

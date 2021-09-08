@@ -8488,13 +8488,10 @@ var signin = /*#__PURE__*/function () {
             config = {
               method: 'POST',
               url: 'http://127.0.0.1:8080/api/v1/users/signin',
-              headers: {},
               data: {
                 email: email,
                 password: password
-              },
-              withCredentials: true,
-              credentials: 'include'
+              }
             };
             _context.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -8579,8 +8576,7 @@ var signup = /*#__PURE__*/function () {
                 passwordConfirm: passwordConfirm,
                 gender: gender,
                 birthday: birthday
-              },
-              withCredentials: true
+              }
             };
             _context3.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -8634,9 +8630,7 @@ var getPatientId = /*#__PURE__*/function () {
           case 0:
             config = {
               method: 'GET',
-              url: 'http://127.0.0.1:8080/api/v1/queue',
-              headers: {},
-              withCredentials: true
+              url: 'http://127.0.0.1:8080/api/v1/queue'
             };
             _context.next = 3;
             return (0, _axios.default)(config);
@@ -8669,13 +8663,11 @@ var submitResolution = /*#__PURE__*/function () {
             config = {
               method: 'POST',
               url: 'http://127.0.0.1:8080/api/v1/resolutions',
-              headers: {},
               data: {
                 patientId: patientId,
                 resolution: resolution,
                 expiry: expiry
-              },
-              withCredentials: true
+              }
             };
             _context2.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -8712,9 +8704,7 @@ var dequeue = /*#__PURE__*/function () {
           case 0:
             config = {
               method: 'DELETE',
-              url: 'http://127.0.0.1:8080/api/v1/queue',
-              headers: {},
-              withCredentials: true
+              url: 'http://127.0.0.1:8080/api/v1/queue'
             };
             _context3.next = 3;
             return (0, _axios.default)(config).then(function (response) {// if (response.data.statusCode === 404) {
@@ -8767,8 +8757,7 @@ var getIntoQueue = /*#__PURE__*/function () {
           case 0:
             config = {
               method: 'POST',
-              url: 'http://127.0.0.1:8080/api/v1/queue',
-              withCredentials: true
+              url: 'http://127.0.0.1:8080/api/v1/queue'
             };
             _context.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -9185,7 +9174,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "11205" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6760" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -6,7 +6,6 @@ const getIntoQueue = async () => {
   const config = {
     method: 'POST',
     url: 'http://127.0.0.1:8080/api/v1/queue',
-    withCredentials: true,
   };
 
   const res = await axios(config)
