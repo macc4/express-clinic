@@ -5,7 +5,7 @@ import userController from '../controllers/user.controller.js';
 const router = express.Router();
 
 router.post('/signup', authController.signUp);
-router.post('/signin', authController.login);
+router.post('/signin', authController.signIn);
 router.get('/signout', authController.signOut);
 
 // for registered users

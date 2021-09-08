@@ -2,32 +2,50 @@ import config from 'config';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizePatientStorage from '../db/sequelize.patient.storage.js';
 
-const selectStorage = storage => {
-  switch (storage) {
-    case 'sequelize':
-      return sequelizePatientStorage;
-    default:
-      throw new AppError(`This storage doesn't exist`, 404);
+class PatientService {
+  constructor(storageType) {
+    this.storage = this.selectStorage(storageType);
   }
-};
 
-const patientStorage = selectStorage(config.get('db.types.main'));
+  selectStorage(storage) {
+    switch (storage) {
+      case 'sequelize':
+        return sequelizePatientStorage;
+      default:
+        throw new AppError(`This storage doesn't exist`, 404);
+    }
+  }
 
-const create = async body => await patientStorage.createOne(body);
+  async create(body) {
+    try {
+      const patient = await this.storage.createOne(body);
 
-const getAll = async query => await patientStorage.getAll(query);
+      return patient;
+    } catch {
+      throw new AppError(
+        `This userId already has a corresponding patient`,
+        404,
+      );
+    }
+  }
 
-const getByID = async params => await patientStorage.getByID(params.patientId);
+  async getAll(query) {
+    return await this.storage.getAll(query);
+  }
 
-const deleteByID = async params =>
-  await patientStorage.deleteByID(params.patientId);
+  async getByID(id) {
+    return await this.storage.getByID(id);
+  }
 
-const getByUserID = async id => await patientStorage.getByUserID(id);
+  async deleteByID(id) {
+    return await this.storage.deleteByID(id);
+  }
 
-export default {
-  create,
-  getAll,
-  getByID,
-  deleteByID,
-  getByUserID,
-};
+  async getByUserID(userId) {
+    return await this.storage.getByUserID(userId);
+  }
+}
+
+const patientService = new PatientService(config.get('db.types.main'));
+
+export default patientService;

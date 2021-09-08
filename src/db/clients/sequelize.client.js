@@ -57,6 +57,7 @@ db.connect = async () => {
   await db.users.create({
     email: 'admin@gmail.com',
     password: await passwordUtils.hashPassword('12345678'),
+    name: 'Admin',
     role: 'admin',
   });
 

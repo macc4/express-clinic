@@ -25,21 +25,13 @@ class SequelizeUserStorage {
     return data;
   }
 
-  async getOne(query) {
-    const queryConditions = {};
-
-    if (query.email) {
-      queryConditions.email = {
-        [this.client.Sequelize.Op.like]: `${query.email}`,
-      };
-    }
-
-    const users = await this.client.users.findOne({
+  async getByEmail(email) {
+    const user = await this.client.users.findOne({
       raw: true,
-      where: queryConditions,
+      where: { email },
     });
 
-    return users;
+    return user;
   }
 
   async getAll(query) {

@@ -30,6 +30,23 @@ class SequelizeResolutionStorage {
     return resolutions;
   }
 
+  async getByPatientName(name) {
+    const query = `
+    SELECT resolutions.id, resolutions.resolution, resolutions.createdAt, resolutions.expiry
+    FROM resolutions
+    INNER JOIN patients
+    ON patients.id=resolutions.patientId
+    WHERE patients.name="${name}"
+    `;
+
+    const resolutions = await this.client.sequelize.query(query, {
+      raw: true,
+      type: this.client.Sequelize.QueryTypes.SELECT,
+    });
+
+    return resolutions;
+  }
+
   async deleteByID(id) {
     return await this.client.resolutions.destroy({ raw: true, where: { id } });
   }

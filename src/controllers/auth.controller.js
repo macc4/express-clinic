@@ -5,6 +5,7 @@ import { AppError } from '../utils/errorClasses.js';
 import catchAsync from '../utils/catchAsync.js';
 import passwordUtils from '../utils/passwordUtils.js';
 import JWTUtils from '../utils/jwtUtils.js';
+import dateUtils from '../utils/dateUtils.js';
 
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
@@ -17,9 +18,8 @@ const createSendToken = (user, statusCode, res) => {
   );
 
   const cookieOptions = {
-    expires: new Date(
-      Date.now() +
-        config.get('security.jwt_cookie_expiresIn') * 24 * 60 * 60 * 1000,
+    expires: dateUtils.getUnixFromDays(
+      config.get('security.jwt_cookie_expiresIn'),
     ),
     httpOnly: true,
   };
@@ -52,7 +52,7 @@ const signUp = catchAsync(async (req, res, next) => {
     );
   }
 
-  const userBody = { email, password };
+  const userBody = { name, email, password };
   const newUser = await userService.create(userBody);
 
   // automatically create a corresponding patient
@@ -67,7 +67,7 @@ const signUp = catchAsync(async (req, res, next) => {
   createSendToken(newUser, StatusCodes.CREATED, res);
 });
 
-const login = catchAsync(async (req, res, next) => {
+const signIn = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1) check if the email and the password exist
@@ -81,8 +81,7 @@ const login = catchAsync(async (req, res, next) => {
   }
 
   // 2) check if the user exists and password is correct
-  req.query.email = email;
-  const user = await userService.getOne(req.query);
+  const user = await userService.getByEmail(email);
 
   if (!user || !(await passwordUtils.verifyPassword(password, user.password))) {
     return next(
@@ -101,7 +100,7 @@ const login = catchAsync(async (req, res, next) => {
 
 const signOut = (req, res) => {
   res.cookie('jwt', 'signed-out', {
-    expires: new Date(Date.now() + 60 * 1000),
+    expires: dateUtils.getUnixOneMin(),
     httpOnly: true,
   });
   res.status(StatusCodes.OK).json({ status: 'success' });
@@ -140,8 +139,7 @@ const protect = catchAsync(async (req, res, next) => {
   }
 
   // 3) Check if the user still exists
-  req.params.userId = decoded.id;
-  const freshUser = await userService.getByID(req.params);
+  const freshUser = await userService.getByID(decoded.id);
 
   if (!freshUser) {
     return next(
@@ -187,7 +185,9 @@ const isLoggedIn = async (req, res, next) => {
       );
 
       // 2) Check if the user still exists
+
       const currentUser = await userService.getByID(decoded.id);
+
       if (!currentUser) {
         return next();
       }
@@ -233,4 +233,4 @@ const restrictTo =
     next();
   };
 
-export default { signUp, login, signOut, protect, restrictTo, isLoggedIn };
+export default { signUp, signIn, signOut, protect, restrictTo, isLoggedIn };

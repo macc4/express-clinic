@@ -9,7 +9,7 @@ header.header
         if user
           -if (user.role === 'patient')
             li.nav-item
-              a.nav-link(href='/resolutions') Resolutions
+              a.nav-link(href='/personal-resolutions') Personal Resolutions
           -if (user.role === 'admin')
             span.navbar-text.mx-3
             li.nav-item.dropdown
@@ -17,11 +17,11 @@ header.header
                 | Admin Menu
               ul.dropdown-menu(aria-labelledby='navbarDropdown')
                 li
-                  a.dropdown-item(href='#') Users
+                  a.dropdown-item.disabled(href='#') Users
                 li
-                  a.dropdown-item(href='#') Patients
+                  a.dropdown-item.disabled(href='#') Patients
                 li
-                  a.dropdown-item(href='#') Resolutions
+                  a.dropdown-item(href='resolutions') Resolutions
 
       if user
         form.d-flex.justify-content-end.m-1

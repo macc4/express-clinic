@@ -1,54 +1,62 @@
-import config from 'config';
 import { StatusCodes } from 'http-status-codes';
+import config from 'config';
 import { AppError } from '../utils/errorClasses.js';
 import redisQueueStorage from '../db/redis.queue.storage.js';
 
-const selectStorage = storage => {
-  switch (storage) {
-    case 'redis':
-      return redisQueueStorage;
-    default:
-      throw new AppError(`This storage doesn't exist`, 404);
-  }
-};
-
-const queueStorage = selectStorage(config.get('db.types.queue'));
-
-const getQueue = async () => await queueStorage.getQueue();
-
-const enqueue = async patientId => {
-  // checking if the patientId is already in the queue
-  const queue = await getQueue();
-
-  const duplicate = queue.some(patient => patient === `${patientId}`);
-
-  if (duplicate) {
-    throw new AppError('You are already in the queue', StatusCodes.CONFLICT);
+class QueueService {
+  constructor(storageType) {
+    this.storage = this.selectStorage(storageType);
   }
 
-  await queueStorage.enqueue(patientId);
-
-  return { patientId: +patientId };
-};
-
-const peek = async () => {
-  const patientId = await queueStorage.peek();
-
-  if (!patientId) {
-    return undefined;
+  selectStorage(storage) {
+    switch (storage) {
+      case 'redis':
+        return redisQueueStorage;
+      default:
+        throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
+    }
   }
 
-  return { patientId: +patientId };
-};
-
-const dequeue = async () => {
-  const deletedPatientId = await queueStorage.dequeue();
-
-  if (!deletedPatientId) {
-    return undefined;
+  async getQueue() {
+    return await this.storage.getQueue();
   }
 
-  return { patientId: +deletedPatientId };
-};
+  async enqueue(patientId) {
+    // checking if the patientId is already in the queue
+    const queue = await this.getQueue();
 
-export default { getQueue, enqueue, peek, dequeue };
+    const duplicate = queue.some(patient => patient === `${patientId}`);
+
+    if (duplicate) {
+      throw new AppError('You are already in the queue', StatusCodes.CONFLICT);
+    }
+
+    await this.storage.enqueue(patientId);
+
+    return { patientId: +patientId };
+  }
+
+  async peek() {
+    const patientId = await this.storage.peek();
+
+    if (!patientId) {
+      return undefined;
+    }
+
+    return { patientId: +patientId };
+  }
+
+  async dequeue() {
+    const deletedPatientId = await this.storage.dequeue();
+
+    if (!deletedPatientId) {
+      return undefined;
+    }
+
+    return { patientId: +deletedPatientId };
+  }
+}
+
+const queueService = new QueueService(config.get('db.types.queue'));
+
+export default queueService;

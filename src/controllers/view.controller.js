@@ -1,26 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
 import catchAsync from '../utils/catchAsync.js';
+
 import resolutionService from '../services/resolution.service.js';
 import queueService from '../services/queue.service.js';
 import patientService from '../services/patient.service.js';
-import db from '../db/clients/sequelize.client.js';
 
-// view controller needs adjustments, since we are working directly with sequelize here, when we should work with services
 const getQueue = catchAsync(async (req, res, next) => {
   const currentPatientId = await queueService.peek();
+  const currentPatient = await patientService.getByID(currentPatientId);
 
   const queue = {};
 
-  req.params.patientId = currentPatientId;
-
-  const currentPatient = await patientService.getByID(req.params);
-
-  // needs adjustments, since name is now being stored in the patient entity
   if (currentPatient) {
     queue.current = currentPatient.name;
-    if (req.user) {
-      queue.userPatientId = currentPatientId;
-    }
   }
 
   res.status(StatusCodes.OK).render('queue', {
@@ -30,13 +22,18 @@ const getQueue = catchAsync(async (req, res, next) => {
 });
 
 const getPersonalResolutions = catchAsync(async (req, res, next) => {
-  const patient = db.users.findOne({
-    where: { userId: req.user.id },
+  const resolutions = await resolutionService.getByUserID(req.user.id);
+
+  res.status(StatusCodes.OK).render('personalResolutions', {
+    title: 'Resolutions',
+    resolutions,
   });
+});
 
-  req.query.patientId = patient.id;
-
-  const resolutions = await resolutionService.getAll(req.query);
+const getAllResolutionsByName = catchAsync(async (req, res, next) => {
+  const resolutions = await resolutionService.getResolutionsByPatientName(
+    req.query.name,
+  );
 
   res.status(StatusCodes.OK).render('resolutions', {
     title: 'Resolutions',
@@ -61,4 +58,5 @@ export default {
   getPersonalResolutions,
   getSigninForm,
   getSignupForm,
+  getAllResolutionsByName,
 };

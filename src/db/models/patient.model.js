@@ -16,6 +16,12 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      userId: {
+        type: Sequelize.UUID,
+        foreignKey: true,
+        allowNull: false,
+        unique: true,
+      },
     },
     { sequelize, modelName: 'patient', timestamps: true },
   );

@@ -1,5 +1,4 @@
 server:
-  host: 'localhost'
   port: 8080
 app:
   timeToLive: -1 # '-1' for turning expiry off; otherwise, should be at least '1' (minute)
@@ -12,7 +11,7 @@ db:
   sequelize:
     host: 'localhost'
     user: 'root'
-    password: '0000' # INSERT PASSWORD HERE
+    password: '7895leon' # INSERT PASSWORD HERE
     db: 'clinic'
     dialect: 'mysql'
 security:

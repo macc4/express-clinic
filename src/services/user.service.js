@@ -3,37 +3,55 @@ import { AppError } from '../utils/errorClasses.js';
 import sequelizeUserStorage from '../db/sequelize.user.storage.js';
 import passwordUtils from '../utils/passwordUtils.js';
 
-const selectStorage = storage => {
-  switch (storage) {
-    case 'sequelize':
-      return sequelizeUserStorage;
-    default:
-      throw new AppError(`This storage doesn't exist`, 404);
+class UserService {
+  constructor(storageType) {
+    this.storage = this.selectStorage(storageType);
   }
-};
 
-const userStorage = selectStorage(config.get('db.types.main'));
+  selectStorage(storage) {
+    switch (storage) {
+      case 'sequelize':
+        return sequelizeUserStorage;
+      default:
+        throw new AppError(`This storage doesn't exist`, 404);
+    }
+  }
 
-const create = async body => {
-  const password = await passwordUtils.hashPassword(body.password);
+  async create(body) {
+    const password = await passwordUtils.hashPassword(body.password);
 
-  const user = await userStorage.createOne({ email: body.email, password });
+    try {
+      const user = await this.storage.createOne({
+        name: body.name,
+        email: body.email,
+        password: password,
+      });
 
-  return user;
-};
+      return user;
+    } catch {
+      throw new AppError(`This email is already in use!`, 404);
+    }
+  }
 
-const getAll = async query => await userStorage.getAll(query);
+  async getAll(query) {
+    return await this.storage.getAll(query);
+  }
 
-const getOne = async query => await userStorage.getOne(query);
+  async getByEmail(email) {
+    return await this.storage.getByEmail(email);
+  }
 
-const getByID = async params => await userStorage.getByID(params.userId);
+  async getByID(id) {
+    const user = await this.storage.getByID(id);
 
-const deleteByID = async params => await userStorage.deleteByID(params.userId);
+    return user;
+  }
 
-export default {
-  create,
-  getAll,
-  getOne,
-  getByID,
-  deleteByID,
-};
+  async deleteByID(id) {
+    return await this.storage.deleteByID(id);
+  }
+}
+
+const userService = new UserService(config.get('db.types.main'));
+
+export default userService;

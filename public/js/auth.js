@@ -16,8 +16,7 @@ const signin = async (email, password) => {
   const res = await axios(config)
     .then(function (response) {
       if (response.data.status === 'success') {
-        console.log(response);
-        // location.assign('/');
+        location.assign('/');
       }
     })
     .catch(function (error) {

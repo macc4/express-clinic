@@ -1,89 +1,112 @@
 import config from 'config';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizeResolutionStorage from '../db/sequelize.resolution.storage.js';
-import utilsExpiry from '../utils/expiryUtils.js';
+import expiryUtils from '../utils/expiryUtils.js';
 
-const selectStorage = storage => {
-  switch (storage) {
-    case 'sequelize':
-      return sequelizeResolutionStorage;
-    default:
-      throw new AppError(`This storage doesn't exist`, 404);
-  }
-};
-
-const resolutionStorage = selectStorage(config.get('db.types.main'));
-
-const checkForNotExpiredOrDelete = async resolution => {
-  const expired = utilsExpiry.checkIfExpired(resolution.expiry);
-
-  if (expired) {
-    await resolutionStorage.deleteByID(resolution.id);
-
-    return false;
+class ResolutionService {
+  constructor(storageType) {
+    this.storage = this.selectStorage(storageType);
   }
 
-  return true;
-};
+  selectStorage(storage) {
+    switch (storage) {
+      case 'sequelize':
+        return sequelizeResolutionStorage;
+      default:
+        throw new AppError(`This storage doesn't exist`, 404);
+    }
+  }
 
-const create = async body => {
-  body.expiry = utilsExpiry.getUnixExpiry(
-    body.expiry,
-    config.get('app.timeToLive'),
-  );
+  async checkForNotExpiredOrDelete(resolution) {
+    const expired = expiryUtils.checkIfExpired(resolution.expiry);
 
-  const resolution = await resolutionStorage.createOne(body);
+    if (expired) {
+      await this.storage.deleteByID(resolution.id);
 
-  return resolution;
-};
+      return false;
+    }
 
-const getAll = async query => {
-  const data = await resolutionStorage.getAll(query);
+    return true;
+  }
 
-  if (data.length !== 0) {
-    const resolutions = data.filter(
-      async resolution => await checkForNotExpiredOrDelete(resolution),
+  async filterResolutionsArrayByExpiry(resolutions) {
+    const data = await Promise.all(
+      resolutions.map(async resolution => {
+        const notExpired = await this.checkForNotExpiredOrDelete(resolution);
+
+        if (notExpired) {
+          return resolution;
+        }
+
+        return undefined;
+      }),
     );
 
-    return resolutions;
-  }
-
-  return [];
-};
-
-const getByID = async params => {
-  const resolution = await resolutionStorage.getByID(params.resolutionId);
-
-  if (resolution) {
-    const notExpired = await checkForNotExpiredOrDelete(resolution);
-
-    if (notExpired) return resolution;
-  }
-
-  return undefined;
-};
-
-const getByUserID = async id => {
-  const data = await resolutionStorage.getByUserID(id);
-
-  if (data.length !== 0) {
-    const resolutions = data.filter(
-      async resolution => await checkForNotExpiredOrDelete(resolution),
+    const filteredResolutions = data.filter(
+      resolution => resolution !== undefined,
     );
 
-    return resolutions;
+    return filteredResolutions;
   }
 
-  return [];
-};
+  async create(body) {
+    body.expiry = expiryUtils.getUnixExpiry(
+      body.expiry,
+      config.get('app.timeToLive'),
+    );
 
-const deleteByID = async params =>
-  await resolutionStorage.deleteByID(params.resolutionId);
+    const resolution = await this.storage.createOne(body);
 
-export default {
-  create,
-  getAll,
-  getByID,
-  deleteByID,
-  getByUserID,
-};
+    return resolution;
+  }
+
+  async getByUserID(id) {
+    const data = await this.storage.getByUserID(id);
+
+    if (data.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(data);
+    }
+
+    return [];
+  }
+
+  async getAll(query) {
+    const data = await this.storage.getAll(query);
+
+    if (data.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(data);
+    }
+
+    return [];
+  }
+
+  async getResolutionsByPatientName(name) {
+    const data = await this.storage.getByPatientName(name);
+
+    if (data.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(data);
+    }
+
+    return [];
+  }
+
+  async getByID(id) {
+    const resolution = await this.storage.getByID(id);
+
+    if (resolution) {
+      const notExpired = await this.checkForNotExpiredOrDelete(resolution);
+
+      if (notExpired) return resolution;
+    }
+
+    return undefined;
+  }
+
+  async deleteByID(id) {
+    return await this.storage.deleteByID(id);
+  }
+}
+
+const resolutionService = new ResolutionService(config.get('db.types.main'));
+
+export default resolutionService;

@@ -10,10 +10,17 @@ router.get('/signin', authController.isLoggedIn, viewController.getSigninForm);
 router.get('/signup', authController.isLoggedIn, viewController.getSignupForm);
 
 router.get(
-  '/resolutions',
+  '/personal-resolutions',
   authController.protect,
   authController.isLoggedIn,
   viewController.getPersonalResolutions,
+);
+
+router.get(
+  '/resolutions',
+  authController.protect,
+  authController.isLoggedIn,
+  viewController.getAllResolutionsByName,
 );
 
 export default router;

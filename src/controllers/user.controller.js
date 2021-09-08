@@ -8,9 +8,12 @@ const getMe = (req, res, next) => {
   next();
 };
 
-const createUser = (req, res) => {
-  // can be used in the future to create doctor/admin accounts
+//
+// following control functions are not used in frontend but can be added later
+//
 
+// can be used to create doctor/admin accounts
+const createUser = (req, res) => {
   res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     status: 'error',
     message: 'This route is not defined! Please, use /signup instead.',
@@ -43,7 +46,7 @@ const getAllUsers = catchAsync(async (req, res, next) => {
 
 // not used
 const getUserByID = catchAsync(async (req, res, next) => {
-  const user = await userService.getByID(req.params);
+  const user = await userService.getByID(req.params.userId);
 
   if (!user) {
     return next(new AppError(ReasonPhrases.NOT_FOUND, StatusCodes.NOT_FOUND));
@@ -64,7 +67,7 @@ const getUserByID = catchAsync(async (req, res, next) => {
 
 // not used
 const deleteUserByID = catchAsync(async (req, res, next) => {
-  const user = await userService.deleteByID(req.params);
+  const user = await userService.deleteByID(req.params.userId);
 
   if (!user) {
     return next(new AppError(ReasonPhrases.NOT_FOUND, StatusCodes.NOT_FOUND));

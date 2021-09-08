@@ -1,11 +1,23 @@
 extends base
 
 block content
-  .d-flex
-    .container-fluid.p-3.m-4
-      .display-5.my-3 Your resolutions:
-      #patient-resolutions-list.list-group.my-4(style='height: 400px; overflow-y: auto')
-        each resolution in resolutions
-          .list-group-item.py-3
-            p.mb-1=resolution.resolution
-            small=resolution.createdAt.toLocaleString('en-us')
+  .row.justify-content.p-3.m-2
+    .col-md-5.text-center.text-md-start
+        h3.mx-3.my-3 Search resolutions by patient name: 
+  .row.justify-content.p-3
+    .col-md-8.text-center.text-md-start
+      .container-fluid
+        form#form-search-resolutions-by-name.d-flex(method='get', action='', target='_blank')
+          input#name.form-control.me-2(type='text', name='name')
+          input.btn.btn-outline-success(type='submit', value='Search')
+      .container-fluid.p-3.m-2
+        -if (resolutions.length !== 0)
+          .list-group.my-4(style='height: 600px; overflow-y: auto')
+            each resolution in resolutions
+              .list-group-item.py-3
+                p.mb-1=resolution.resolution
+                small=resolution.createdAt.toLocaleString('en-us')
+        -else 
+          small.p-3.m-2 No resolutions to show.
+
+  

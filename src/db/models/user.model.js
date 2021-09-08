@@ -12,6 +12,10 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.ENUM('patient', 'doctor', 'admin'),
         defaultValue: 'patient',
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -22,6 +26,7 @@ export default (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      // for future checks that the password was not changed after the JWT was issued
       passwordChangedAt: {
         type: Sequelize.DATE,
         default: Date.now(),

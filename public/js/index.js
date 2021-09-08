@@ -4,6 +4,7 @@ import '@babel/polyfill';
 import { signin, signup, signout } from './auth.js';
 import { getPatientId, submitResolution, dequeue } from './processPatient.js';
 import { getIntoQueue } from './getIntoQueue.js';
+import searchResolutionsByName from './searchResolutionsByName.js';
 
 const signinForm = document.getElementById('signin-form');
 const signupForm = document.getElementById('signup-form');
@@ -11,6 +12,9 @@ const signoutButton = document.getElementById('btn-signout');
 const submitResolutionForm = document.getElementById('form-submit-resolution');
 const nextPatientButton = document.getElementById('btn-next-patient');
 const getIntoQueueButton = document.getElementById('btn-get-into-queue');
+const searchResolutionsByNameForm = document.getElementById(
+  'form-search-resolutions-by-name',
+);
 
 if (signinForm) {
   signinForm.addEventListener('submit', event => {
@@ -72,5 +76,15 @@ if (nextPatientButton) {
 if (getIntoQueueButton) {
   getIntoQueueButton.addEventListener('click', () => {
     getIntoQueue();
+  });
+}
+
+if (searchResolutionsByNameForm) {
+  searchResolutionsByNameForm.addEventListener('submit', event => {
+    event.preventDefault();
+
+    const name = searchResolutionsByNameForm.querySelector('#name').value;
+
+    searchResolutionsByName(name);
   });
 }
