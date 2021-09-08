@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import config from 'config';
 
 import { StatusCodes } from 'http-status-codes';
 import errorController from './src/controllers/error.controller.js';
@@ -21,11 +22,16 @@ app.set('views', path.join(path.resolve(), 'src/views'));
 
 // 1) GLOBAL MIDDLEWARES
 
+app.use(cookieParser());
 app.use(express.static(path.join(path.resolve(), 'public')));
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: `http://${config.get('server.host')}:${config.get('server.port')}`,
+  }),
+);
 app.use(morgan('dev'));
 app.use(express.json());
-app.use(cookieParser());
 
 // 2) ROUTES.
 

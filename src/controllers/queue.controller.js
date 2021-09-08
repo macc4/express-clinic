@@ -4,7 +4,7 @@ import catchAsync from '../utils/catchAsync.js';
 import queueService from '../services/queue.service.js';
 
 const enqueue = catchAsync(async (req, res, next) => {
-  const newPatient = await queueService.enqueue(req.body);
+  const newPatient = await queueService.enqueue(req.body.patientId);
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',

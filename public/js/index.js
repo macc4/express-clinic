@@ -27,14 +27,17 @@ if (signupForm) {
   signupForm.addEventListener('submit', event => {
     event.preventDefault();
 
+    // add birthday, gender
     const name = signupForm.querySelector('#inputName').value;
     const email = signupForm.querySelector('#inputEmail').value;
     const password = signupForm.querySelector('#inputPassword').value;
     const passwordConfirm = signupForm.querySelector(
       '#inputPasswordConfirm',
     ).value;
+    const gender = signupForm.querySelector('#inputGender').value;
+    const birthday = signupForm.querySelector('#inputBirthday').value;
 
-    signup(name, email, password, passwordConfirm);
+    signup(name, email, password, passwordConfirm, gender, birthday);
   });
 }
 

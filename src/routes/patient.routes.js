@@ -8,6 +8,8 @@ const router = express.Router();
 // for registered users
 router.use(authController.protect);
 
+router.get('/me', patientController.getMe, patientController.getPatientByID);
+
 router
   .route('/')
   .post(patientController.createPatient)

@@ -6,34 +6,15 @@ class SequelizeResolutionStorage {
   }
 
   async createOne(body) {
-    return await this.client.resolutions.create(body);
-  }
+    const data = await this.client.resolutions
+      .create(body)
+      .then(result => result.get({ plain: true }));
 
-  async deleteByID(id) {
-    return await this.client.resolutions.destroy({ where: { id } });
-  }
-
-  async getByID(id) {
-    const resolution = await this.client.resolutions.findByPk(id);
-
-    if (resolution.isExpired) {
-      return undefined;
-    }
-
-    const expired = resolution.checkIfExpired(resolution.expiry);
-
-    if (expired) {
-      resolution.isExpired = true;
-      await resolution.save({ fields: ['isExpired'] });
-
-      return undefined;
-    }
-
-    return resolution;
+    return data;
   }
 
   async getAll(query) {
-    const queryConditions = { isExpired: false };
+    const queryConditions = {};
 
     if (query.patientId) {
       queryConditions.patientId = {
@@ -41,21 +22,39 @@ class SequelizeResolutionStorage {
       };
     }
 
-    const resolutionsCheck = await this.client.resolutions.findAll({
+    const resolutions = await this.client.resolutions.findAll({
+      raw: true,
       where: queryConditions,
     });
 
-    resolutionsCheck.forEach(async resolution => {
-      const isExpired = resolution.checkIfExpired(resolution.expiry);
-      if (isExpired) {
-        resolution.isExpired = true;
-        await resolution.save({ fields: ['isExpired'] });
-      }
+    return resolutions;
+  }
+
+  async deleteByID(id) {
+    return await this.client.resolutions.destroy({ raw: true, where: { id } });
+  }
+
+  async getByID(id) {
+    const resolution = await this.client.resolutions.findByPk(id, {
+      raw: true,
     });
 
-    const resolutions = resolutionsCheck.filter(
-      resolution => resolution.isExpired === false,
-    );
+    return resolution;
+  }
+
+  async getByUserID(id) {
+    const query = `
+    SELECT resolutions.id, resolutions.resolution, resolutions.createdAt, resolutions.expiry
+    FROM resolutions
+    INNER JOIN patients
+    ON patients.id=resolutions.patientId
+    WHERE patients.userId="${id}"
+    `;
+
+    const resolutions = await this.client.sequelize.query(query, {
+      raw: true,
+      type: this.client.Sequelize.QueryTypes.SELECT,
+    });
 
     return resolutions;
   }

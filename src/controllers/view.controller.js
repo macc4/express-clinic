@@ -5,6 +5,7 @@ import queueService from '../services/queue.service.js';
 import patientService from '../services/patient.service.js';
 import db from '../db/clients/sequelize.client.js';
 
+// view controller needs adjustments, since we are working directly with sequelize here, when we should work with services
 const getQueue = catchAsync(async (req, res, next) => {
   const currentPatientId = await queueService.peek();
 
@@ -14,12 +15,9 @@ const getQueue = catchAsync(async (req, res, next) => {
 
   const currentPatient = await patientService.getByID(req.params);
 
+  // needs adjustments, since name is now being stored in the patient entity
   if (currentPatient) {
-    const currentUser = await db.users.findOne({
-      where: { id: currentPatient.userId },
-    });
-
-    queue.current = currentUser.name;
+    queue.current = currentPatient.name;
     if (req.user) {
       queue.userPatientId = currentPatientId;
     }

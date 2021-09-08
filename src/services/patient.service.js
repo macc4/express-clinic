@@ -22,9 +22,12 @@ const getByID = async params => await patientStorage.getByID(params.patientId);
 const deleteByID = async params =>
   await patientStorage.deleteByID(params.patientId);
 
+const getByUserID = async id => await patientStorage.getByUserID(id);
+
 export default {
   create,
   getAll,
   getByID,
   deleteByID,
+  getByUserID,
 };

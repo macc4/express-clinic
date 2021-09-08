@@ -13,14 +13,6 @@ class SequelizePatientStorage {
     return data;
   }
 
-  async getByID(id) {
-    return await this.client.patients.findByPk(id, { raw: true });
-  }
-
-  async deleteByID(id) {
-    return await this.client.patients.destroy({ raw: true, where: { id } });
-  }
-
   // eslint-disable-next-line no-unused-vars
   async getAll(query) {
     const queryConditions = {};
@@ -39,6 +31,21 @@ class SequelizePatientStorage {
     });
 
     return patients;
+  }
+
+  async getByID(id) {
+    return await this.client.patients.findByPk(id, { raw: true });
+  }
+
+  async deleteByID(id) {
+    return await this.client.patients.destroy({ raw: true, where: { id } });
+  }
+
+  async getByUserID(id) {
+    return await this.client.patients.findOne({
+      raw: true,
+      where: { userId: id },
+    });
   }
 }
 

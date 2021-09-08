@@ -5,6 +5,8 @@ import User from '../models/user.model.js';
 import Patient from '../models/patient.model.js';
 import Resolution from '../models/resolution.model.js';
 
+import passwordUtils from '../../utils/passwordUtils.js';
+
 const db = {};
 
 const sequelize = new Sequelize(
@@ -54,29 +56,9 @@ db.connect = async () => {
   // create a default admin role
   await db.users.create({
     email: 'admin@gmail.com',
-    password: '12345678',
-    passwordConfirm: '12345678',
+    password: await passwordUtils.hashPassword('12345678'),
     role: 'admin',
   });
-
-  // await db.resolutions.bulkCreate([
-  //   {
-  //     patientId: 1,
-  //     resolution: 'This is a test resolution!',
-  //   },
-  //   {
-  //     patientId: 1,
-  //     resolution: 'This is a test resolution!',
-  //   },
-  //   {
-  //     patientId: 1,
-  //     resolution: 'This is a test resolution!',
-  //   },
-  //   {
-  //     patientId: 1,
-  //     resolution: 'This is a test resolution!',
-  //   },
-  // ]);
 
   console.log('-----------------------------'); // eslint-disable-line no-console
   console.log('SQL database has been connected.'); // eslint-disable-line no-console

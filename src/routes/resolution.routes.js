@@ -10,13 +10,15 @@ router.use(authController.protect);
 router
   .route('/')
   .post(
-    resolutionController.setPatientID,
+    resolutionController.setPatientIDFromParams,
     resolutionController.createResolution,
   )
   .get(
-    resolutionController.setPatientID,
+    resolutionController.setPatientIDFromParams,
     resolutionController.getAllResolutions,
   );
+
+router.route('/personal').get(resolutionController.getResolutionsByUserID);
 
 router
   .route('/:resolutionId')

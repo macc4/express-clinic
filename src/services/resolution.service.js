@@ -1,6 +1,7 @@
 import config from 'config';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizeResolutionStorage from '../db/sequelize.resolution.storage.js';
+import utilsExpiry from '../utils/expiryUtils.js';
 
 const selectStorage = storage => {
   switch (storage) {
@@ -13,12 +14,68 @@ const selectStorage = storage => {
 
 const resolutionStorage = selectStorage(config.get('db.types.main'));
 
-const create = async body => await resolutionStorage.createOne(body);
+const checkForNotExpiredOrDelete = async resolution => {
+  const expired = utilsExpiry.checkIfExpired(resolution.expiry);
 
-const getAll = async query => await resolutionStorage.getAll(query);
+  if (expired) {
+    await resolutionStorage.deleteByID(resolution.id);
 
-const getByID = async params =>
-  await resolutionStorage.getByID(params.resolutionId);
+    return false;
+  }
+
+  return true;
+};
+
+const create = async body => {
+  body.expiry = utilsExpiry.getUnixExpiry(
+    body.expiry,
+    config.get('app.timeToLive'),
+  );
+
+  const resolution = await resolutionStorage.createOne(body);
+
+  return resolution;
+};
+
+const getAll = async query => {
+  const data = await resolutionStorage.getAll(query);
+
+  if (data.length !== 0) {
+    const resolutions = data.filter(
+      async resolution => await checkForNotExpiredOrDelete(resolution),
+    );
+
+    return resolutions;
+  }
+
+  return [];
+};
+
+const getByID = async params => {
+  const resolution = await resolutionStorage.getByID(params.resolutionId);
+
+  if (resolution) {
+    const notExpired = await checkForNotExpiredOrDelete(resolution);
+
+    if (notExpired) return resolution;
+  }
+
+  return undefined;
+};
+
+const getByUserID = async id => {
+  const data = await resolutionStorage.getByUserID(id);
+
+  if (data.length !== 0) {
+    const resolutions = data.filter(
+      async resolution => await checkForNotExpiredOrDelete(resolution),
+    );
+
+    return resolutions;
+  }
+
+  return [];
+};
 
 const deleteByID = async params =>
   await resolutionStorage.deleteByID(params.resolutionId);
@@ -28,4 +85,5 @@ export default {
   getAll,
   getByID,
   deleteByID,
+  getByUserID,
 };

@@ -11,7 +11,7 @@ router.get('/signout', authController.signOut);
 // for registered users
 router.use(authController.protect);
 
-router.get('/account', userController.getMe, userController.getUserByID);
+router.get('/me', userController.getMe, userController.getUserByID);
 
 // for admins
 router.use(authController.restrictTo('admin'));

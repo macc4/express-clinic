@@ -16,21 +16,19 @@ const queueStorage = selectStorage(config.get('db.types.queue'));
 
 const getQueue = async () => await queueStorage.getQueue();
 
-const enqueue = async body => {
-  const newPatientId = body.patientId;
-
+const enqueue = async patientId => {
   // checking if the patientId is already in the queue
   const queue = await getQueue();
 
-  const duplicate = queue.some(patient => patient === `${newPatientId}`);
+  const duplicate = queue.some(patient => patient === `${patientId}`);
 
   if (duplicate) {
     throw new AppError('You are already in the queue', StatusCodes.CONFLICT);
   }
 
-  await queueStorage.enqueue(newPatientId);
+  await queueStorage.enqueue(patientId);
 
-  return { patientId: +newPatientId };
+  return { patientId: +patientId };
 };
 
 const peek = async () => {

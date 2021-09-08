@@ -12,12 +12,15 @@ const signin = async (email, password) => {
       email,
       password,
     },
+    withCredentials: true,
+    credentials: 'include',
   };
 
   const res = await axios(config)
     .then(function (response) {
       if (response.data.status === 'success') {
-        location.assign('/');
+        console.log(response);
+        // location.assign('/');
       }
     })
     .catch(function (error) {
@@ -44,7 +47,14 @@ const signout = async () => {
     });
 };
 
-const signup = async (name, email, password, passwordConfirm) => {
+const signup = async (
+  name,
+  email,
+  password,
+  passwordConfirm,
+  gender,
+  birthday,
+) => {
   const config = {
     method: 'POST',
     url: 'http://127.0.0.1:8080/api/v1/users/signup',
@@ -54,7 +64,10 @@ const signup = async (name, email, password, passwordConfirm) => {
       email,
       password,
       passwordConfirm,
+      gender,
+      birthday,
     },
+    withCredentials: true,
   };
 
   const res = await axios(config)

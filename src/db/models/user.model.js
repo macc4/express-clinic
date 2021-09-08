@@ -1,5 +1,3 @@
-import bcrypt from 'bcryptjs';
-
 export default (sequelize, Sequelize) => {
   const User = sequelize.define(
     'user',
@@ -23,18 +21,6 @@ export default (sequelize, Sequelize) => {
       password: {
         type: Sequelize.STRING,
         allowNull: false,
-        validate: { len: [8, 30] },
-      },
-      passwordConfirm: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        validate: {
-          samePassword(value) {
-            if (this.password !== value) {
-              throw new Error('Passwords are not the same');
-            }
-          },
-        },
       },
       passwordChangedAt: {
         type: Sequelize.DATE,
@@ -44,33 +30,35 @@ export default (sequelize, Sequelize) => {
     { sequelize, modelName: 'user', timestamps: true },
   );
 
+  // not used since there is no way to get the hooks/prototype methods into the controllers
+
   // HOOKS
   // hash the password before storing
-  User.beforeSave(async user => {
-    if (!user.changed('password')) return;
+  // User.beforeSave(async user => {
+  //   if (!user.changed('password')) return;
 
-    // Hash the password with cost of 12
-    user.password = await bcrypt.hash(user.password, 12);
+  //   // Hash the password with cost of 12
+  //   user.password = await bcrypt.hash(user.password, 12);
 
-    // Delete passwordConfirm field
-    user.passwordConfirm = null;
-  });
+  //   // Delete passwordConfirm field
+  //   user.passwordConfirm = null;
+  // });
 
   // PROTOTYPE METHODS
   // if the password was changed after the jwt was issued, throw 401
-  User.prototype.changedPasswordAfter = function (JWTTimeStamp) {
-    if (this.passwordChangedAt) {
-      const changedTimeStamp = parseInt(
-        this.passwordChangedAt.getTime() / 1000,
-        10,
-      );
+  // User.prototype.changedPasswordAfter = function (JWTTimeStamp) {
+  //   if (this.passwordChangedAt) {
+  //     const changedTimeStamp = parseInt(
+  //       this.passwordChangedAt.getTime() / 1000,
+  //       10,
+  //     );
 
-      return JWTTimeStamp < changedTimeStamp;
-    }
+  //     return JWTTimeStamp < changedTimeStamp;
+  //   }
 
-    // false means not changed
-    return false;
-  };
+  //   // false means not changed
+  //   return false;
+  // };
 
   return User;
 };

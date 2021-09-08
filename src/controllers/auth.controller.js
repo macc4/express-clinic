@@ -3,14 +3,14 @@ import config from 'config';
 
 import { AppError } from '../utils/errorClasses.js';
 import catchAsync from '../utils/catchAsync.js';
-import correctPassword from '../utils/correctPassword.js';
-import utilsJWT from '../utils/utilsJWT.js';
+import passwordUtils from '../utils/passwordUtils.js';
+import JWTUtils from '../utils/jwtUtils.js';
 
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
 
 const createSendToken = (user, statusCode, res) => {
-  const token = utilsJWT.sign(
+  const token = JWTUtils.sign(
     user.id,
     config.get('security.jwt_secret'),
     config.get('security.jwt_expiry'),
@@ -41,12 +41,28 @@ const signUp = catchAsync(async (req, res, next) => {
   // destructuring for security reasons, so body won't receive an admin role by POST req
   const { name, email, password, passwordConfirm, gender, birthday } = req.body;
 
-  const userBody = { email, password, passwordConfirm };
+  const samePasswords = passwordUtils.comparePasswords(
+    password,
+    passwordConfirm,
+  );
+
+  if (!samePasswords) {
+    return next(
+      new AppError('Passwords are not the same!', StatusCodes.FORBIDDEN),
+    );
+  }
+
+  const userBody = { email, password };
   const newUser = await userService.create(userBody);
 
   // automatically create a corresponding patient
   const patientBody = { name, gender, birthday, userId: newUser.id };
   await patientService.create(patientBody);
+
+  // don't send sensitive data
+  newUser.password = undefined;
+  newUser.passwordConfirm = undefined;
+  newUser.passwordChangedAt = undefined;
 
   createSendToken(newUser, StatusCodes.CREATED, res);
 });
@@ -68,13 +84,13 @@ const login = catchAsync(async (req, res, next) => {
   req.query.email = email;
   const user = await userService.getOne(req.query);
 
-  if (!user || !(await correctPassword(password, user.password))) {
+  if (!user || !(await passwordUtils.verifyPassword(password, user.password))) {
     return next(
       new AppError('Incorrect email or password!', StatusCodes.UNAUTHORIZED),
     );
   }
 
-  // don't send back the data
+  // don't send sensitive data
   user.password = undefined;
   user.passwordConfirm = undefined;
   user.passwordChangedAt = undefined;
@@ -85,7 +101,7 @@ const login = catchAsync(async (req, res, next) => {
 
 const signOut = (req, res) => {
   res.cookie('jwt', 'signed-out', {
-    expires: new Date(Date.now() + 10 * 1000),
+    expires: new Date(Date.now() + 60 * 1000),
     httpOnly: true,
   });
   res.status(StatusCodes.OK).json({ status: 'success' });
@@ -112,10 +128,16 @@ const protect = catchAsync(async (req, res, next) => {
 
   // 2) Verificate the token
 
-  const decoded = await utilsJWT.decode(
+  const decoded = await JWTUtils.decode(
     token,
     config.get('security.jwt_secret'),
   );
+
+  if (!decoded) {
+    return next(
+      new AppError('You are not logged in!', StatusCodes.UNAUTHORIZED),
+    );
+  }
 
   // 3) Check if the user still exists
   req.params.userId = decoded.id;
@@ -130,9 +152,9 @@ const protect = catchAsync(async (req, res, next) => {
     );
   }
 
+  // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method
   // 4) Check if the user has changed the password after the token was issued
 
-  // not working due to recent sequelize detachment from user.service, requires a separate method now
   // if (freshUser.changedPasswordAfter(decoded.iat)) {
   //   return next(
   //     new AppError(
@@ -142,8 +164,10 @@ const protect = catchAsync(async (req, res, next) => {
   //   );
   // }
 
-  // don't send back the password
+  // don't send sensitive data
   freshUser.password = undefined;
+  freshUser.passwordConfirm = undefined;
+  freshUser.passwordChangedAt = undefined;
 
   // put the user data into the request for the next controllers
   req.user = freshUser;
@@ -157,7 +181,7 @@ const isLoggedIn = async (req, res, next) => {
   try {
     if (req.cookies.jwt) {
       // 1) Verify the token
-      const decoded = await utilsJWT.decode(
+      const decoded = await JWTUtils.decode(
         req.cookies.jwt,
         config.get('security.jwt_secret'),
       );
@@ -168,16 +192,21 @@ const isLoggedIn = async (req, res, next) => {
         return next();
       }
 
+      // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method
       // 3) Check if the user has changed the password after the token was issued
-      if (currentUser.changedPasswordAfter(decoded.iat)) {
-        return next();
-      }
 
-      // don't send back the password
+      // if (currentUser.changedPasswordAfter(decoded.iat)) {
+      //   return next();
+      // }
+
+      // don't send sensitive data
       currentUser.password = undefined;
+      currentUser.passwordConfirm = undefined;
+      currentUser.passwordChangedAt = undefined;
 
-      // put the user data into the request and locals for the next controllers
+      // put the user data into the request for the next controllers
       req.user = currentUser;
+      // put data into locals so the templates would have access to user data (to render different pages if the user has signed-in or not)
       res.locals.user = currentUser;
 
       return next();

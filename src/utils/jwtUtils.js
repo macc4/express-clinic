@@ -10,9 +10,13 @@ const sign = (id, secret, expiry) => {
 };
 
 const decode = async (token, secret) => {
-  const decoded = await promisify(jwt.verify)(token, secret);
+  try {
+    const decoded = await promisify(jwt.verify)(token, secret);
 
-  return decoded;
+    return decoded;
+  } catch (error) {
+    return undefined;
+  }
 };
 
 export default { sign, decode };

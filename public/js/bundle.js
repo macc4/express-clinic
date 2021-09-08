@@ -8492,12 +8492,14 @@ var signin = /*#__PURE__*/function () {
               data: {
                 email: email,
                 password: password
-              }
+              },
+              withCredentials: true,
+              credentials: 'include'
             };
             _context.next = 3;
             return (0, _axios.default)(config).then(function (response) {
               if (response.data.status === 'success') {
-                location.assign('/');
+                console.log(response); // location.assign('/');
               }
             }).catch(function (error) {
               alert(error.response.data.message); // showAlert('error', error.response.data.message);
@@ -8560,7 +8562,7 @@ var signout = /*#__PURE__*/function () {
 exports.signout = signout;
 
 var signup = /*#__PURE__*/function () {
-  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, email, password, passwordConfirm) {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(name, email, password, passwordConfirm, gender, birthday) {
     var config, res;
     return regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) {
@@ -8574,8 +8576,11 @@ var signup = /*#__PURE__*/function () {
                 name: name,
                 email: email,
                 password: password,
-                passwordConfirm: passwordConfirm
-              }
+                passwordConfirm: passwordConfirm,
+                gender: gender,
+                birthday: birthday
+              },
+              withCredentials: true
             };
             _context3.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -8597,7 +8602,7 @@ var signup = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function signup(_x3, _x4, _x5, _x6) {
+  return function signup(_x3, _x4, _x5, _x6, _x7, _x8) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -8619,6 +8624,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+// most likely should be rewritten
 var getPatientId = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
     var config;
@@ -8629,7 +8635,8 @@ var getPatientId = /*#__PURE__*/function () {
             config = {
               method: 'GET',
               url: 'http://127.0.0.1:8080/api/v1/queue',
-              headers: {}
+              headers: {},
+              withCredentials: true
             };
             _context.next = 3;
             return (0, _axios.default)(config);
@@ -8667,7 +8674,8 @@ var submitResolution = /*#__PURE__*/function () {
                 patientId: patientId,
                 resolution: resolution,
                 expiry: expiry
-              }
+              },
+              withCredentials: true
             };
             _context2.next = 3;
             return (0, _axios.default)(config).then(function (response) {
@@ -8705,7 +8713,8 @@ var dequeue = /*#__PURE__*/function () {
             config = {
               method: 'DELETE',
               url: 'http://127.0.0.1:8080/api/v1/queue',
-              headers: {}
+              headers: {},
+              withCredentials: true
             };
             _context3.next = 3;
             return (0, _axios.default)(config).then(function (response) {// if (response.data.statusCode === 404) {
@@ -8749,69 +8758,19 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var getPersonalPatientId = /*#__PURE__*/function () {
+var getIntoQueue = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var config, res, patientId;
+    var config, res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             config = {
-              method: 'GET',
-              url: 'http://127.0.0.1:8080/api/v1/users/account'
-            };
-            _context.next = 3;
-            return (0, _axios.default)(config).catch(function (error) {
-              alert(error.response.data.message); // showAlert('error', error.response.data.message);
-
-              // showAlert('error', error.response.data.message);
-              return undefined;
-            });
-
-          case 3:
-            res = _context.sent;
-
-            if (!(res.data.status === 'success')) {
-              _context.next = 7;
-              break;
-            }
-
-            patientId = res.data.data.data.patientId;
-            return _context.abrupt("return", patientId);
-
-          case 7:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-
-  return function getPersonalPatientId() {
-    return _ref.apply(this, arguments);
-  };
-}();
-
-var getIntoQueue = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-    var patientId, config, res;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.next = 2;
-            return getPersonalPatientId();
-
-          case 2:
-            patientId = _context2.sent;
-            config = {
               method: 'POST',
               url: 'http://127.0.0.1:8080/api/v1/queue',
-              data: {
-                patientId: patientId
-              }
+              withCredentials: true
             };
-            _context2.next = 6;
+            _context.next = 3;
             return (0, _axios.default)(config).then(function (response) {
               if (response.data.status === 'success') {
                 location.reload(true);
@@ -8820,19 +8779,19 @@ var getIntoQueue = /*#__PURE__*/function () {
               alert(error.response.data.message); // showAlert('error', error.response.data.message);
             });
 
-          case 6:
-            res = _context2.sent;
+          case 3:
+            res = _context.sent;
 
-          case 7:
+          case 4:
           case "end":
-            return _context2.stop();
+            return _context.stop();
         }
       }
-    }, _callee2);
+    }, _callee);
   }));
 
   return function getIntoQueue() {
-    return _ref2.apply(this, arguments);
+    return _ref.apply(this, arguments);
   };
 }();
 
@@ -9132,12 +9091,15 @@ if (signinForm) {
 
 if (signupForm) {
   signupForm.addEventListener('submit', function (event) {
-    event.preventDefault();
+    event.preventDefault(); // add birthday, gender
+
     var name = signupForm.querySelector('#inputName').value;
     var email = signupForm.querySelector('#inputEmail').value;
     var password = signupForm.querySelector('#inputPassword').value;
     var passwordConfirm = signupForm.querySelector('#inputPasswordConfirm').value;
-    (0, _auth.signup)(name, email, password, passwordConfirm);
+    var gender = signupForm.querySelector('#inputGender').value;
+    var birthday = signupForm.querySelector('#inputBirthday').value;
+    (0, _auth.signup)(name, email, password, passwordConfirm, gender, birthday);
   });
 }
 
@@ -9223,7 +9185,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6530" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "11205" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

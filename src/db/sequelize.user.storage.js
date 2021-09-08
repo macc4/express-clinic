@@ -6,19 +6,21 @@ class SequelizeUserStorage {
   }
 
   async createOne(body) {
-    const data = await this.client.users.create(body);
+    const data = await this.client.users
+      .create(body)
+      .then(result => result.get({ plain: true }));
 
     return data;
   }
 
   async getByID(id) {
-    const data = await this.client.users.findByPk(id);
+    const data = await this.client.users.findByPk(id, { raw: true });
 
     return data;
   }
 
   async deleteByID(id) {
-    const data = await this.client.users.destroy({ where: { id } });
+    const data = await this.client.users.destroy({ raw: true, where: { id } });
 
     return data;
   }
@@ -32,7 +34,10 @@ class SequelizeUserStorage {
       };
     }
 
-    const users = await this.client.users.findOne({ where: queryConditions });
+    const users = await this.client.users.findOne({
+      raw: true,
+      where: queryConditions,
+    });
 
     return users;
   }
@@ -46,7 +51,10 @@ class SequelizeUserStorage {
       };
     }
 
-    const users = await this.client.users.findAll({ where: queryConditions });
+    const users = await this.client.users.findAll({
+      raw: true,
+      where: queryConditions,
+    });
 
     return users;
   }
