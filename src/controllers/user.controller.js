@@ -13,14 +13,20 @@ const getMe = (req, res, next) => {
 //
 
 // can be used to create doctor/admin accounts
-const createUser = (req, res) => {
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    status: 'error',
-    message: 'This route is not defined! Please, use /signup instead.',
-  });
-};
+const createUser = catchAsync(async (req, res, next) => {
+  const user = await userService.create(req.body);
 
-// not used
+  user.password = undefined;
+  user.passwordChangedAt = undefined;
+
+  res.status(StatusCodes.CREATED).json({
+    status: 'success',
+    data: {
+      user,
+    },
+  });
+});
+
 const getAllUsers = catchAsync(async (req, res, next) => {
   const users = await userService.getAll(req.query);
 
@@ -31,7 +37,6 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   users.forEach(user => {
     // don't send sensitive data
     user.password = undefined;
-    user.passwordConfirm = undefined;
     user.passwordChangedAt = undefined;
   });
 
@@ -44,7 +49,6 @@ const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-// not used
 const getUserByID = catchAsync(async (req, res, next) => {
   const user = await userService.getByID(req.params.userId);
 
@@ -54,7 +58,6 @@ const getUserByID = catchAsync(async (req, res, next) => {
 
   // don't send sensitive data
   user.password = undefined;
-  user.passwordConfirm = undefined;
   user.passwordChangedAt = undefined;
 
   res.status(StatusCodes.OK).json({
@@ -65,7 +68,6 @@ const getUserByID = catchAsync(async (req, res, next) => {
   });
 });
 
-// not used
 const deleteUserByID = catchAsync(async (req, res, next) => {
   const user = await userService.deleteByID(req.params.userId);
 

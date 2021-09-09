@@ -1,6 +1,6 @@
 import sequelize from './clients/sequelize.client.js';
 
-class SequelizeUserStorage {
+export class SequelizeUserStorage {
   constructor(client) {
     this.client = client;
   }

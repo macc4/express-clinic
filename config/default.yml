@@ -11,7 +11,7 @@ db:
   sequelize:
     host: 'localhost'
     user: 'root'
-    password: '7895leon' # INSERT PASSWORD HERE
+    password: '0000' # INSERT PASSWORD HERE
     db: 'clinic'
     dialect: 'mysql'
 security:

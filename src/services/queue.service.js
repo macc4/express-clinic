@@ -1,20 +1,20 @@
-import { StatusCodes } from 'http-status-codes';
 import config from 'config';
+import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../utils/errorClasses.js';
 import redisQueueStorage from '../db/redis.queue.storage.js';
 
-class QueueService {
-  constructor(storageType) {
-    this.storage = this.selectStorage(storageType);
+const selectStorage = storageType => {
+  switch (storageType) {
+    case 'redis':
+      return redisQueueStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
   }
+};
 
-  selectStorage(storage) {
-    switch (storage) {
-      case 'redis':
-        return redisQueueStorage;
-      default:
-        throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
-    }
+export class QueueService {
+  constructor(storage) {
+    this.storage = storage;
   }
 
   async getQueue() {
@@ -57,6 +57,8 @@ class QueueService {
   }
 }
 
-const queueService = new QueueService(config.get('db.types.queue'));
+const queueService = new QueueService(
+  selectStorage(config.get('db.types.queue')),
+);
 
 export default queueService;

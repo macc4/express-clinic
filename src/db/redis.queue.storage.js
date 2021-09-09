@@ -1,6 +1,6 @@
 import redisClient from './clients/redis.client.js';
 
-class RedisStorage {
+export class RedisQueueStorage {
   constructor(client) {
     this.client = client.connect();
   }
@@ -22,6 +22,6 @@ class RedisStorage {
   }
 }
 
-const redisStorage = new RedisStorage(redisClient);
+const redisQueueStorage = new RedisQueueStorage(redisClient);
 
-export default redisStorage;
+export default redisQueueStorage;

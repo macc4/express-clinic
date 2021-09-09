@@ -1,32 +1,26 @@
 import config from 'config';
+import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizePatientStorage from '../db/sequelize.patient.storage.js';
 
-class PatientService {
-  constructor(storageType) {
-    this.storage = this.selectStorage(storageType);
+const selectStorage = storageType => {
+  switch (storageType) {
+    case 'sequelize':
+      return sequelizePatientStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
   }
+};
 
-  selectStorage(storage) {
-    switch (storage) {
-      case 'sequelize':
-        return sequelizePatientStorage;
-      default:
-        throw new AppError(`This storage doesn't exist`, 404);
-    }
+export class PatientService {
+  constructor(storage) {
+    this.storage = storage;
   }
 
   async create(body) {
-    try {
-      const patient = await this.storage.createOne(body);
+    const patient = await this.storage.createOne(body);
 
-      return patient;
-    } catch {
-      throw new AppError(
-        `This userId already has a corresponding patient`,
-        404,
-      );
-    }
+    return patient;
   }
 
   async getAll(query) {
@@ -46,6 +40,8 @@ class PatientService {
   }
 }
 
-const patientService = new PatientService(config.get('db.types.main'));
+const patientService = new PatientService(
+  selectStorage(config.get('db.types.main')),
+);
 
 export default patientService;

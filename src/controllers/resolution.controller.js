@@ -50,9 +50,7 @@ const getAllResolutions = catchAsync(async (req, res, next) => {
   let resolutions;
 
   if (req.body.name) {
-    resolutions = await resolutionService.getResolutionsByPatientName(
-      req.body.name,
-    );
+    resolutions = await resolutionService.getByPatientName(req.body.name);
   } else {
     resolutions = await resolutionService.getAll(req.query);
   }

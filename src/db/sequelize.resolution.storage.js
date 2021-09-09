@@ -1,6 +1,6 @@
 import sequelize from './clients/sequelize.client.js';
 
-class SequelizeResolutionStorage {
+export class SequelizeResolutionStorage {
   constructor(client) {
     this.client = client;
   }
@@ -61,7 +61,7 @@ class SequelizeResolutionStorage {
 
   async getByUserID(id) {
     const query = `
-    SELECT resolutions.id, resolutions.resolution, resolutions.createdAt, resolutions.expiry
+    SELECT resolutions.id, resolutions.patientId, resolutions.resolution, resolutions.expiry, resolutions.createdAt, resolutions.updatedAt
     FROM resolutions
     INNER JOIN patients
     ON patients.id=resolutions.patientId

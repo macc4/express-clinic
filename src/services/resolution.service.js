@@ -1,20 +1,20 @@
 import config from 'config';
+import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizeResolutionStorage from '../db/sequelize.resolution.storage.js';
 import expiryUtils from '../utils/expiryUtils.js';
 
-class ResolutionService {
-  constructor(storageType) {
-    this.storage = this.selectStorage(storageType);
+const selectStorage = storageType => {
+  switch (storageType) {
+    case 'sequelize':
+      return sequelizeResolutionStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
   }
-
-  selectStorage(storage) {
-    switch (storage) {
-      case 'sequelize':
-        return sequelizeResolutionStorage;
-      default:
-        throw new AppError(`This storage doesn't exist`, 404);
-    }
+};
+export class ResolutionService {
+  constructor(storage) {
+    this.storage = storage;
   }
 
   async checkForNotExpiredOrDelete(resolution) {
@@ -60,16 +60,6 @@ class ResolutionService {
     return resolution;
   }
 
-  async getByUserID(id) {
-    const data = await this.storage.getByUserID(id);
-
-    if (data.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(data);
-    }
-
-    return [];
-  }
-
   async getAll(query) {
     const data = await this.storage.getAll(query);
 
@@ -80,7 +70,17 @@ class ResolutionService {
     return [];
   }
 
-  async getResolutionsByPatientName(name) {
+  async getByUserID(id) {
+    const data = await this.storage.getByUserID(id);
+
+    if (data.length !== 0) {
+      return this.filterResolutionsArrayByExpiry(data);
+    }
+
+    return [];
+  }
+
+  async getByPatientName(name) {
     const data = await this.storage.getByPatientName(name);
 
     if (data.length !== 0) {
@@ -107,6 +107,8 @@ class ResolutionService {
   }
 }
 
-const resolutionService = new ResolutionService(config.get('db.types.main'));
+const resolutionService = new ResolutionService(
+  selectStorage(config.get('db.types.main')),
+);
 
 export default resolutionService;

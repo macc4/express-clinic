@@ -1,7 +1,12 @@
-import queueService from '../../src/services/queue.service';
+import { QueueService } from '../../src/services/queue.service.js';
+import { RedisQueueStorage } from '../../src/db/redis.queue.storage.js';
+import redis from '../../src/db/clients/redis.client.js';
 
-describe(`queue service`, () => {
-  test('should return undefined while peeking an empty queue', async () => {
+const storage = new RedisQueueStorage(redis);
+const queueService = new QueueService(storage);
+
+describe(`queueService:`, () => {
+  test('peek(); should return undefined while if the queue is empty', async () => {
     expect.assertions(1);
 
     const one = await queueService.peek();
@@ -9,7 +14,7 @@ describe(`queue service`, () => {
     expect(one).toEqual(undefined);
   });
 
-  test(`should send data and 1 error while enqueuing values 5, 3, 27, 5`, async () => {
+  test(`enqueue(id); should send data and 1 error while enqueuing values 5, 3, 27, 5`, async () => {
     expect.assertions(4);
 
     const data = [5, 3, 27, 5];
@@ -29,7 +34,7 @@ describe(`queue service`, () => {
     expect(three).toEqual({ patientId: 27 });
   });
 
-  test('should send the same data while peeking the queue 2 times', async () => {
+  test('peek(); should send the same data while peeking the queue 2 times', async () => {
     expect.assertions(2);
 
     const one = await queueService.peek();
@@ -39,7 +44,7 @@ describe(`queue service`, () => {
     expect(two).toEqual({ patientId: 5 });
   });
 
-  test('should send corresponding data while dequeuing two times', async () => {
+  test('dequeue(); should send corresponding data while dequeuing two times', async () => {
     expect.assertions(2);
 
     const one = await queueService.dequeue();
@@ -49,7 +54,7 @@ describe(`queue service`, () => {
     expect(two).toEqual({ patientId: 3 });
   });
 
-  test('should send corresponding data while peeking', async () => {
+  test('peek(); should send corresponding data while peeking', async () => {
     expect.assertions(1);
 
     const one = await queueService.peek();

@@ -31,9 +31,7 @@ const getPersonalResolutions = catchAsync(async (req, res, next) => {
 });
 
 const getAllResolutionsByName = catchAsync(async (req, res, next) => {
-  const resolutions = await resolutionService.getResolutionsByPatientName(
-    req.query.name,
-  );
+  const resolutions = await resolutionService.getByPatientName(req.query.name);
 
   res.status(StatusCodes.OK).render('resolutions', {
     title: 'Resolutions',

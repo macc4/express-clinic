@@ -1,36 +1,33 @@
 import config from 'config';
+import { StatusCodes } from 'http-status-codes';
 import { AppError } from '../utils/errorClasses.js';
 import sequelizeUserStorage from '../db/sequelize.user.storage.js';
 import passwordUtils from '../utils/passwordUtils.js';
 
-class UserService {
-  constructor(storageType) {
-    this.storage = this.selectStorage(storageType);
+const selectStorage = storageType => {
+  switch (storageType) {
+    case 'sequelize':
+      return sequelizeUserStorage;
+    default:
+      throw new AppError(`This storage doesn't exist`, StatusCodes.NOT_FOUND);
   }
-
-  selectStorage(storage) {
-    switch (storage) {
-      case 'sequelize':
-        return sequelizeUserStorage;
-      default:
-        throw new AppError(`This storage doesn't exist`, 404);
-    }
+};
+export class UserService {
+  constructor(storage) {
+    this.storage = storage;
   }
 
   async create(body) {
     const password = await passwordUtils.hashPassword(body.password);
 
-    try {
-      const user = await this.storage.createOne({
-        name: body.name,
-        email: body.email,
-        password: password,
-      });
+    const user = await this.storage.createOne({
+      name: body.name,
+      email: body.email,
+      password: password,
+      role: body.role,
+    });
 
-      return user;
-    } catch {
-      throw new AppError(`This email is already in use!`, 404);
-    }
+    return user;
   }
 
   async getAll(query) {
@@ -42,9 +39,7 @@ class UserService {
   }
 
   async getByID(id) {
-    const user = await this.storage.getByID(id);
-
-    return user;
+    return await this.storage.getByID(id);
   }
 
   async deleteByID(id) {
@@ -52,6 +47,6 @@ class UserService {
   }
 }
 
-const userService = new UserService(config.get('db.types.main'));
+const userService = new UserService(selectStorage(config.get('db.types.main')));
 
 export default userService;
