@@ -1,6 +1,8 @@
+import { promisify } from 'util';
 import Redis from 'redis';
 import config from 'config';
-import { promisify } from 'util';
+import { StatusCodes } from 'http-status-codes';
+import { AppError } from '../utils/errorClasses.js';
 
 class RedisClient {
   constructor() {
@@ -12,8 +14,9 @@ class RedisClient {
   }
 
   connect() {
-    if (this.connected) return this.client;
-    else {
+    if (this.connected) {
+      return this.client;
+    } else {
       this.client = Redis.createClient({
         host: this.host,
         port: this.port,
@@ -26,10 +29,6 @@ class RedisClient {
 
       this.client.on('error', function (error) {
         throw new AppError(error, StatusCodes.INTERNAL_SERVER_ERROR);
-      });
-
-      this.client.on('connect', () => {
-        console.log(`Redis connected successfully...`);
       });
 
       return this.client;
@@ -48,6 +47,7 @@ class RedisClient {
     this.client.lindex = promisify(this.client.lindex).bind(this.client);
     this.client.lpop = promisify(this.client.lpop).bind(this.client);
     this.client.lrange = promisify(this.client.lrange).bind(this.client);
+    this.client.scan = promisify(this.client.scan).bind(this.client);
   }
 
   flushData() {
@@ -55,4 +55,21 @@ class RedisClient {
   }
 }
 
-export { RedisClient };
+const redisClient = new RedisClient();
+
+const redisScan = async (client, pattern) => {
+  const found = [];
+  let cursor = '0';
+
+  do {
+    const reply = await client.scan(cursor, 'MATCH', pattern);
+
+    cursor = reply[0];
+    found.push(...reply[1]);
+  } while (cursor !== '0');
+
+  return found;
+};
+
+export default redisClient;
+export { redisScan };

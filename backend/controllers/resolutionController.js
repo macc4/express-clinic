@@ -1,40 +1,74 @@
 import { StatusCodes } from 'http-status-codes';
-import resolutionModel from '../models/resolutionFactory.js';
-import catchAsync from '../utils/catchAsync.js';
+
+import clinicFactory from '../services/factory.js';
 import { AppError } from '../utils/errorClasses.js';
-import errorMessages from '../lib/errorMessages.js';
+import catchAsync from '../utils/catchAsync.js';
+
+const resolutionService = clinicFactory.getResolutionService;
 
 const createResolution = catchAsync(async (req, res, next) => {
-  const newPatient = await resolutionModel.create(req.body);
+  const newResolution = await resolutionService.createResolution(
+    req.body,
+    req.params
+  );
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
     data: {
-      patient: newPatient,
+      resolution: newResolution,
     },
   });
 });
 
-const getResolutions = catchAsync(async (req, res, next) => {
-  const patient = await resolutionModel.get(req.query.patient); // double-check this part
+// not used in our project
+const getResolutionById = catchAsync(async (req, res, next) => {
+  const resolution = await resolutionService.getResolutionById(
+    req.params.resolutionId
+  );
 
-  if (!patient) {
-    return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
+  if (!resolution) {
+    return next(
+      new AppError('No resolution found with that ID', StatusCodes.NOT_FOUND)
+    );
+  }
+
+  res.status(StatusCodes.CREATED).json({
+    status: 'success',
+    data: {
+      resolution: resolution,
+    },
+  });
+});
+
+const getAllResolutionsForThePatient = catchAsync(async (req, res, next) => {
+  const resolutions = await resolutionService.getAllResolutionsForThePatient(
+    req.params.patientId
+  );
+
+  if (resolutions.length === 0 || !resolutions) {
+    return next(
+      new AppError(
+        'No resolutions found for that patient',
+        StatusCodes.NOT_FOUND
+      )
+    );
   }
 
   res.status(StatusCodes.OK).json({
     status: 'success',
     data: {
-      patient,
+      resolutions,
     },
   });
 });
 
-const deleteResolution = catchAsync(async (req, res, next) => {
-  const patient = await resolutionModel.delete(req.params.name);
+const deleteAllResolutionsForThePatient = catchAsync(async (req, res, next) => {
+  const resolutions = await resolutionService.deleteAllResolutionsForThePatient(
+    req.params.patientId
+  );
 
-  if (!patient) {
-    return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
+  if (!resolutions || resolutions.length === 0) {
+    return next(new AppError('No resolutions found for that patient', 404));
   }
 
   res.status(StatusCodes.NO_CONTENT).json({
@@ -43,4 +77,9 @@ const deleteResolution = catchAsync(async (req, res, next) => {
   });
 });
 
-export default { createResolution, getResolutions, deleteResolution };
+export default {
+  createResolution,
+  getResolutionById,
+  getAllResolutionsForThePatient,
+  deleteAllResolutionsForThePatient,
+};

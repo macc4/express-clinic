@@ -1,5 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 
+// TODO create a separate handler for sequelize validation errors
+
 class AppError extends Error {
   constructor(message, statusCode) {
     super(message);

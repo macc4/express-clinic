@@ -1,11 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
-import queueModel from '../models/queueFactory.js';
-import catchAsync from '../utils/catchAsync.js';
-import { AppError } from '../utils/errorClasses.js';
-import errorMessages from '../lib/errorMessages.js';
 
-const enqueuePatient = catchAsync(async (req, res, next) => {
-  const newPatient = await queueModel.enqueue(req.body);
+import clinicFactory from '../services/factory.js';
+import { AppError } from '../utils/errorClasses.js';
+import catchAsync from '../utils/catchAsync.js';
+
+const queueService = clinicFactory.getQueueService;
+
+const enqueue = catchAsync(async (req, res, next) => {
+  const newPatient = await queueService.enqueue(req.body);
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
@@ -15,32 +17,36 @@ const enqueuePatient = catchAsync(async (req, res, next) => {
   });
 });
 
-const getPatient = catchAsync(async (req, res, next) => {
-  const patient = await queueModel.peek();
+const peek = catchAsync(async (req, res, next) => {
+  const patient = await queueService.peek();
 
   if (!patient) {
-    return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
+    return next(
+      new AppError('There are no patients in the queue', StatusCodes.NOT_FOUND)
+    );
   }
 
   res.status(StatusCodes.OK).json({
     status: 'success',
     data: {
-      patient,
+      patient: patient,
     },
   });
 });
 
-const dequeuePatient = catchAsync(async (req, res, next) => {
-  const patient = await queueModel.dequeue();
+const dequeue = catchAsync(async (req, res, next) => {
+  const patient = await queueService.dequeue();
 
-  if (!patient) {
-    return next(new AppError(errorMessages.NOT_FOUND_DATA, StatusCodes.NOT_FOUND));
+  if (patient === undefined) {
+    return next(
+      new AppError('There are no patients in the queue', StatusCodes.NOT_FOUND)
+    );
   }
 
-  res.status(StatusCodes.NO_CONTENT).json({
+  res.status(StatusCodes.OK).json({
     status: 'success',
     data: null,
   });
 });
 
-export default { enqueuePatient, getPatient, dequeuePatient };
+export default { enqueue, peek, dequeue };

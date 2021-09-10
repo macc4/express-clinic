@@ -1,18 +1,5 @@
 version: '3.8'
 services:
-  redis:
-    container_name: redis-db
-    image: redis
-  backend:
-    container_name: backend
-    environment:
-      - REDIS_HOST=redis
-    build: ./backend
-    ports:
-      - '8080:8080'
-    restart: always
-    depends_on:
-      - redis
   frontend:
     container_name: frontend
     build: ./frontend
@@ -21,3 +8,30 @@ services:
     restart: always
     depends_on:
       - backend
+  backend:
+    container_name: backend
+    environment:
+      - REDIS_HOST=redis
+      - MYSQL_HOST=host.docker.internal
+    build: ./backend
+    ports:
+      - '8080:8080'
+    restart: always
+    depends_on:
+      - redis
+      - mysql
+  redis:
+    container_name: redis
+    image: redis
+  mysql:
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=clinic
+      - MYSQL_ROOT_PASSWORD=password
+    image: mysql
+    hostname: mysql
+    restart: always
+    ports:
+      - '3307:3306'
+    expose:
+      - '3306'

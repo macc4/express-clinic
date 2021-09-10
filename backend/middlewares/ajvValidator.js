@@ -4,11 +4,13 @@ import { ValidationError } from '../utils/errorClasses.js';
 
 const ajv = new Ajv();
 
-const ajvParseErrorLog = (error) => {
+const ajvParseErrorLog = error => {
   const errorPath = error.instancePath;
   const variableName = errorPath.substring(1);
 
   const errorMessage = error.message;
+
+  console.log(error);
 
   if (variableName === '') {
     return `${errorMessage}`;
@@ -23,7 +25,9 @@ export default (property, schema) => {
     const valid = validateEnqueueSchema(req[property]);
 
     if (!valid) {
-      const validationErrors = ajvParseErrorLog(validateEnqueueSchema.errors[0]);
+      const validationErrors = ajvParseErrorLog(
+        validateEnqueueSchema.errors[0]
+      );
       next(new ValidationError(validationErrors));
     }
 
