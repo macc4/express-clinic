@@ -1,6 +1,6 @@
-import { QueueService } from '../../src/services/queue.service.js';
-import { RedisQueueStorage } from '../../src/db/redis.queue.storage.js';
-import redis from '../../src/db/clients/redis.client.js';
+import { QueueService } from './queue.service.js';
+import { RedisQueueStorage } from '../db/redis.queue.storage.js';
+import redis from '../db/clients/redis.client.js';
 
 const storage = new RedisQueueStorage(redis);
 const queueService = new QueueService(storage);

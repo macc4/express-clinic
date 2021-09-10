@@ -1,6 +1,6 @@
-import { PatientService } from '../../src/services/patient.service.js';
-import { SequelizePatientStorage } from '../../src/db/sequelize.patient.storage.js';
-import sequelize from '../../src/db/clients/sequelize.client.js';
+import { PatientService } from './patient.service.js';
+import { SequelizePatientStorage } from '../db/sequelize.patient.storage.js';
+import sequelize from '../db/clients/sequelize.client.js';
 
 const storage = new SequelizePatientStorage(sequelize);
 const patientService = new PatientService(storage);

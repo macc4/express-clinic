@@ -11,5 +11,5 @@
   ],
   "verbose": true,
   "bail": 1,
-  "setupFilesAfterEnv": ["./tests/jest.setup.redis-mock.js"]
+  "setupFilesAfterEnv": ["./__mocks__/jest.setup.redis-mock.js"]
 }

@@ -1,7 +1,7 @@
-import { UserService } from '../../src/services/user.service.js';
-import { SequelizeUserStorage } from '../../src/db/sequelize.user.storage.js';
-import sequelize from '../../src/db/clients/sequelize.client.js';
-import passwordUtils from '../../src/utils/passwordUtils.js';
+import { UserService } from './user.service.js';
+import { SequelizeUserStorage } from '../db/sequelize.user.storage.js';
+import sequelize from '../db/clients/sequelize.client.js';
+import passwordUtils from '../utils/passwordUtils.js';
 
 const storage = new SequelizeUserStorage(sequelize);
 const userService = new UserService(storage);

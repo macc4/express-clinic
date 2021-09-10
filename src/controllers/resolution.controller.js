@@ -49,8 +49,10 @@ const getAllResolutions = catchAsync(async (req, res, next) => {
   // basically a workaround to implement a search by patientName while maintaining REST route structure
   let resolutions;
 
-  if (req.body.name) {
-    resolutions = await resolutionService.getByPatientName(req.body.name);
+  if (req.query.patientName) {
+    resolutions = await resolutionService.getByPatientName(
+      req.query.patientName,
+    );
   } else {
     resolutions = await resolutionService.getAll(req.query);
   }
