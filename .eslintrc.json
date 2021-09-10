@@ -1,6 +1,17 @@
 {
-  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
-  "plugins": ["prettier"],
+  "extends": ["airbnb-base", "prettier", "plugin:node/recommended"],
+  "plugins": ["prettier", "jest"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "commonjs": true,
+    "jest/globals": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
   "rules": {
     "prettier/prettier": [
       "error",
@@ -8,6 +19,7 @@
         "endOfLine": "auto"
       }
     ],
+    "linebreak-style": 0,
     "spaced-comment": "off",
     "no-console": "warn",
     "consistent-return": "off",
@@ -19,6 +31,19 @@
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val" }]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val" }],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "version": ">=13.0.0",
+        "ignores": ["modules"]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      {
+        "js": "ignorePackages"
+      }
+    ]
   }
 }

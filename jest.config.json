@@ -1,0 +1,15 @@
+{
+  "collectCoverage": false,
+  "coveragePathIgnorePatterns": [
+    "node_modules",
+    "schemas",
+    "config",
+    "db",
+    "lib",
+    "tests",
+    "utils"
+  ],
+  "verbose": true,
+  "bail": 1,
+  "setupFilesAfterEnv": ["./__mocks__/jest.setup.redis-mock.js"]
+}

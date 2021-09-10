@@ -1,4 +1,0 @@
-export default {
-  queue: [],
-  resolutions: [],
-};
