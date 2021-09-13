@@ -4,6 +4,11 @@ import config from 'config';
 import User from '../models/user.model.js';
 import Patient from '../models/patient.model.js';
 import Resolution from '../models/resolution.model.js';
+import Doctor from '../models/doctor.model.js';
+import Specialization from '../models/specialization.model.js';
+import Role from '../models/role.model.js';
+import roles from '../models/data/roles.js';
+import specializations from '../models/data/specializations.js';
 
 import passwordUtils from '../../utils/passwordUtils.js';
 
@@ -25,14 +30,38 @@ db.sequelize = sequelize;
 db.users = User(sequelize, Sequelize);
 db.patients = Patient(sequelize, Sequelize);
 db.resolutions = Resolution(sequelize, Sequelize);
+db.doctors = Doctor(sequelize, Sequelize);
+db.specializations = Specialization(sequelize, Sequelize);
+db.roles = Role(sequelize, Sequelize);
 
 // ASSOCIATIONS
 db.users.hasOne(db.patients, {
   // foreignKey: 'patientId',
   onDelete: 'cascade',
 });
+
+db.users.hasOne(db.doctors, {
+  onDelete: 'cascade',
+});
+
 db.patients.belongsTo(db.users, {
   foreignKey: 'userId',
+});
+
+db.doctors.belongsTo(db.users, {
+  foreignKey: 'userId',
+});
+
+db.doctors.belongsToMany(db.specializations, {
+  through: 'doctor_specializations',
+  foreignKey: 'doctorId',
+  otherKey: 'specializationId',
+});
+
+db.specializations.belongsToMany(db.doctors, {
+  through: 'doctor_specializations',
+  foreignKey: 'specializationId',
+  otherKey: 'doctorId',
 });
 
 db.patients.hasMany(db.resolutions, {
@@ -40,9 +69,24 @@ db.patients.hasMany(db.resolutions, {
   truncate: true,
   hooks: true,
 });
+
 db.resolutions.belongsTo(db.patients, {
   foreignKey: 'patientId',
 });
+
+db.roles.belongsToMany(db.users, {
+  through: 'user_roles',
+  foreignKey: 'roleId',
+  otherKey: 'userId',
+});
+
+db.users.belongsToMany(db.roles, {
+  through: 'user_roles',
+  foreignKey: 'userId',
+  otherKey: 'roleId',
+});
+
+db.ROLES = roles;
 
 db.connect = async () => {
   await db.sequelize.query(
@@ -60,6 +104,11 @@ db.connect = async () => {
     name: 'Admin',
     role: 'admin',
   });
+
+  roles.forEach(item => db.roles.create({ role: item }));
+  specializations.forEach(item =>
+    db.specializations.create({ classifier: item }),
+  );
 
   console.log('-----------------------------'); // eslint-disable-line no-console
   console.log('SQL database has been connected.'); // eslint-disable-line no-console
