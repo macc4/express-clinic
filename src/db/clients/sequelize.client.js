@@ -7,8 +7,7 @@ import Resolution from '../models/resolution.model.js';
 import Doctor from '../models/doctor.model.js';
 import Specialization from '../models/specialization.model.js';
 import Role from '../models/role.model.js';
-import roles from '../models/source/roles.js';
-import specializations from '../models/source/specializations.js';
+import seeding from './utils/seeding.js';
 
 import passwordUtils from '../../utils/passwordUtils.js';
 
@@ -86,8 +85,6 @@ db.users.belongsToMany(db.roles, {
   otherKey: 'roleId',
 });
 
-db.ROLES = roles;
-
 db.connect = async () => {
   await db.sequelize.query(
     `CREATE DATABASE IF NOT EXISTS \`${config.get('db.sequelize.db')}\`;`,
@@ -102,13 +99,13 @@ db.connect = async () => {
     email: 'admin@gmail.com',
     password: await passwordUtils.hashPassword('12345678'),
     name: 'Admin',
-    role: 'admin',
   });
 
-  roles.forEach(item => db.roles.create({ role: item }));
-  specializations.forEach(item =>
-    db.specializations.create({ classifier: item }),
-  );
+  try {
+    await seeding(db);
+  } catch (err) {
+    console.log(err);
+  }
 
   console.log('-----------------------------'); // eslint-disable-line no-console
   console.log('SQL database has been connected.'); // eslint-disable-line no-console
