@@ -7,7 +7,7 @@ import Resolution from '../models/resolution.model.js';
 import Doctor from '../models/doctor.model.js';
 import Specialization from '../models/specialization.model.js';
 import Role from '../models/role.model.js';
-import seeding from './utils/seeding.js';
+import runSeeders from './utils/seeding.js';
 
 import passwordUtils from '../../utils/passwordUtils.js';
 
@@ -102,7 +102,7 @@ db.connect = async () => {
   });
 
   try {
-    await seeding(db);
+    await runSeeders(db);
   } catch (err) {
     console.log(err);
   }
