@@ -45,6 +45,12 @@ const getSigninForm = (req, res) => {
   });
 };
 
+const getDoctorSigninForm = (req, res) => {
+  res.status(StatusCodes.OK).render('doctorSignIn', {
+    title: 'Doctor\'s authorization',
+  });
+};
+
 const getSignupForm = (req, res) => {
   res.status(StatusCodes.OK).render('signup', {
     title: 'Create your account',
@@ -55,6 +61,7 @@ export default {
   getQueue,
   getPersonalResolutions,
   getSigninForm,
+  getDoctorSigninForm,
   getSignupForm,
   getAllResolutionsByName,
 };

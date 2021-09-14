@@ -7,8 +7,8 @@ import Resolution from '../models/resolution.model.js';
 import Doctor from '../models/doctor.model.js';
 import Specialization from '../models/specialization.model.js';
 import Role from '../models/role.model.js';
-import roles from '../models/data/roles.js';
-import specializations from '../models/data/specializations.js';
+import roles from '../models/source/roles.js';
+import specializations from '../models/source/specializations.js';
 
 import passwordUtils from '../../utils/passwordUtils.js';
 
