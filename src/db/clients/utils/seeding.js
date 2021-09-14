@@ -1,6 +1,6 @@
-import roles from '../../models/source/roles.js';
-import specializations from '../../models/source/specializations.js';
-import doctors from '../../models/source/doctors.js';
+import roles from './source/roles.js';
+import specializations from './source/specializations.js';
+import doctors from './source/doctors.js';
 import passwordUtils from '../../../utils/passwordUtils.js';
 
 const seeding = async db => {
