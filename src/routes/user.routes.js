@@ -14,7 +14,7 @@ router.use(authController.protect);
 router.get('/me', userController.getMe, userController.getUserByID);
 
 // for admins
-router.use(authController.restrictTo('admin'));
+router.use(authController.restrictTo(['admin', 'doctor']));
 
 router
   .route('/')

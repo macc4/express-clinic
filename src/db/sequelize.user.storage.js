@@ -6,16 +6,18 @@ export class SequelizeUserStorage {
   }
 
   async createOne(body) {
-    const data = await this.client.users
-      .create(body)
-      .then(result => result.get({ plain: true }));
+    const data = await this.client.users.create(body);
+
+    data.setRoles(body.role);
 
     return data;
   }
 
   async getByID(id) {
-    const data = await this.client.users.findByPk(id, { raw: true });
-
+    const data = await this.client.users.findByPk(id, {
+      raw: true,
+      include: [this.client.roles],
+    });
     return data;
   }
 
@@ -29,6 +31,7 @@ export class SequelizeUserStorage {
     const user = await this.client.users.findOne({
       raw: true,
       where: { email },
+      include: [this.client.roles],
     });
 
     return user;
@@ -46,6 +49,7 @@ export class SequelizeUserStorage {
     const users = await this.client.users.findAll({
       raw: true,
       where: queryConditions,
+      include: [this.client.roles],
     });
 
     return users;

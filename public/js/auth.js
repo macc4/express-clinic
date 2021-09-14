@@ -15,16 +15,14 @@ const signin = async (email, password) => {
     },
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 const doctorSignin = async (email, password) => {
@@ -37,15 +35,14 @@ const doctorSignin = async (email, password) => {
     },
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 const signout = async () => {
@@ -54,16 +51,14 @@ const signout = async () => {
     url: 'http://127.0.0.1:8080/api/v1/users/signout',
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 const signup = async (
@@ -88,16 +83,14 @@ const signup = async (
     },
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 export { signin, doctorSignin, signout, signup };

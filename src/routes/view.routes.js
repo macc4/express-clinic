@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', authController.isLoggedIn, viewController.getQueue);
 
 router.get('/signin', authController.isLoggedIn, viewController.getSigninForm);
-router.get('/doctor/signin', authController.isLoggedIn, viewController.getDoctorSigninForm);
+router.get('/doctor-signin', authController.isLoggedIn, viewController.getDoctorSigninForm);
 router.get('/signup', authController.isLoggedIn, viewController.getSignupForm);
 
 router.get(

@@ -29,11 +29,11 @@ if (signinForm) {
 }
 
 if (doctorSigninForm) {
-  signinForm.addEventListener('submit', async (event) => {
+  doctorSigninForm.addEventListener('submit', async event => {
     event.preventDefault();
 
-    const email = signinForm.querySelector('#inputEmail').value;
-    const password = signinForm.querySelector('#inputPassword').value;
+    const email = doctorSigninForm.querySelector('#inputEmail').value;
+    const password = doctorSigninForm.querySelector('#inputPassword').value;
 
     await doctorSignin(email, password);
   });

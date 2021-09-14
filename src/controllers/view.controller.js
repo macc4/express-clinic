@@ -7,12 +7,16 @@ import patientService from '../services/patient.service.js';
 
 const getQueue = catchAsync(async (req, res, next) => {
   const currentPatientId = await queueService.peek();
-  const currentPatient = await patientService.getByID(currentPatientId);
-
   const queue = {};
 
-  if (currentPatient) {
-    queue.current = currentPatient.name;
+  if (currentPatientId) {
+    const currentPatient = await patientService.getByID(
+      currentPatientId.patientId,
+    );
+
+    if (currentPatient) {
+      queue.current = currentPatient.name;
+    }
   }
 
   res.status(StatusCodes.OK).render('queue', {
@@ -47,7 +51,7 @@ const getSigninForm = (req, res) => {
 
 const getDoctorSigninForm = (req, res) => {
   res.status(StatusCodes.OK).render('doctorSignIn', {
-    title: 'Doctor\'s authorization',
+    title: "Doctor's authorization",
   });
 };
 
