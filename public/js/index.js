@@ -1,13 +1,14 @@
 /* eslint-disable */
 
 import '@babel/polyfill';
-import { signin, signup, signout } from './auth.js';
+import { signin, doctorSignin, signup, signout } from './auth.js';
 import { getPatientId, submitResolution, dequeue } from './processPatient.js';
 import { getIntoQueue } from './getIntoQueue.js';
 import searchResolutionsByName from './searchResolutionsByName.js';
 
 const signinForm = document.getElementById('signin-form');
 const signupForm = document.getElementById('signup-form');
+const doctorSigninForm = document.getElementById('doctorSigninForm');
 const signoutButton = document.getElementById('btn-signout');
 const submitResolutionForm = document.getElementById('form-submit-resolution');
 const nextPatientButton = document.getElementById('btn-next-patient');
@@ -24,6 +25,17 @@ if (signinForm) {
     const password = signinForm.querySelector('#inputPassword').value;
 
     signin(email, password);
+  });
+}
+
+if (doctorSigninForm) {
+  signinForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const email = signinForm.querySelector('#inputEmail').value;
+    const password = signinForm.querySelector('#inputPassword').value;
+
+    await doctorSignin(email, password);
   });
 }
 

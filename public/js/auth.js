@@ -3,6 +3,8 @@
 // import { showAlert } from './alerts.js';
 import axios from 'axios';
 
+const base = 'http://127.0.0.1:8080/api/v1/users';
+
 const signin = async (email, password) => {
   const config = {
     method: 'POST',
@@ -22,6 +24,27 @@ const signin = async (email, password) => {
     .catch(function (error) {
       alert(error.response.data.message);
       // showAlert('error', error.response.data.message);
+    });
+};
+
+const doctorSignin = async (email, password) => {
+  const config = {
+    method: 'POST',
+    url: `${base}/signin`,
+    data: {
+      email,
+      password,
+    },
+  };
+
+  const res = await axios(config)
+    .then(function (response) {
+      if (response.data.status === 'success') {
+        location.assign('/');
+      }
+    })
+    .catch(function (error) {
+      alert(error.response.data.message);
     });
 };
 
@@ -77,4 +100,4 @@ const signup = async (
     });
 };
 
-export { signin, signout, signup };
+export { signin, doctorSignin, signout, signup };
