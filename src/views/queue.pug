@@ -17,6 +17,10 @@ block content
               h1
                 .lead.text-muted.my-4.text-white .
               form.d-flex.justify-content-end.m-2
+                select#doctorSelect.form-select(aria-label='-- select --')
+                  option(selected='') -- select --
+                  - for (let i = 0; i < doctors.length; i += 1)
+                      option(value=doctors[i].id) #{doctors[i].name} #{doctors[i]['specializations.classifier']}
                 a.btn.btn-dark.m-1#btn-get-into-queue(href='#') Get into queue
           -if (user['roles.role'] === 'doctor' || user.role === 'admin')
             .col-md-5.text-center.text-md-start

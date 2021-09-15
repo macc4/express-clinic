@@ -4,24 +4,43 @@ import catchAsync from '../utils/catchAsync.js';
 import resolutionService from '../services/resolution.service.js';
 import queueService from '../services/queue.service.js';
 import patientService from '../services/patient.service.js';
+import doctorService from '../services/doctor.service.js';
 
-const getQueue = catchAsync(async (req, res, next) => {
-  const currentPatientId = await queueService.peek();
+const getQueueAsDoctor = catchAsync(async (req, res) => {
   const queue = {};
+  queue.current = null;
+
+  const doctorId = req.user.doctorId;
+  const currentPatientId = await queueService.peek(doctorId);
 
   if (currentPatientId) {
-    const currentPatient = await patientService.getByID(
-      currentPatientId.patientId,
-    );
+    const { patientId } = currentPatientId;
+    const { name } = await patientService.getByID(patientId);
 
-    if (currentPatient) {
-      queue.current = currentPatient.name;
+    if (name) {
+      queue.current = name;
     }
   }
 
   res.status(StatusCodes.OK).render('queue', {
     title: 'Queue',
-    queue: queue,
+    queue,
+  });
+});
+
+const getQueue = catchAsync(async (req, res, next) => {
+  const queue = {};
+
+  if (req.user && req.user.doctorId) {
+    return await getQueueAsDoctor(req, res);
+  }
+
+  const doctors = await doctorService.getAll();
+
+  res.status(StatusCodes.OK).render('queue', {
+    title: 'Queue',
+    queue,
+    doctors,
   });
 });
 

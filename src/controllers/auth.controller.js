@@ -9,6 +9,7 @@ import dateUtils from '../utils/dateUtils.js';
 
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
+import doctorService from '../services/doctor.service.js';
 import roles from '../db/clients/utils/source/roles.js';
 
 const createSendToken = (user, statusCode, res) => {
@@ -151,7 +152,12 @@ const protect = catchAsync(async (req, res, next) => {
       ),
     );
   }
-
+  if (freshUser['roles.id'] === 2) {
+    const { id } = await doctorService.getByUserID(freshUser.id);
+    if (id) {
+      freshUser.doctorId = id;
+    }
+  }
   // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method
   // 4) Check if the user has changed the password after the token was issued
 
@@ -192,6 +198,13 @@ const isLoggedIn = async (req, res, next) => {
 
       if (!currentUser) {
         return next();
+      }
+
+      if (currentUser['roles.id'] === 2) {
+        const { id } = await doctorService.getByUserID(currentUser.id);
+        if (id) {
+          currentUser.doctorId = id;
+        }
       }
 
       // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method

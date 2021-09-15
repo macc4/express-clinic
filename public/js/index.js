@@ -16,6 +16,7 @@ const getIntoQueueButton = document.getElementById('btn-get-into-queue');
 const searchResolutionsByNameForm = document.getElementById(
   'form-search-resolutions-by-name',
 );
+const selectedDoctor = document.getElementById('doctorSelect');
 
 if (signinForm) {
   signinForm.addEventListener('submit', event => {
@@ -86,8 +87,10 @@ if (nextPatientButton) {
 }
 
 if (getIntoQueueButton) {
-  getIntoQueueButton.addEventListener('click', () => {
-    getIntoQueue();
+  getIntoQueueButton.addEventListener('click', async () => {
+    const selectedOption = selectedDoctor.options.selectedIndex;
+    const doctorId = selectedDoctor.options[selectedOption].value;
+    await getIntoQueue(doctorId);
   });
 }
 

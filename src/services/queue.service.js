@@ -17,13 +17,13 @@ export class QueueService {
     this.storage = storage;
   }
 
-  async getQueue() {
-    return await this.storage.getQueue();
+  async getQueue(doctorId) {
+    return await this.storage.getQueue(doctorId);
   }
 
-  async enqueue(patientId) {
+  async enqueue(patientId, doctorId) {
     // checking if the patientId is already in the queue
-    const queue = await this.getQueue();
+    const queue = await this.getQueue(doctorId);
 
     const duplicate = queue.some(patient => patient === `${patientId}`);
 
@@ -31,13 +31,13 @@ export class QueueService {
       throw new AppError('You are already in the queue', StatusCodes.CONFLICT);
     }
 
-    await this.storage.enqueue(patientId);
+    await this.storage.enqueue(patientId, doctorId);
 
     return { patientId: +patientId };
   }
 
-  async peek() {
-    const patientId = await this.storage.peek();
+  async peek(doctorId) {
+    const patientId = await this.storage.peek(doctorId);
 
     if (!patientId) {
       return undefined;
@@ -46,8 +46,8 @@ export class QueueService {
     return { patientId: +patientId };
   }
 
-  async dequeue() {
-    const deletedPatientId = await this.storage.dequeue();
+  async dequeue(doctorId) {
+    const deletedPatientId = await this.storage.dequeue(doctorId);
 
     if (!deletedPatientId) {
       return undefined;

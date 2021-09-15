@@ -7,6 +7,7 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
       },
     },
+    { sequelize, modelName: 'patient', timestamps: true },
   );
 
   return Doctor;
