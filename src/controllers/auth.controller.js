@@ -10,7 +10,7 @@ import dateUtils from '../utils/dateUtils.js';
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
 import doctorService from '../services/doctor.service.js';
-import roles from '../db/clients/utils/source/roles.js';
+import { Roles } from '../db/clients/utils/source/roles.js';
 
 const createSendToken = (user, statusCode, res) => {
   const token = JWTUtils.sign(
@@ -42,7 +42,7 @@ const createSendToken = (user, statusCode, res) => {
 const signUp = catchAsync(async (req, res, next) => {
   // destructuring for security reasons, so body won't receive an admin role by POST req
   const { name, email, password, passwordConfirm, gender, birthday } = req.body;
-  const { id } = roles.filter(item => item.role === 'patient')[0];
+  const id = Roles.PATIENT;
 
   const samePasswords = passwordUtils.comparePasswords(
     password,
@@ -200,7 +200,7 @@ const isLoggedIn = async (req, res, next) => {
         return next();
       }
 
-      if (currentUser['roles.id'] === 2) {
+      if (currentUser['roles.id'] === Roles.DOCTOR) {
         const { id } = await doctorService.getByUserID(currentUser.id);
         if (id) {
           currentUser.doctorId = id;
