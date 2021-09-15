@@ -17,8 +17,8 @@ export class SequelizeDoctorStorage {
   async getByID(id) {
     const doctor = await this.client.doctors.findByPk(id, {
       raw: true,
-      include: [this.client.specializations],
     });
+    
     return doctor;
   }
 

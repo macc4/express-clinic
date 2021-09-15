@@ -14,7 +14,7 @@ router
     patientController.getAndSetPatientIDFromUser, // if the patient is signed in, it will get the patientId from the req.user
     queueController.enqueue,
   )
-  .get(queueController.peek)
+  .get(doctorController.getAndSetDoctorIDFromUser, queueController.peek)
   .delete(
     authController.protect,
     // authController.restrictTo('doctor', 'admin'),
