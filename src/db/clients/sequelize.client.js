@@ -94,13 +94,6 @@ db.connect = async () => {
   await db.sequelize.sync({ force: true });
   await db.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null, { raw: true });
 
-  // create a default admin role
-  await db.users.create({
-    email: 'admin@gmail.com',
-    password: await passwordUtils.hashPassword('12345678'),
-    name: 'Admin',
-  });
-
   try {
     await runSeeders(db);
   } catch (err) {

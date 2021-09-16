@@ -1,4 +1,4 @@
-import roles from './source/roles.js';
+import roles, { Roles } from './source/roles.js';
 import specializations from './source/specializations.js';
 import doctors from './source/doctors.js';
 import passwordUtils from '../../../utils/passwordUtils.js';
@@ -28,7 +28,7 @@ const usersSeeder = async db => {
       where: { email },
       defaults: { name, email, password: hashPassword },
     });
-    user.setRoles([2]);
+    user.setRoles([Roles.DOCTOR]);
   }
 };
 
@@ -52,6 +52,14 @@ const runSeeders = async db => {
   await specializationsSeeder(db);
   await usersSeeder(db);
   await doctorsSeeder(db);
+
+  // create a default admin role
+  const admin = await db.users.create({
+    email: 'admin@gmail.com',
+    password: await passwordUtils.hashPassword('12345678'),
+    name: 'Admin',
+  });
+  admin.setRoles(Roles.ADMIN);
 };
 
 export default runSeeders;
