@@ -24,7 +24,6 @@ const getQueueAndDoctors = catchAsync(async (req, res) => {
   if (req.params && req.params.doctorId) {
     selectedDoctor = req.params.doctorId;
   }
-  console.log('getQueueAndDoctors selectedDoctor', selectedDoctor)
 
   const queue = await getQueue(selectedDoctor);
 
