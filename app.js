@@ -13,6 +13,7 @@ import queueRoutes from './src/routes/queue.routes.js';
 import userRoutes from './src/routes/user.routes.js';
 import patientRoutes from './src/routes/patient.routes.js';
 import resolutionRoutes from './src/routes/resolution.routes.js';
+import doctorRoutes from './src/routes/doctor.routes.js';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/api/v1/queue', queueRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/patients', patientRoutes);
 app.use('/api/v1/resolutions', resolutionRoutes);
+app.use('/api/v1/doctors', doctorRoutes);
 
 // 2.3) NOT FOUND ROUTE
 

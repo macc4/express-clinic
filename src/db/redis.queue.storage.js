@@ -5,20 +5,20 @@ export class RedisQueueStorage {
     this.client = client.connect();
   }
 
-  async getQueue() {
-    return await this.client.lrange('queue', 0, -1);
+  async getQueue(doctorId) {
+    return await this.client.lrange(`queue:${doctorId}`, 0, -1);
   }
 
-  async enqueue(id) {
-    return await this.client.rpush('queue', id);
+  async enqueue(id, doctorId) {
+    return await this.client.rpush(`queue:${doctorId}`, id);
   }
 
-  async peek() {
-    return await this.client.lindex('queue', 0);
+  async peek(doctorId) {
+    return await this.client.lindex(`queue:${doctorId}`, 0);
   }
 
-  async dequeue() {
-    return await this.client.lpop('queue');
+  async dequeue(doctorId) {
+    return await this.client.lpop(`queue:${doctorId}`);
   }
 }
 

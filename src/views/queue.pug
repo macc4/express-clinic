@@ -12,13 +12,18 @@ block content
             else
               .lead.text-muted.my-4 empty
         if user
-          -if (user.role === 'patient')
+          -if (user['roles.title'] === 'patient')
             .col-md-5.text-center.text-md-start
               h1
                 .lead.text-muted.my-4.text-white .
               form.d-flex.justify-content-end.m-2
+                select#doctorSelect.form-select(aria-label='-- select --')
+                  - for (let i = 0; i < doctors.length; i += 1)
+                    - let selected = false;
+                    - if (doctors[i].id === +selectedDoctor) selected = true;
+                    option(value=doctors[i].id selected=selected) #{doctors[i].name} #{doctors[i]['specializations.title']}
                 a.btn.btn-dark.m-1#btn-get-into-queue(href='#') Get into queue
-          -if (user.role === 'doctor' || user.role === 'admin')
+          -if (user['roles.title'] === 'doctor' || user['roles.title'] === 'admin')
             .col-md-5.text-center.text-md-start
               form#form-submit-resolution.m-5
                 .my-3

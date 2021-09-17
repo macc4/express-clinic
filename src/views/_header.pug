@@ -7,10 +7,10 @@ header.header
         li.nav-item
           a.nav-link(href='/') Home
         if user
-          -if (user.role === 'patient')
+          -if (user['roles.title'] === 'patient')
             li.nav-item
               a.nav-link(href='/personal-resolutions') Personal Resolutions
-          -if (user.role === 'admin')
+          -if (user['roles.title'] === 'admin')
             span.navbar-text.mx-3
             li.nav-item.dropdown
               a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false')
@@ -22,7 +22,14 @@ header.header
                   a.dropdown-item.disabled(href='#') Patients
                 li
                   a.dropdown-item(href='resolutions') Resolutions
-
+          -if (user['roles.title'] === 'doctor')
+            span.navbar-text.mx-3
+            li.nav-item.dropdown
+              a#navbarDropdown.nav-link.dropdown-toggle(href='#' role='button' data-bs-toggle='dropdown' aria-expanded='false')
+                | Doctor Menu
+              ul.dropdown-menu(aria-labelledby='navbarDropdown')
+                li
+                  a.dropdown-item(href='resolutions') Resolutions
       if user
         form.d-flex.justify-content-end.m-1
           ul.navbar-nav.me-auto
@@ -33,6 +40,8 @@ header.header
       else
         form.d-flex.justify-content-end.m-1
           ul.navbar-nav.me-auto
+            li.nav-item
+              a.nav-link.m-1(href='/doctorSignin') Sign in as doctor
             li.nav-item
               a.nav-link.m-1(href='/signin') Sign in
           a.btn.btn-outline-light.m-1(href='/signup') Sign up

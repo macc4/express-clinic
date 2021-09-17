@@ -4,7 +4,9 @@ import catchAsync from '../utils/catchAsync.js';
 import queueService from '../services/queue.service.js';
 
 const enqueue = catchAsync(async (req, res, next) => {
-  const newPatient = await queueService.enqueue(req.body.patientId);
+  const { patientId } = req.body;
+  const { doctorId } = req.params;
+  const newPatient = await queueService.enqueue(patientId, doctorId);
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
@@ -15,7 +17,7 @@ const enqueue = catchAsync(async (req, res, next) => {
 });
 
 const peek = catchAsync(async (req, res, next) => {
-  const patient = await queueService.peek();
+  const patient = await queueService.peek(req.params.doctorId);
 
   if (!patient) {
     return next(
@@ -32,7 +34,7 @@ const peek = catchAsync(async (req, res, next) => {
 });
 
 const dequeue = catchAsync(async (req, res, next) => {
-  const patient = await queueService.dequeue();
+  const patient = await queueService.dequeue(req.params.doctorId);
 
   if (patient === undefined) {
     return next(

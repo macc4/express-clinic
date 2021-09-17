@@ -8,10 +8,6 @@ export default (sequelize, Sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      role: {
-        type: Sequelize.ENUM('patient', 'doctor', 'admin'),
-        defaultValue: 'patient',
-      },
       name: {
         type: Sequelize.STRING,
         allowNull: false,

@@ -41,16 +41,10 @@ export const dequeue = async () => {
     url: 'http://127.0.0.1:8080/api/v1/queue',
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      // if (response.data.statusCode === 404) {
-      //   alert('test');
-      // }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
-
-  return res;
+  try {
+    const res = await axios(config);
+    return res;
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };

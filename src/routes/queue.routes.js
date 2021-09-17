@@ -1,23 +1,36 @@
 import express from 'express';
 import queueController from '../controllers/queue.controller.js';
 import patientController from '../controllers/patient.controller.js';
+import doctorController from '../controllers/doctor.controller.js';
 import authController from '../controllers/auth.controller.js';
+import Roles from '../utils/roles.js';
 
 const router = express.Router();
 
+// doctor
 router
   .route('/')
-  .post(
-    authController.protect,
-    // authController.restrictTo('doctor', 'admin'),
-    patientController.getAndSetPatientIDFromUser, // if the patient is signed in, it will get the patientId from the req.user
-    queueController.enqueue,
+  .get(
+    authController.restrictTo(Roles.DOCTOR),
+    doctorController.getMe,
+    queueController.peek,
   )
-  .get(queueController.peek)
   .delete(
     authController.protect,
-    // authController.restrictTo('doctor', 'admin'),
+    authController.restrictTo(Roles.DOCTOR),
+    doctorController.getMe,
     queueController.dequeue,
+  );
+
+// patient
+router
+  .route('/:doctorId')
+  .get(authController.restrictTo(Roles.PATIENT), queueController.peek)
+  .post(
+    authController.protect,
+    authController.restrictTo(Roles.PATIENT),
+    patientController.getAndSetPatientIDFromUser,
+    queueController.enqueue,
   );
 
 export default router;

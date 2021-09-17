@@ -2,6 +2,9 @@
 
 // import { showAlert } from './alerts.js';
 import axios from 'axios';
+import SELECTED_DOCTOR from './doctorInit';
+
+const base = 'http://127.0.0.1:8080/api/v1/users';
 
 const signin = async (email, password) => {
   const config = {
@@ -13,16 +16,34 @@ const signin = async (email, password) => {
     },
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign(`/doctor-${SELECTED_DOCTOR}`);
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};
+
+const doctorSignin = async (email, password) => {
+  const config = {
+    method: 'POST',
+    url: `${base}/signin`,
+    data: {
+      email,
+      password,
+    },
+  };
+
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/doctor');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 const signout = async () => {
@@ -31,16 +52,14 @@ const signout = async () => {
     url: 'http://127.0.0.1:8080/api/v1/users/signout',
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign('/');
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
 const signup = async (
@@ -65,16 +84,14 @@ const signup = async (
     },
   };
 
-  const res = await axios(config)
-    .then(function (response) {
-      if (response.data.status === 'success') {
-        location.assign('/');
-      }
-    })
-    .catch(function (error) {
-      alert(error.response.data.message);
-      // showAlert('error', error.response.data.message);
-    });
+  try {
+    const response = await axios(config);
+    if (response.data.status === 'success') {
+      location.assign(`/doctor-${SELECTED_DOCTOR}`);
+    }
+  } catch (error) {
+    alert(error.response.data.message);
+  }
 };
 
-export { signin, signout, signup };
+export { signin, doctorSignin, signout, signup };

@@ -9,6 +9,7 @@ import dateUtils from '../utils/dateUtils.js';
 
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
+import Roles from '../utils/roles.js';
 
 const createSendToken = (user, statusCode, res) => {
   const token = JWTUtils.sign(
@@ -40,6 +41,7 @@ const createSendToken = (user, statusCode, res) => {
 const signUp = catchAsync(async (req, res, next) => {
   // destructuring for security reasons, so body won't receive an admin role by POST req
   const { name, email, password, passwordConfirm, gender, birthday } = req.body;
+  const id = Roles.PATIENT;
 
   const samePasswords = passwordUtils.comparePasswords(
     password,
@@ -52,7 +54,7 @@ const signUp = catchAsync(async (req, res, next) => {
     );
   }
 
-  const userBody = { name, email, password };
+  const userBody = { name, email, password, role: id };
   const newUser = await userService.create(userBody);
 
   // automatically create a corresponding patient
@@ -221,7 +223,7 @@ const isLoggedIn = async (req, res, next) => {
 const restrictTo =
   (...roles) =>
   (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    if (!roles.includes(req.user['roles.id'])) {
       return next(
         new AppError(
           'You do not have permission to perform this action.',
