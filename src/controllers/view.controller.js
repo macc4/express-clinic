@@ -8,6 +8,25 @@ import doctorService from '../services/doctor.service.js';
 import Roles from '../utils/roles.js';
 import SELECTED_DOCTOR from '../../public/js/doctorInit.js';
 
+const getQueue = async doctorId => {
+  const queue = {};
+  queue.current = null;
+
+  if (!doctorId) return queue;
+
+  const currentPatientId = await queueService.peek(doctorId);
+
+  if (currentPatientId) {
+    const { patientId } = currentPatientId;
+    const { name } = await patientService.getByID(patientId);
+
+    if (name) {
+      queue.current = name;
+    }
+  }
+  return queue;
+};
+
 const getQueueByDoctor = catchAsync(async (req, res) => {
   const { doctorId } = req.user;
   const queue = await getQueue(doctorId);
@@ -36,25 +55,6 @@ const getQueueAndDoctors = catchAsync(async (req, res) => {
     selectedDoctor,
   });
 });
-
-const getQueue = async doctorId => {
-  const queue = {};
-  queue.current = null;
-
-  if (!doctorId) return queue;
-
-  const currentPatientId = await queueService.peek(doctorId);
-
-  if (currentPatientId) {
-    const { patientId } = currentPatientId;
-    const { name } = await patientService.getByID(patientId);
-
-    if (name) {
-      queue.current = name;
-    }
-  }
-  return queue;
-};
 
 const getPersonalResolutions = catchAsync(async (req, res, next) => {
   const resolutions = await resolutionService.getByUserID(req.user.id);
