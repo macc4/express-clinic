@@ -7,6 +7,8 @@ import Roles from '../utils/roles.js';
 
 const router = express.Router();
 
+router.use(authController.protect);
+
 // doctor
 router
   .route('/')
@@ -16,7 +18,6 @@ router
     queueController.peek,
   )
   .delete(
-    authController.protect,
     authController.restrictTo(Roles.DOCTOR),
     doctorController.getMe,
     queueController.dequeue,
@@ -27,7 +28,6 @@ router
   .route('/:doctorId')
   .get(authController.restrictTo(Roles.PATIENT), queueController.peek)
   .post(
-    authController.protect,
     authController.restrictTo(Roles.PATIENT),
     patientController.getAndSetPatientIDFromUser,
     queueController.enqueue,
