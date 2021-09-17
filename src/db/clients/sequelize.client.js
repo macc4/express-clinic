@@ -9,8 +9,6 @@ import Specialization from '../models/specialization.model.js';
 import Role from '../models/role.model.js';
 import runSeeders from './utils/seeding.js';
 
-import passwordUtils from '../../utils/passwordUtils.js';
-
 const db = {};
 
 const sequelize = new Sequelize(

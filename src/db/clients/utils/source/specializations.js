@@ -1,14 +1,14 @@
 export default [
   {
     id: 1,
-    classifier: 'Dermatologists',
+    title: 'Dermatologists',
   },
   {
     id: 2,
-    classifier: 'Endocrinologists',
+    title: 'Endocrinologists',
   },
   {
     id: 3,
-    classifier: 'Hematologists',
+    title: 'Hematologists',
   },
 ];

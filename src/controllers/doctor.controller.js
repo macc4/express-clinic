@@ -16,18 +16,20 @@ const getMe = catchAsync(async (req, res, next) => {
 
 // for queue
 const getAndSetDoctorIDFromUser = catchAsync(async (req, res, next) => {
-  const data = await doctorService.getByUserID(req.user.id);
+  if (!req.body.doctorId) {
+    const data = await doctorService.getByUserID(req.user.id);
 
-  if (!data) {
-    return next(
-      new AppError(
-        'You do not have a doctor account corresponding to your user!',
-        StatusCodes.NOT_FOUND,
-      ),
-    );
+    if (!data) {
+      return next(
+        new AppError(
+          'You do not have a doctor account corresponding to your user!',
+          StatusCodes.NOT_FOUND,
+        ),
+      );
+    }
+
+    req.user.doctorId = data.id;
   }
-
-  req.params.doctorId = data.id;
   next();
 });
 

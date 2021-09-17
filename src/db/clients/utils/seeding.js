@@ -1,21 +1,22 @@
-import roles, { Roles } from './source/roles.js';
+import roles from './source/roles.js';
 import specializations from './source/specializations.js';
 import doctors from './source/doctors.js';
 import passwordUtils from '../../../utils/passwordUtils.js';
+import Roles from '../../../utils/roles.js';
 
 const rolesSeeder = async db => {
   for (let i = 0; i < roles.length; i += 1) {
-    const { id, role } = roles[i];
-    await db.roles.findOrCreate({ where: { role }, defaults: { id, role } });
+    const { id, title } = roles[i];
+    await db.roles.findOrCreate({ where: { title }, defaults: { id, title } });
   }
 };
 
 const specializationsSeeder = async db => {
   for (let i = 0; i < specializations.length; i += 1) {
-    const { id, classifier } = specializations[i];
+    const { id, title } = specializations[i];
     await db.specializations.findOrCreate({
-      where: { classifier },
-      defaults: { id, classifier },
+      where: { title },
+      defaults: { id, title },
     });
   }
 };

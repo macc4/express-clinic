@@ -9,8 +9,7 @@ import dateUtils from '../utils/dateUtils.js';
 
 import patientService from '../services/patient.service.js';
 import userService from '../services/user.service.js';
-import doctorService from '../services/doctor.service.js';
-import { Roles } from '../db/clients/utils/source/roles.js';
+import Roles from '../utils/roles.js';
 
 const createSendToken = (user, statusCode, res) => {
   const token = JWTUtils.sign(
@@ -152,12 +151,7 @@ const protect = catchAsync(async (req, res, next) => {
       ),
     );
   }
-  if (freshUser['roles.id'] === 2) {
-    const { id } = await doctorService.getByUserID(freshUser.id);
-    if (id) {
-      freshUser.doctorId = id;
-    }
-  }
+
   // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method
   // 4) Check if the user has changed the password after the token was issued
 
@@ -200,13 +194,6 @@ const isLoggedIn = async (req, res, next) => {
         return next();
       }
 
-      if (currentUser['roles.id'] === Roles.DOCTOR) {
-        const { id } = await doctorService.getByUserID(currentUser.id);
-        if (id) {
-          currentUser.doctorId = id;
-        }
-      }
-
       // not working due to recent sequelize detachment from user.service, requires a separate method now instead of the model.instance method
       // 3) Check if the user has changed the password after the token was issued
 
@@ -236,7 +223,7 @@ const isLoggedIn = async (req, res, next) => {
 const restrictTo =
   (...roles) =>
   (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
+    if (!roles.includes(req.user['roles.id'])) {
       return next(
         new AppError(
           'You do not have permission to perform this action.',

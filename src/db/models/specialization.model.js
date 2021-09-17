@@ -4,7 +4,7 @@ export default (sequelize, Sequelize) => {
       type: Sequelize.INTEGER,
       primaryKey: true,
     },
-    classifier: {
+    title: {
       type: Sequelize.STRING,
       allowNull: false,
     },

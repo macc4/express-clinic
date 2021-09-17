@@ -1,6 +1,7 @@
 import express from 'express';
 import authController from '../controllers/auth.controller.js';
 import userController from '../controllers/user.controller.js';
+import Roles from '../utils/roles.js';
 
 const router = express.Router();
 
@@ -14,7 +15,7 @@ router.use(authController.protect);
 router.get('/me', userController.getMe, userController.getUserByID);
 
 // for admins
-router.use(authController.restrictTo(['admin', 'doctor']));
+router.use(authController.restrictTo(Roles.ADMIN));
 
 router
   .route('/')

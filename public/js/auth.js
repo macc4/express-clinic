@@ -2,6 +2,7 @@
 
 // import { showAlert } from './alerts.js';
 import axios from 'axios';
+import SELECTED_DOCTOR from './doctorInit';
 
 const base = 'http://127.0.0.1:8080/api/v1/users';
 
@@ -18,7 +19,7 @@ const signin = async (email, password) => {
   try {
     const response = await axios(config);
     if (response.data.status === 'success') {
-      location.assign('/');
+      location.assign(`/doctor-${SELECTED_DOCTOR}`);
     }
   } catch (error) {
     alert(error.response.data.message);
@@ -38,7 +39,7 @@ const doctorSignin = async (email, password) => {
   try {
     const response = await axios(config);
     if (response.data.status === 'success') {
-      location.assign('/');
+      location.assign('/doctor');
     }
   } catch (error) {
     alert(error.response.data.message);
@@ -86,7 +87,7 @@ const signup = async (
   try {
     const response = await axios(config);
     if (response.data.status === 'success') {
-      location.assign('/');
+      location.assign(`/doctor-${SELECTED_DOCTOR}`);
     }
   } catch (error) {
     alert(error.response.data.message);

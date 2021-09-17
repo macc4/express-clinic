@@ -4,7 +4,8 @@ import catchAsync from '../utils/catchAsync.js';
 import queueService from '../services/queue.service.js';
 
 const enqueue = catchAsync(async (req, res, next) => {
-  const { patientId, doctorId } = req.body;
+  const { patientId } = req.body;
+  const { doctorId } = req.params;
   const newPatient = await queueService.enqueue(patientId, doctorId);
 
   res.status(StatusCodes.CREATED).json({

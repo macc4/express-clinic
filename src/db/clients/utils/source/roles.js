@@ -1,20 +1,14 @@
 export default [
   {
     id: 1,
-    role: 'patient',
+    title: 'patient',
   },
   {
     id: 2,
-    role: 'doctor',
+    title: 'doctor',
   },
   {
     id: 3,
-    role: 'admin',
+    title: 'admin',
   },
 ];
-
-export const Roles = Object.freeze({
-  PATIENT: 1,
-  DOCTOR: 2,
-  ADMIN: 3,
-});

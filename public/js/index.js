@@ -5,6 +5,7 @@ import { signin, doctorSignin, signup, signout } from './auth.js';
 import { getPatientId, submitResolution, dequeue } from './processPatient.js';
 import { getIntoQueue } from './getIntoQueue.js';
 import searchResolutionsByName from './searchResolutionsByName.js';
+import updateQueue from './updateQueue.js';
 
 const signinForm = document.getElementById('signin-form');
 const signupForm = document.getElementById('signup-form');
@@ -16,7 +17,7 @@ const getIntoQueueButton = document.getElementById('btn-get-into-queue');
 const searchResolutionsByNameForm = document.getElementById(
   'form-search-resolutions-by-name',
 );
-const selectedDoctor = document.getElementById('doctorSelect');
+const doctorSelect = document.getElementById('doctorSelect');
 
 if (signinForm) {
   signinForm.addEventListener('submit', event => {
@@ -88,10 +89,17 @@ if (nextPatientButton) {
 
 if (getIntoQueueButton) {
   getIntoQueueButton.addEventListener('click', async () => {
-    const selectedOption = selectedDoctor.options.selectedIndex;
-    const doctorId = selectedDoctor.options[selectedOption].value;
+    const selectedOption = doctorSelect.options.selectedIndex;
+    const doctorId = doctorSelect.options[selectedOption].value;
     await getIntoQueue(doctorId);
   });
+}
+
+if (doctorSelect) {
+  doctorSelect.onchange = e => {
+    const selectedDoctor = e.target.value;
+    updateQueue(selectedDoctor);
+  };
 }
 
 if (searchResolutionsByNameForm) {
