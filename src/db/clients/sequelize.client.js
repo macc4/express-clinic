@@ -71,6 +71,16 @@ db.resolutions.belongsTo(db.patients, {
   foreignKey: 'patientId',
 });
 
+db.doctors.hasMany(db.resolutions, {
+  onDelete: 'cascade',
+  truncate: true,
+  hooks: true,
+});
+
+db.resolutions.belongsTo(db.doctors, {
+  foreignKey: 'doctorId',
+});
+
 db.roles.belongsToMany(db.users, {
   through: 'user_roles',
   foreignKey: 'roleId',

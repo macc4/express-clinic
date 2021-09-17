@@ -2,6 +2,7 @@ import { StatusCodes, ReasonPhrases } from 'http-status-codes';
 import resolutionService from '../services/resolution.service.js';
 import { AppError } from '../utils/errorClasses.js';
 import catchAsync from '../utils/catchAsync.js';
+import doctorService from '../services/doctor.service.js';
 
 // middleware for nested "patient/:patientId/resolution" routes
 const setPatientIDFromParams = (req, res, next) => {
@@ -35,7 +36,10 @@ const getResolutionsByUserID = catchAsync(async (req, res, next) => {
 });
 
 const createResolution = catchAsync(async (req, res, next) => {
-  const resolution = await resolutionService.create(req.body);
+  const { id: userId } = req.user;
+  const { id: doctorId } = await doctorService.getByUserID(userId);
+
+  const resolution = await resolutionService.create({ ...req.body, doctorId });
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',

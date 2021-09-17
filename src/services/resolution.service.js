@@ -63,31 +63,19 @@ export class ResolutionService {
   async getAll(query) {
     const data = await this.storage.getAll(query);
 
-    if (data.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(data);
-    }
-
-    return [];
+    return data;
   }
 
   async getByUserID(id) {
     const data = await this.storage.getByUserID(id);
 
-    if (data.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(data);
-    }
-
-    return [];
+    return data;
   }
 
   async getByPatientName(name) {
     const data = await this.storage.getByPatientName(name);
 
-    if (data.length !== 0) {
-      return this.filterResolutionsArrayByExpiry(data);
-    }
-
-    return [];
+    return data;
   }
 
   async getByID(id) {

@@ -48,3 +48,17 @@ export const dequeue = async () => {
     alert(error.response.data.message);
   }
 };
+
+export const deleteResolution = async resolutionId => {
+  const config = {
+    method: 'DELETE',
+    url: `http://127.0.0.1:8080/api/v1/resolutions/${resolutionId}`,
+  };
+
+  try {
+    const res = await axios(config);
+    return res;
+  } catch (error) {
+    alert(error.response.data.message);
+  }
+};

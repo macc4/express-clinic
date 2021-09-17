@@ -6,6 +6,14 @@ export class SequelizeResolutionStorage {
   }
 
   async createOne(body) {
+    const { expiry } = body;
+
+    if (expiry > 0) {
+      body.expiry = new Date(expiry);
+    } else {
+      body.expiry = null;
+    }
+
     const data = await this.client.resolutions
       .create(body)
       .then(result => result.get({ plain: true }));
@@ -32,11 +40,24 @@ export class SequelizeResolutionStorage {
 
   async getByPatientName(name) {
     const query = `
-    SELECT resolutions.id, resolutions.resolution, resolutions.createdAt, resolutions.expiry
+    SELECT resolutions.id, resolutions.resolution, resolutions.createdAt, resolutions.expiry,
+    (SELECT doctors.name FROM doctors WHERE doctors.id = ds.doctorId) AS doctorName,
+    (SELECT specializations.title FROM specializations WHERE specializations.id = ds.specializationId) AS specialization
     FROM resolutions
     INNER JOIN patients
-    ON patients.id=resolutions.patientId
+      ON patients.id=resolutions.patientId
+    LEFT OUTER JOIN 
+      (
+        doctor_specializations ds 
+          INNER JOIN doctors ON ds.doctorId=doctors.id
+          INNER JOIN specializations ON ds.specializationId=specializations.id
+      )
+      ON resolutions.doctorId=ds.doctorId
     WHERE patients.name="${name}"
+    AND (
+      resolutions.expiry IS NULL
+      OR resolutions.expiry > Now() 
+    )
     `;
 
     const resolutions = await this.client.sequelize.query(query, {
@@ -61,11 +82,24 @@ export class SequelizeResolutionStorage {
 
   async getByUserID(id) {
     const query = `
-    SELECT resolutions.id, resolutions.patientId, resolutions.resolution, resolutions.expiry, resolutions.createdAt, resolutions.updatedAt
+    SELECT resolutions.id, resolutions.patientId, resolutions.resolution, resolutions.expiry, resolutions.createdAt, resolutions.updatedAt,
+    (SELECT doctors.name FROM doctors WHERE doctors.id = ds.doctorId) AS doctorName,
+    (SELECT specializations.title FROM specializations WHERE specializations.id = ds.specializationId) AS specialization
     FROM resolutions
     INNER JOIN patients
-    ON patients.id=resolutions.patientId
+      ON patients.id=resolutions.patientId
+    LEFT OUTER JOIN 
+      (
+        doctor_specializations ds 
+          INNER JOIN doctors ON ds.doctorId=doctors.id
+          INNER JOIN specializations ON ds.specializationId=specializations.id
+      )
+      ON resolutions.doctorId=ds.doctorId
     WHERE patients.userId="${id}"
+    AND (
+      resolutions.expiry IS NULL
+      OR resolutions.expiry > Now() 
+    )
     `;
 
     const resolutions = await this.client.sequelize.query(query, {
