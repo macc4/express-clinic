@@ -72,9 +72,8 @@ db.resolutions.belongsTo(db.patients, {
 });
 
 db.doctors.hasMany(db.resolutions, {
-  onDelete: 'cascade',
+  onDelete: 'NO ACTION',
   truncate: true,
-  hooks: true,
 });
 
 db.resolutions.belongsTo(db.doctors, {

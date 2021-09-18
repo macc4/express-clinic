@@ -36,8 +36,7 @@ const getResolutionsByUserID = catchAsync(async (req, res, next) => {
 });
 
 const createResolution = catchAsync(async (req, res, next) => {
-  const { id: userId } = req.user;
-  const { id: doctorId } = await doctorService.getByUserID(userId);
+  const { id: doctorId } = await doctorService.getByUserID(req.user.id);
 
   const resolution = await resolutionService.create({ ...req.body, doctorId });
 
