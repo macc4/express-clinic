@@ -7,12 +7,17 @@ export default (sequelize, Sequelize) => {
         foreignKey: true,
         allowNull: false,
       },
+      doctorId: {
+        type: Sequelize.INTEGER,
+        foreignKey: true,
+        allowNull: false,
+      },
       resolution: {
         type: Sequelize.TEXT,
         allowNull: false,
       },
       expiry: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.DATE,
       },
     },
     { sequelize, modelName: 'resolution', timestamps: true },

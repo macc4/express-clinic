@@ -8,6 +8,8 @@ block content
         -if (resolutions.length !== 0)
           each resolution in resolutions
             .list-group-item.py-3
+              p.mb-1=resolution.doctorName
+              p.mb-1=resolution.specialization
               p.mb-1=resolution.resolution
               small=resolution.createdAt.toLocaleString('en-us')
         -else 

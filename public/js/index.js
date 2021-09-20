@@ -2,7 +2,12 @@
 
 import '@babel/polyfill';
 import { signin, doctorSignin, signup, signout } from './auth.js';
-import { getPatientId, submitResolution, dequeue } from './processPatient.js';
+import {
+  getPatientId,
+  submitResolution,
+  dequeue,
+  deleteResolution,
+} from './processPatient.js';
 import { getIntoQueue } from './getIntoQueue.js';
 import searchResolutionsByName from './searchResolutionsByName.js';
 import updateQueue from './updateQueue.js';
@@ -18,6 +23,7 @@ const searchResolutionsByNameForm = document.getElementById(
   'form-search-resolutions-by-name',
 );
 const doctorSelect = document.getElementById('doctorSelect');
+const resolutionsList = document.querySelector('.resolutions__list');
 
 if (signinForm) {
   signinForm.addEventListener('submit', event => {
@@ -110,4 +116,17 @@ if (searchResolutionsByNameForm) {
 
     searchResolutionsByName(name);
   });
+}
+
+if (resolutionsList) {
+  resolutionsList.onclick = async event => {
+    const target = event.target;
+    if (!target.classList.contains('btn__delete')) return;
+
+    const deleteBtn = document.getElementById(target.id);
+    const resolutionId = deleteBtn.dataset.id;
+
+    await deleteResolution(resolutionId);
+    location.reload(true);
+  };
 }

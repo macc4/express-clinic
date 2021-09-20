@@ -1,3 +1,5 @@
+/*eslint no-await-in-loop: 0*/
+
 import roles from './source/roles.js';
 import specializations from './source/specializations.js';
 import doctors from './source/doctors.js';

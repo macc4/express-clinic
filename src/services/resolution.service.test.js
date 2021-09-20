@@ -69,7 +69,7 @@ describe('resolutionService:', () => {
 
   describe('getAll(query);', () => {
     test('should return back data if successful', async () => {
-      expect.assertions(3);
+      expect.assertions(2);
 
       const spyOne = jest.spyOn(storage, 'getAll').mockResolvedValue([
         {
@@ -82,48 +82,35 @@ describe('resolutionService:', () => {
         },
       ]);
 
-      const spyTwo = jest
-        .spyOn(resolutionService, 'filterResolutionsArrayByExpiry')
-        .mockImplementation(resolutions => resolutions);
-
       const query = {};
 
       const result = await resolutionService.getAll(query);
 
       expect(spyOne).toHaveBeenCalled();
-      expect(spyTwo).toHaveBeenCalled();
       expect(result[0].id).toEqual(1);
 
       spyOne.mockRestore();
-      spyTwo.mockRestore();
     });
 
     test('should return an empty array if no data found', async () => {
-      expect.assertions(3);
+      expect.assertions(2);
 
       const spyOne = jest.spyOn(storage, 'getAll').mockResolvedValue([]);
-
-      const spyTwo = jest.spyOn(
-        resolutionService,
-        'filterResolutionsArrayByExpiry',
-      );
 
       const query = {};
 
       const result = await resolutionService.getAll(query);
 
       expect(spyOne).toHaveBeenCalled();
-      expect(spyTwo).toHaveBeenCalledTimes(0);
       expect(result).toEqual([]);
 
       spyOne.mockRestore();
-      spyTwo.mockRestore();
     });
   });
 
   describe('getByUserID(id);', () => {
     test('should return back data if successful', async () => {
-      expect.assertions(3);
+      expect.assertions(2);
 
       const spyOne = jest.spyOn(storage, 'getByUserID').mockResolvedValue([
         {
@@ -136,20 +123,14 @@ describe('resolutionService:', () => {
         },
       ]);
 
-      const spyTwo = jest
-        .spyOn(resolutionService, 'filterResolutionsArrayByExpiry')
-        .mockImplementation(resolutions => resolutions);
-
       const result = await resolutionService.getByUserID(
         'a67dcf70-1133-11ec-8da9-d142e5deed6f',
       );
 
       expect(spyOne).toHaveBeenCalled();
-      expect(spyTwo).toHaveBeenCalled();
       expect(result[0].id).toEqual(1);
 
       spyOne.mockRestore();
-      spyTwo.mockRestore();
     });
 
     test('should return an empty array if no data found', async () => {
@@ -176,7 +157,7 @@ describe('resolutionService:', () => {
 
   describe('getByPatientName(name);', () => {
     test('should return back data if successful', async () => {
-      expect.assertions(3);
+      expect.assertions(2);
 
       const spyOne = jest.spyOn(storage, 'getByPatientName').mockResolvedValue([
         {
@@ -189,18 +170,12 @@ describe('resolutionService:', () => {
         },
       ]);
 
-      const spyTwo = jest
-        .spyOn(resolutionService, 'filterResolutionsArrayByExpiry')
-        .mockImplementation(resolutions => resolutions);
-
       const result = await resolutionService.getByPatientName('test');
 
       expect(spyOne).toHaveBeenCalled();
-      expect(spyTwo).toHaveBeenCalled();
       expect(result[0].id).toEqual(1);
 
       spyOne.mockRestore();
-      spyTwo.mockRestore();
     });
 
     test('should return an empty array if no data found', async () => {
